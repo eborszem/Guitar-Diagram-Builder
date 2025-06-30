@@ -29,8 +29,8 @@ function Fretboard() {
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
 
     // coloring for diagrams
-    const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cffa4', '#5cf0ff', '#b25cff', '#ff5cfd']);
-    const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#beffdb','#bef9ff','#e0beff','#ffbefe']);
+    const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
+    const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
     const [color, setColor] = useState('none'); // can be any value in colorBank or 'none'
     const [noteToColor, setNoteToColor] = useState({});
     
