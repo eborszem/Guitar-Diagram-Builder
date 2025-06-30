@@ -217,7 +217,7 @@ function Fretboard() {
         if (note > 108) return; // note is out of range, so ignore it
         // console.log(`Selected note: ${note} on string index: ${stringIndex}`);
         if (playAudio && instrument) {
-            instrument.play(note, 0, { gain: 5, duration: 1.5 });
+            instrument.play(note, 0, { gain: 1, duration: 1.5 });
         }
 
         if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
