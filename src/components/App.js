@@ -1,0 +1,20 @@
+/* client/src/components/App.js */
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Fretboard from './Fretboard';
+import '../elements/App.css';
+
+function App() {
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    <Route path="/fretboard" element={<Fretboard />} />
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+export default App;

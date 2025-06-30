@@ -1,0 +1,637 @@
+import { React, useEffect, useRef, useState } from 'react'
+import '../elements/Fretboard.css';
+import { IoArrowForwardCircle, IoArrowBackCircle, IoVolumeMedium, IoVolumeOff } from "react-icons/io5";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { toSvg } from 'html-to-image';
+import axios from 'axios';
+import Soundfont from 'soundfont-player';
+
+// midi notes correspond to notes
+// e.g., 64 = e4, 59 = B3, 55 = G3, 50 = D3, 45 = A2, 40 = E2, etc.
+const presetTunings = {
+    'standard': [64, 59, 55, 50, 45, 40],
+    'drop-d': [64, 59, 55, 50, 45, 38],
+    'half-step-down': [63, 58, 54, 49, 44, 39],
+    'full-step-down': [62, 57, 53, 48, 43, 38],
+    'drop-c': [62, 57, 53, 48, 43, 36],
+    'open-d': [62, 57, 54, 50, 45, 38],
+    'open-g': [62, 59, 55, 50, 43, 38],
+    'open-c': [64, 60, 55, 48, 43, 36],
+    'dadgad': [62, 57, 55, 50, 45, 38],
+    'double-drop-d': [62, 59, 55, 50, 45, 38],
+    'custom': [] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
+};
+
+function Fretboard() {
+    // toggles
+    const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
+    const [playAudio, setPlayAudio] = useState(true);
+    const [showSharps, setShowSharps] = useState(true); // sharps or flats
+
+    // coloring for diagrams
+    const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cffa4', '#5cf0ff', '#b25cff', '#ff5cfd']);
+    const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#beffdb','#bef9ff','#e0beff','#ffbefe']);
+    const [color, setColor] = useState('none'); // can be any value in colorBank or 'none'
+    const [noteToColor, setNoteToColor] = useState({});
+    
+    // fret is 0-indexed, so the first fret is 0, second fret is 1, etc.
+    // playing the open strings (in standard tuning, [E, A, D, G, B, e]) is the equivalent of playing the 0th fret
+    const [firstVisibleFretIndex, setFirstVisibleFretIndex] = useState(0); // value changes when the user expands or shrinks the fretboard from the left side
+    const [lastVisibleFretIndex, setLastVisibleFretIndex] = useState(16); // value changes when the user expands or shrinks the fretboard from the right side
+    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
+
+    const increaseVisibleFretsLeft = () => {
+        if (firstVisibleFretIndex !== 0) {
+            setFirstVisibleFretIndex(prev => prev - 1);
+        }
+    };
+    
+    const decreaseVisibleFretsLeft = () => {
+         if (numFrets > 3) {
+            setFirstVisibleFretIndex(prev => prev + 1);
+        }
+    };
+
+    const increaseVisibleFretsRight = () => {
+        setLastVisibleFretIndex(prev => prev + 1);
+    };
+    
+    const decreaseVisibleFretsRight = () => {
+        if (numFrets > 3) {
+            setLastVisibleFretIndex(prev => prev - 1);
+        }
+    };
+
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [updatedNote, setUpdatedNote] = useState('');
+    
+    useEffect(() => {
+        // update letter by letter
+        setUpdatedNote(formatNoteToString(strings[editingIndex]));
+    }, [editingIndex, setEditingIndex]);
+    
+    const [strings, setStrings] = useState([64, 59, 55, 50, 45, 40]); // tuning can quickly change by modifying this array of midi note
+    const [tuning, setTuning] = useState('standard'); // standard by default
+
+    // utility function to check if two arrays are equal
+    // used to check if the updated tuning by the user matches any preset options
+    const arraysEqual = (a, b) => {
+        return a.length === b.length && a.every((val, i) => val === b[i]);
+    };
+
+    // check if updated tuning by user matches any preset options
+    useEffect(() => {
+        let found = false;
+        for (const [name, notes] of Object.entries(presetTunings)) {
+            if (arraysEqual(notes, strings)) {
+                setTuning(name);
+                found = true;
+            }
+        }
+        if (!found) {
+            setTuning("custom");
+        }
+    }, [strings]);
+
+    // keyboard shortcuts for increasing/decreasing visible frets
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const tagName = e.target.tagName.toLowerCase();
+            if (tagName === 'input' || tagName === 'textarea' || e.target.isContentEditable) {
+                // user is typing, so ignore
+                return;
+            }
+            if (e.key == "4") {
+                increaseVisibleFretsRight();
+            } else if (e.key == "3"){
+                decreaseVisibleFretsRight();
+            } else if (e.key == "1"){
+                increaseVisibleFretsLeft();
+            } else if (e.key == "2"){
+                decreaseVisibleFretsLeft();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [decreaseVisibleFretsLeft, decreaseVisibleFretsRight, increaseVisibleFretsLeft, increaseVisibleFretsRight]);
+
+    // load the soundfont library on page load, prevents audio delay
+    const [instrument, setInstrument] = useState(null);
+    useEffect(() => {
+        const audioCtx = new AudioContext();
+        Soundfont.instrument(audioCtx, 'acoustic_guitar_nylon')
+            .then((instrument) => {
+                setInstrument(instrument);
+            })
+            .catch((error) => {
+                console.error('Error loading instrument:', error);
+            }
+        );
+    }, []);
+
+    // generate midi notes for the fretboard
+    // allNotes is an array of midi notes from 0 to 127, representing all possible notes in midi
+    const allNotes = Array.from({ length: 128 }, (_, i) => i);
+    
+    // startingNote: the note the string starts at (e.g. E for E string)
+    // gets all the notes that belong to the string
+    const getStringNotes = (startingNote) => {
+        let highEStringNotes = [];
+        console.log(typeof startingNote, startingNote);
+        console.log(`Generating notes for string starting at: ${startingNote}`);
+        const startIndex = allNotes[startingNote];
+        console.log(allNotes);
+        console.log(`Start index for ${startingNote}: ${startIndex}`);
+        const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
+        for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
+            highEStringNotes.push(allNotes[i]);
+        }
+        return highEStringNotes;
+    };
+
+    // midi notes: 57=A3, 52=E3, etc.
+    // stringIndex = 0 (top string) to 5 (bottom string)
+    // if playAudio is true, play the note when clicked, and if color is set, apply the color to the note
+    const selectNote = (note, stringIndex) => {
+        console.log(`Selected note: ${note} on string index: ${stringIndex}`);
+        if (playAudio && instrument) {
+            instrument.play(note, 0, { gain: 0.5, duration: 1.5 });
+        }
+
+        if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
+            setNoteToColor((prev) => {
+                const updated = { ...prev };
+                delete updated[`${note}-${stringIndex}`];
+                return updated;
+            });
+        } else if (color !== 'none') { // if a color has been set, then apply it to the note
+            setNoteToColor((prev) => ({
+                ...prev,
+                [`${note}-${stringIndex}`]: color
+            }));
+        }
+    };
+
+    // (100% width) / (number of frets) = locations where each fret marker should be placed
+    const getFretMarkerPositions = (numFrets) => {
+        let placements = [];
+        let firstFretPosition = 100 / numFrets;
+        for (let i = 1; i <= numFrets; i++) {
+            placements.push(firstFretPosition * i);
+        }
+        return placements;
+    };
+
+    // notes should be positioned in the middle of the fret markers
+    // exception: the first note of a string (e.g. EADGBE in standard tuning) should be placed slightly before the "zero-th" fret marker
+    const getNotePositions = () => {
+        let placements = [];
+        let firstFretPosition = 100 / numFrets;
+        // first notes of the strings (e.g. EADGBE in standard tuning) should be placed slightly before "zero-th" fret marker
+        // only do so when its the zero-th fret, even if the user changes its visibility
+        let i = 2;
+        if (firstVisibleFretIndex === 0) {
+            placements.push(firstFretPosition - firstFretPosition / 3); // div by 3 is a nice offset to div by 2 (which is used for other note placements not on the 0th fret)
+        } else {
+            // i is changed here to account for when the first visible fret isn't pushed to the placements array
+            i = 1;
+        }
+        // the other notes of the strings are placed in the midpoints of the frets
+        for (; i <= numFrets; i++) {
+            placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+        }
+        // console.log(placements);
+        return placements;
+    };
+    
+    // user can change the tuning of the fretboard by clicking on the note boxes below the fretboard and editing them
+    const updateTuningInputText = (e) => {
+        setUpdatedNote(e.target.value);
+    };
+
+    const finishChangeTuning = (updatedNote_, index) => {
+        const updatedNote = unformatNote(updatedNote_);
+        if (updatedNote === -1) {
+            alert("Invalid note format. Use C4, D#3, etc.");
+            setEditingIndex(null); // reset index
+            return; // return with no changes
+        }
+        console.log(`Updating tuning at index ${index} to note: ${updatedNote}`);
+        const newTuning = [...strings];
+        newTuning[index] = updatedNote;
+        setStrings(newTuning);
+        setEditingIndex(null); // reset index
+    };
+
+    const resetTuning = () => {
+        setStrings([64, 59, 55, 50, 45, 40]);
+    }
+
+    // for when the user selects a preset tuning from the dropdown
+    const changeTuningViaDropdown = (e) => {
+        console.log("event val ===" + e.target.value);
+        const tuning = e.target.value;
+        setTuning(tuning); // update dropdown
+        if (tuning !== 'custom') {
+            setStrings(presetTunings[tuning]); // update the fretboard tuning
+        }
+    };
+
+    // export the fretboard as svg upon request
+    const downloadSVG = () => {
+        const fretboardNode = document.getElementById('fretboard-interface');
+        toSvg(fretboardNode, {
+            filter: (node) => {
+                // removes the arrow buttons on both sides of the fretboard
+                return !(
+                    node.classList?.contains('modify-fretboard-length-left') ||
+                    node.classList?.contains('modify-fretboard-length-right')
+                );
+            }
+        })
+        .then(dataUrl => {
+            const link = document.createElement('a');
+            link.download = 'fretboard.svg';
+            link.href = dataUrl;
+            link.click();
+        })
+        .catch(err => {
+            console.error('Failed to save fretboard as SVG:', err);
+        }); 
+    };
+
+    // saving to db is only available when the user is logged in
+    const [savingToDB, setSavingToDB] = useState(false);
+    const [nameToSaveToDB, setNameToSaveToDB] = useState('');
+
+    const [userid] = useState(localStorage.getItem('userId'));
+
+    const handleSave = () => {
+        setSavingToDB(true);
+    };
+
+    const saveFretboardToDB = async () => {
+        console.log("USERID=" + userid);
+        // dont update db unless user is logged in
+        console.log("userid="+userid);  
+        console.log("nameToSaveToDB="+nameToSaveToDB);
+        if (!userid) {
+            console.error('No user ID found in localStorage');
+            return;
+        }
+        console.log("User ID=", userid);
+        console.log("title=", nameToSaveToDB);
+        if (nameToSaveToDB === '') {
+            alert("Please enter a name for the fretboard diagram.");
+            return;
+        }
+        try {
+            const response = await axios.post(`http://localhost:5001/fretboards/${userid}`, {
+                title: nameToSaveToDB,
+                tuning: strings.join(', '), // convert array to string
+                firstVisibleFretIndex: firstVisibleFretIndex,
+                lastVisibleFretIndex: lastVisibleFretIndex,
+                noteToColor: noteToColor,
+            });
+            console.log('Fretboard saved to database:', response.data);
+        } catch (error) {
+            console.error('Error saving fretboard to database:', error);
+            alert('Failed to save fretboard. Please try again.');
+            return;
+        }
+        // now reset since we are done
+        setNameToSaveToDB('');
+        setSavingToDB(false);
+    };
+
+    // returns true if fretIndex is on the zero-th fret and the first visible fret is the zero-th fret
+    // used for styling, making it apparent where the start of the fretboard is
+    const isZerothFret = (fretIndex) => {
+        return firstVisibleFretIndex === 0 && fretIndex === 0;
+    };
+
+    // midi note to letter note conversion, returns react element
+    const formatNote = (midiNoteValue) => {
+        const noteMap = showSharps
+            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        let note = noteMap[midiNoteValue % 12];
+        const octave = Math.floor(midiNoteValue / 12) - 1;
+        return (
+            <>
+                {note}
+                <sub>{octave}</sub>
+                {/* {note} */}
+            </>
+        );
+    };
+
+    // midi note to letter note conversion, returns string 
+     const formatNoteToString = (midiNoteValue) => {
+        const noteMap = showSharps
+            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        let note = noteMap[midiNoteValue % 12];
+        const octave = Math.floor(midiNoteValue / 12) - 1;
+        return note + octave;
+    };
+    
+    // letter note to midi note conversion
+    const unformatNote = (userInputNote) => {
+        const noteMap = {
+            'C': 0,
+            'C#': 1, 'Db': 1,
+            'D': 2,
+            'D#': 3, 'Eb': 3,
+            'E': 4,
+            'F': 5,
+            'F#': 6, 'Gb': 6,
+            'G': 7,
+            'G#': 8, 'Ab': 8,
+            'A': 9,
+            'A#': 10, 'Bb': 10,
+            'B': 11
+        };
+        const match = userInputNote.match(/^([A-G][#b]?)(\d)$/);
+        if (!match) {
+            return -1;
+        }
+        const note = match[1];
+        if (noteMap[note] === undefined) {
+            return -1; // invalid note
+        }
+        const octave = parseInt(match[2], 10) + 1;
+        console.log(`Unformatted note: ${note}, Octave: ${octave}`);
+        return (octave * 12) + noteMap[note];
+    };
+
+    return (
+        <div className="fretboard-container">
+            <div className="fretboard-title">
+                Fretboard Diagram Creator
+            </div>
+            <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets + 1) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
+                <div className="modify-fretboard-length-left">
+                    {firstVisibleFretIndex !== 0 && (
+                        <button 
+                            className="increase-frets-left"
+                            onClick={() => increaseVisibleFretsLeft()}
+                        > 
+                            <IoArrowBackCircle /> 
+                        </button>
+                    )}
+                    {numFrets > 3 && (
+                        <button
+                            className="decrease-frets-left"
+                            onClick={() => decreaseVisibleFretsLeft()}
+                        >
+                            <IoArrowForwardCircle />
+                        </button>
+                    )}
+                </div>
+
+                {/* the fretboard itself; contains the clickable note */}
+                <div className="fretboard">
+                    <div className="fret-labels">
+                        {Array.from({ length: lastVisibleFretIndex - firstVisibleFretIndex}).map((_, i) => {
+                            const fretIndex = firstVisibleFretIndex + i;
+                            return (
+                            <div
+                                key={fretIndex}
+                                className="fret-label"
+                                style={{ left: `${getNotePositions()[i]}%` }}
+                            >
+                                {fretIndex}
+                            </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* .string-container is a workaround bc of the left/right arrows messing with .fretboard height */}
+                    <div className="string-container" style={{minWidth: `${numFrets * 75}px`}}>
+                        {strings.map((stringName, stringIndex) => (
+                        <div className="string" key={stringName}> {/* for the string itself */}
+                            <div className="string-notes">
+                                {/* now map the notes onto the string just generated */}
+                                {getStringNotes(stringName, numFrets).map((note, j) => (
+                                    <button
+                                        key={`${note}-${stringName}`}
+                                        // only hide notes that don't have a color given to them
+                                        className={`note ${(hideNotes && !noteToColor[note + "-" + stringIndex]) ? 'hidden' : ''}`}
+                                        style={{
+                                            left: `${getNotePositions()[j]}%`,
+                                            // backgroundColor: noteColorArr[note]
+                                            backgroundColor: noteToColor[`${note}-${stringIndex}`] != null ? noteToColor[`${note}-${stringIndex}`] : ''
+                                        }}
+                                        onClick={() => selectNote(note, stringIndex)}
+                                        
+                                    >
+                                        {/* {formatNote(note)} - {stringName} */}
+                                        {formatNote(note)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+
+                    {/* fret lines */}
+                    {getFretMarkerPositions(numFrets).map((percent, i) => {
+                        if (i != numFrets - 1) {
+                            return ( <div className="fret-marker" style={{ 
+                            left: `${percent}%`,
+                            width: isZerothFret(i) ? "3px" : "2px",
+                            backgroundColor: isZerothFret(i) ? "black" : "gray"
+                        }}></div>)
+                        }
+                    }
+                        
+                       
+                    )}  
+                </div>
+
+                <div className="modify-fretboard-length-right">
+                    <button 
+                        className="increase-frets-right"
+                        onClick={() => increaseVisibleFretsRight()}
+                    >
+                        <IoArrowForwardCircle /> 
+                    </button>
+                    {numFrets > 3 && (
+                        <button 
+                            className="decrease-frets-right"
+                            onClick={() => decreaseVisibleFretsRight()}
+                        >
+                            <IoArrowBackCircle /> 
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="tuning-editor">
+                Set Tuning:
+                <div className="tune-input">
+                    {strings.map((note, i) => (
+                        <div key={i}>
+                            {editingIndex === i ? (
+                                <input
+                                    value={updatedNote}
+                                    onChange={(e) => updateTuningInputText(e)}
+                                    onBlur={() => setEditingIndex(null)} // or maybe onBlur={() => finishChangeTuning(updatedNote, i)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            finishChangeTuning(updatedNote, i);
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                            ) : (
+                                <button 
+                                    className='retune-note-btn'
+                                    onClick={() => setEditingIndex(i)}>
+                                    {formatNote(note)}
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                
+                <div>
+                    <div className="tuning-label">
+                        Current Tuning:
+                    </div>
+                    <select id="tuning-dropdown" value={tuning} onChange={changeTuningViaDropdown}>
+                        {Object.entries(presetTunings).map(([tuningKey]) => {
+                            if (tuningKey === 'custom' && tuning !== 'custom') {
+                                return null;
+                            }
+                            return (
+                                <option key={tuningKey} value={tuningKey}>
+                                    {tuningKey}
+                                </option>
+                            );
+                        })}
+                    </select>
+                </div>
+
+                {tuning !== 'standard' && (
+                    <button className="reset-tuning" onClick={resetTuning}>
+                        Reset Tuning
+                    </button>
+                )}
+            </div>
+
+            <div className="saving">
+                <button onClick={downloadSVG}>Download SVG</button>
+                {userid && (
+                    savingToDB ? (
+                        <>
+                            <input
+                                value={nameToSaveToDB}
+                                placeholder={"Enter name"}
+                                onChange={(e) => setNameToSaveToDB(e.target.value)}
+                                onBlur={() => {
+                                    setSavingToDB(false);
+                                    setNameToSaveToDB('');
+                                } }
+                                onKeyDown={async (e) => {
+                                    if (e.key === 'Enter') {
+                                        await saveFretboardToDB();
+                                    } else if (e.key === 'Escape') {
+                                        setSavingToDB(false);
+                                        setNameToSaveToDB('');
+                                    } 
+                                } }
+                                autoFocus 
+                            />
+                            <button 
+                                onClick={async () => {
+                                    await saveFretboardToDB();
+                                }}
+                            >
+                                Submit
+                            </button>
+                        </>
+                    ) : (
+                        <button onClick={handleSave}>Save</button>
+                    )
+                )}
+            </div>
+
+            {/* toggle note visibility */}
+            <div className="toggle-btns">
+                <button 
+                    className="toggle-notes"
+                    onClick={() => setHideNotes(prev => !prev)}
+                >
+                    {hideNotes ? <MdVisibilityOff /> : <MdVisibility />}
+                </button>
+
+                <button
+                    className="toggle-audio"
+                    onClick={() => setPlayAudio(prev => !prev)}
+                >
+                    {playAudio ? <IoVolumeMedium /> : <IoVolumeOff />}
+                </button>
+
+                <button
+                    className="toggle-sharps-flats"
+                    onClick={() => setShowSharps(prev => !prev)}
+                >
+                    {showSharps ? '♯' : '♭'}
+                </button>
+
+            </div>
+
+            {/* color selector for making fretboard diagrams */}
+            <div className="color-selector">   
+                <button
+                    className={`unset-color-btn ${color==='none' && 'selected'}`}
+                    onClick={() => setColor('none')}
+                >
+                    X
+                </button>
+                <div className="color-btns-container">
+                    <div className="color-btns">
+                        {colorBank.map((c) => (
+                            <button
+                            key={c}
+                            className={`color-btn ${c === color ? 'selected' : ''}`}
+                            onClick={() => setColor(c)}
+                            style={{ 
+                                backgroundColor: c
+                            }}
+                            >
+
+                            </button>
+                        ))}
+                    </div>
+                    <div className="color-btns">
+                        {colorBankLight.map((c) => (
+                            <button
+                            key={c}
+                            className={`color-btn ${c === color ? 'selected' : ''}`}
+                            onClick={() => setColor(c)}
+                            style={{ 
+                                backgroundColor: c
+                            }}
+                            >
+
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* temporary text */}
+            1 = extend fretboard from left, 2 = shrink fretboard from left
+            <div></div>
+            4 = extend fretboard from right, 3 = shrink fretboard from right
+
+        </div>
+    )
+}
+
+export default Fretboard

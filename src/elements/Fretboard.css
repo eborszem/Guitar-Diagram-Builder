@@ -1,0 +1,266 @@
+.fretboard-interface {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modify-fretboard-length-left button,
+.modify-fretboard-length-right button {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 40px;
+    color: black;
+    border-radius: 50%;
+    /* padding: 10px; */
+    margin: 10px 10px;
+}
+
+.modify-fretboard-length-left button:hover,
+.modify-fretboard-length-right button:hover {
+    color: #498ad9;
+    background-color: #e7f2ff;
+}
+
+.modify-fretboard-length-left button:active,
+.modify-fretboard-length-right button:active {
+    transform: scale(0.95);
+}
+
+.fretboard {
+    /* flex: 1; */
+    position: relative;
+    margin: 40px 0px;
+    padding: 0;
+    /* overflow-y: hidden; */
+    /* overflow-x: auto; */
+}
+
+.string-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 2rem 0;
+}
+
+.string {
+    position: relative;
+    display: flex;
+    /* align-items: center; */
+    height: 1px;
+    width: 100%;
+    background-color: black;
+    margin-top: 2.5rem;
+}
+
+.string-notes {
+    /* position: absolute; */
+    position: relative;
+    height: 3rem;
+    width: 100%;
+    /* display: flex;
+    justify-content: center;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    gap: 20px; */
+    /* padding: 10px; */
+}
+
+.fret-marker {
+    position: absolute;
+    top: 4.5rem;
+    bottom: 2rem;
+    /* width: 2px; */
+    /* background-color: gray; */
+    pointer-events: none;
+}
+
+.note {
+    position: absolute;
+    transform: translateX(-50%);
+    top: -35%;
+    border: 1px solid #ababab;
+    /* border: 1px solid #ccc; */
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+}
+
+.note:hover {
+    /* color: #498ad9;
+    background-color: #e7f2ff;
+    border-color: #498ad9; */
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.note:active {
+    transform: translateX(-50%) scale(0.95);
+}
+
+.note.hidden {
+    display: none;
+}
+
+.tune-input {
+    display: flex;
+    justify-content: center;
+}
+
+.fret-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+}
+
+.fret-label {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.color-btns-container {
+    display: flex;
+    flex-direction: column;
+    /* border:#333 1px solid; */
+    /* border-radius: 10px; */
+}
+
+.color-btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.color-btn,
+.unset-color-btn {
+
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 40px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border:#333 1px solid;
+    margin: 1px 1px;
+    /* border: 1px solid black */
+}
+
+.unset-color-btn {
+    width: 30px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.color-btn.selected,
+.unset-color-btn.selected {
+    border: 2px solid #333;
+    /* transform: scale(0.95); */
+    /* box-shadow: inset 0 0 7.5px rgba(0,0,0,0.5); */
+}
+
+.color-btn:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.color-btn:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.color-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    left: -15px; /* account for inline width of unset-color-btn */
+}
+
+.toggle-btns {
+    all: unset;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-btns button {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 40px;
+    color: black;
+    border-radius: 50%;
+}
+
+.toggle-btns button:hover {
+    color: #498ad9;
+    background-color: #e7f2ff;
+}
+
+.toggle-btns button:active {
+    transform: scale(0.95);
+}
+
+.tuning-editor {
+    /* background-color: bisque; */
+}
+
+.tuning-editor .retune-note-btn {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0px 1px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: black;
+    /* width: 20px; */
+}
+
+.tuning-editor .retune-note-btn:hover {
+    background-color: #e0e0e0;
+}
+/* 
+.tuning-editor button:active {
+    transform: scale(0.95);
+} */
+
+.tuning-editor input {
+    all: unset;
+    /* display: inline-block; */
+    /* box-sizing: border-box; */
+    white-space: nowrap;
+    padding: 5px 10px;
+    margin: 0px 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* width: 20px; */
+}
