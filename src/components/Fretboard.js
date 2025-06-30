@@ -139,11 +139,11 @@ function Fretboard() {
     // gets all the notes that belong to the string
     const getStringNotes = (startingNote) => {
         let highEStringNotes = [];
-        console.log(typeof startingNote, startingNote);
-        console.log(`Generating notes for string starting at: ${startingNote}`);
+        // console.log(typeof startingNote, startingNote);
+        // console.log(`Generating notes for string starting at: ${startingNote}`);
         const startIndex = allNotes[startingNote];
-        console.log(allNotes);
-        console.log(`Start index for ${startingNote}: ${startIndex}`);
+        // console.log(allNotes);
+        // console.log(`Start index for ${startingNote}: ${startIndex}`);
         const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
         for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
             highEStringNotes.push(allNotes[i]);
@@ -155,7 +155,7 @@ function Fretboard() {
     // stringIndex = 0 (top string) to 5 (bottom string)
     // if playAudio is true, play the note when clicked, and if color is set, apply the color to the note
     const selectNote = (note, stringIndex) => {
-        console.log(`Selected note: ${note} on string index: ${stringIndex}`);
+        // console.log(`Selected note: ${note} on string index: ${stringIndex}`);
         if (playAudio && instrument) {
             instrument.play(note, 0, { gain: 0.5, duration: 1.5 });
         }
@@ -218,7 +218,7 @@ function Fretboard() {
             setEditingIndex(null); // reset index
             return; // return with no changes
         }
-        console.log(`Updating tuning at index ${index} to note: ${updatedNote}`);
+        // console.log(`Updating tuning at index ${index} to note: ${updatedNote}`);
         const newTuning = [...strings];
         newTuning[index] = updatedNote;
         setStrings(newTuning);
@@ -231,7 +231,7 @@ function Fretboard() {
 
     // for when the user selects a preset tuning from the dropdown
     const changeTuningViaDropdown = (e) => {
-        console.log("event val ===" + e.target.value);
+        // console.log("event val ===" + e.target.value);
         const tuning = e.target.value;
         setTuning(tuning); // update dropdown
         if (tuning !== 'custom') {
@@ -273,16 +273,16 @@ function Fretboard() {
     };
 
     const saveFretboardToDB = async () => {
-        console.log("USERID=" + userid);
+        // console.log("USERID=" + userid);
         // dont update db unless user is logged in
-        console.log("userid="+userid);  
-        console.log("nameToSaveToDB="+nameToSaveToDB);
+        // console.log("userid="+userid);  
+        // console.log("nameToSaveToDB="+nameToSaveToDB);
         if (!userid) {
             console.error('No user ID found in localStorage');
             return;
         }
-        console.log("User ID=", userid);
-        console.log("title=", nameToSaveToDB);
+        // console.log("User ID=", userid);
+        // console.log("title=", nameToSaveToDB);
         if (nameToSaveToDB === '') {
             alert("Please enter a name for the fretboard diagram.");
             return;
@@ -295,7 +295,7 @@ function Fretboard() {
                 lastVisibleFretIndex: lastVisibleFretIndex,
                 noteToColor: noteToColor,
             });
-            console.log('Fretboard saved to database:', response.data);
+            // console.log('Fretboard saved to database:', response.data);
         } catch (error) {
             console.error('Error saving fretboard to database:', error);
             alert('Failed to save fretboard. Please try again.');
@@ -363,7 +363,7 @@ function Fretboard() {
             return -1; // invalid note
         }
         const octave = parseInt(match[2], 10) + 1;
-        console.log(`Unformatted note: ${note}, Octave: ${octave}`);
+        // console.log(`Unformatted note: ${note}, Octave: ${octave}`);
         return (octave * 12) + noteMap[note];
     };
 
@@ -525,39 +525,6 @@ function Fretboard() {
 
             <div className="saving">
                 <button onClick={downloadSVG}>Download SVG</button>
-                {userid && (
-                    savingToDB ? (
-                        <>
-                            <input
-                                value={nameToSaveToDB}
-                                placeholder={"Enter name"}
-                                onChange={(e) => setNameToSaveToDB(e.target.value)}
-                                onBlur={() => {
-                                    setSavingToDB(false);
-                                    setNameToSaveToDB('');
-                                } }
-                                onKeyDown={async (e) => {
-                                    if (e.key === 'Enter') {
-                                        await saveFretboardToDB();
-                                    } else if (e.key === 'Escape') {
-                                        setSavingToDB(false);
-                                        setNameToSaveToDB('');
-                                    } 
-                                } }
-                                autoFocus 
-                            />
-                            <button 
-                                onClick={async () => {
-                                    await saveFretboardToDB();
-                                }}
-                            >
-                                Submit
-                            </button>
-                        </>
-                    ) : (
-                        <button onClick={handleSave}>Save</button>
-                    )
-                )}
             </div>
 
             {/* toggle note visibility */}
