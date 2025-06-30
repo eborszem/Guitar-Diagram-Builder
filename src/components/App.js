@@ -12,6 +12,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Fretboard />} />
                 </Routes>
+                <Analytics />
             </div>
         </Router>
     );
