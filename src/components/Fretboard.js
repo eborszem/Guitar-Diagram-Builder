@@ -91,6 +91,7 @@ function Fretboard() {
         if (!found) {
             setTuning("custom");
         }
+        // console.log("curr strings:", strings);
     }, [strings]);
 
     // keyboard shortcuts for increasing/decreasing visible frets
@@ -155,6 +156,7 @@ function Fretboard() {
     // stringIndex = 0 (top string) to 5 (bottom string)
     // if playAudio is true, play the note when clicked, and if color is set, apply the color to the note
     const selectNote = (note, stringIndex) => {
+        if (note > 108) return; // note is out of range, so ignore it
         // console.log(`Selected note: ${note} on string index: ${stringIndex}`);
         if (playAudio && instrument) {
             instrument.play(note, 0, { gain: 0.5, duration: 1.5 });
@@ -214,11 +216,9 @@ function Fretboard() {
     const finishChangeTuning = (updatedNote_, index) => {
         const updatedNote = unformatNote(updatedNote_);
         if (updatedNote === -1) {
-            alert("Invalid note format. Use C4, D#3, etc.");
             setEditingIndex(null); // reset index
             return; // return with no changes
         }
-        // console.log(`Updating tuning at index ${index} to note: ${updatedNote}`);
         const newTuning = [...strings];
         newTuning[index] = updatedNote;
         setStrings(newTuning);
@@ -236,6 +236,7 @@ function Fretboard() {
         setTuning(tuning); // update dropdown
         if (tuning !== 'custom') {
             setStrings(presetTunings[tuning]); // update the fretboard tuning
+            console.log("dropdown tuning strings:" + strings);
         }
     };
 
@@ -329,7 +330,7 @@ function Fretboard() {
     };
 
     // midi note to letter note conversion, returns string 
-     const formatNoteToString = (midiNoteValue) => {
+    const formatNoteToString = (midiNoteValue) => {
         const noteMap = showSharps
             ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
             : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -356,13 +357,19 @@ function Fretboard() {
         };
         const match = userInputNote.match(/^([A-G][#b]?)(\d)$/);
         if (!match) {
+            alert("Invalid note format. Use C4, D#3, etc.");
             return -1;
         }
         const note = match[1];
         if (noteMap[note] === undefined) {
+            alert("Invalid note format. Use C4, D#3, etc.");
             return -1; // invalid note
         }
         const octave = parseInt(match[2], 10) + 1;
+        if (octave > 8) {
+            alert("Octaves begin to go out of range past 8.");
+            return -1; // octave begins to go out of range at this point
+        }
         // console.log(`Unformatted note: ${note}, Octave: ${octave}`);
         return (octave * 12) + noteMap[note];
     };
@@ -411,27 +418,30 @@ function Fretboard() {
 
                     {/* .string-container is a workaround bc of the left/right arrows messing with .fretboard height */}
                     <div className="string-container" style={{minWidth: `${numFrets * 75}px`}}>
-                        {strings.map((stringName, stringIndex) => (
-                        <div className="string" key={stringName}> {/* for the string itself */}
+                        {strings.map((stringName, stringIndex) => ( 
+                        <div className="string" key={stringIndex}> {/* for the string itself */}
                             <div className="string-notes">
                                 {/* now map the notes onto the string just generated */}
-                                {getStringNotes(stringName, numFrets).map((note, j) => (
-                                    <button
-                                        key={`${note}-${stringName}`}
-                                        // only hide notes that don't have a color given to them
-                                        className={`note ${(hideNotes && !noteToColor[note + "-" + stringIndex]) ? 'hidden' : ''}`}
-                                        style={{
-                                            left: `${getNotePositions()[j]}%`,
-                                            // backgroundColor: noteColorArr[note]
-                                            backgroundColor: noteToColor[`${note}-${stringIndex}`] != null ? noteToColor[`${note}-${stringIndex}`] : ''
-                                        }}
-                                        onClick={() => selectNote(note, stringIndex)}
-                                        
-                                    >
-                                        {/* {formatNote(note)} - {stringName} */}
-                                        {formatNote(note)}
-                                    </button>
-                                ))}
+                                {getStringNotes(stringName, numFrets).map((note, j) => 
+                                // audible midi range is [0, 109]
+                                    note < 109 && (
+                                        <button
+                                            key={`${note}-${stringName}`}
+                                            // only hide notes that don't have a color given to them
+                                            className={`note ${(hideNotes && !noteToColor[note + "-" + stringIndex]) ? 'hidden' : ''}`}
+                                            style={{
+                                                left: `${getNotePositions()[j]}%`,
+                                                // backgroundColor: noteColorArr[note]
+                                                backgroundColor: noteToColor[`${note}-${stringIndex}`] != null ? noteToColor[`${note}-${stringIndex}`] : ''
+                                            }}
+                                            onClick={() => selectNote(note, stringIndex)}
+                                        >
+                                            {/* {formatNote(note)}-{stringName}-{stringIndex} */}
+                                            {/* {note} */}
+                                            {formatNote(note)}
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                         ))}
@@ -440,16 +450,19 @@ function Fretboard() {
                     {/* fret lines */}
                     {getFretMarkerPositions(numFrets).map((percent, i) => {
                         if (i != numFrets - 1) {
-                            return ( <div className="fret-marker" style={{ 
-                            left: `${percent}%`,
-                            width: isZerothFret(i) ? "3px" : "2px",
-                            backgroundColor: isZerothFret(i) ? "black" : "gray"
-                        }}></div>)
+                            return ( 
+                                <div 
+                                    className="fret-marker" 
+                                    style={{ 
+                                        left: `${percent}%`,
+                                        width: isZerothFret(i) ? "3px" : "2px",
+                                        backgroundColor: isZerothFret(i) ? "black" : "gray"
+                                    }}
+                                >
+                                </div>
+                            )
                         }
-                    }
-                        
-                       
-                    )}  
+                    })}
                 </div>
 
                 <div className="modify-fretboard-length-right">
