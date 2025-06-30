@@ -1,11 +1,10 @@
-
-
 .fretboard-title {
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
     margin: 20px 0;
     font-family: 'Open Sans', sans-serif;
+    user-select: none;
 }
 
 .fretboard-interface {
@@ -158,7 +157,6 @@
 
 .color-btn,
 .unset-color-btn {
-
     all: unset;
     display: flex;
     justify-content: center;
@@ -169,6 +167,7 @@
     box-sizing: border-box;
     border:#333 1px solid;
     margin: 1px 1px;
+    user-select: none;
     /* border: 1px solid black */
 }
 
@@ -215,6 +214,7 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    user-select: none;
 }
 
 .toggle-btns button {
@@ -239,8 +239,10 @@
     transform: scale(0.95);
 }
 
-.tuning-editor {
-    /* background-color: bisque; */
+.tuning-editor p {
+    padding: 0px;
+    margin: 0px;
+    user-select: none;
 }
 
 .tuning-editor .retune-note-btn {
@@ -253,6 +255,7 @@
     background-color: #f0f0f0;
     color: black;
     /* width: 20px; */
+    user-select: none;
 }
 
 .tuning-editor .retune-note-btn:hover {
@@ -275,10 +278,15 @@
     /* width: 20px; */
 }
 
+tuning-dropdown-container p {
+    user-select: none;
+}
+
 .info {
     display: flex;
     flex-direction: column;
-
+    pointer-events: none;
+    user-select: none;
 }
 
 .info p {

@@ -542,7 +542,9 @@ function Fretboard() {
             </div>
 
             <div className="tuning-editor">
-                Set Tuning:
+                <p>
+                    Set Tuning:
+                </p>
                 <div className="tune-input">
                     {strings.map((note, i) => (
                         <div key={i}>
@@ -569,10 +571,10 @@ function Fretboard() {
                     ))}
                 </div>
                 
-                <div>
-                    <div className="tuning-label">
+                <div className="tuning-dropdown-container">
+                    <p>
                         Current Tuning:
-                    </div>
+                    </p>
                     <select id="tuning-dropdown" value={tuning} onChange={changeTuningViaDropdown}>
                         {Object.entries(presetTunings).map(([tuningKey]) => {
                             if (tuningKey === 'custom' && tuning !== 'custom') {
