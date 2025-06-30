@@ -102,14 +102,72 @@ function Fretboard() {
                 // user is typing, so ignore
                 return;
             }
-            if (e.key == "4") {
-                increaseVisibleFretsRight();
-            } else if (e.key == "3"){
-                decreaseVisibleFretsRight();
-            } else if (e.key == "1"){
-                increaseVisibleFretsLeft();
-            } else if (e.key == "2"){
-                decreaseVisibleFretsLeft();
+            switch (e.key) {
+                case '4':
+                    increaseVisibleFretsRight();
+                    break;
+                case '3':
+                    decreaseVisibleFretsRight();
+                    break;
+                case '1':
+                    increaseVisibleFretsLeft();
+                    break;
+                case '2':
+                    decreaseVisibleFretsLeft();
+                    break;
+                case 'Escape':
+                    setColor('none');
+                    break;
+                case 'R':
+                    setColor(colorBankLight[0]);
+                    break;
+                case 'r':
+                    setColor(colorBank[0]);
+                    break;
+                case 'O':
+                    setColor(colorBankLight[1]);
+                    break;
+                case 'o':
+                    setColor(colorBank[1]);
+                    break;
+                case 'Y':
+                    setColor(colorBankLight[2]);
+                    break;
+                case 'y':
+                    setColor(colorBank[2]);
+                    break;
+                case 'G':
+                    setColor(colorBankLight[3]);
+                    break;
+                case 'g':
+                    setColor(colorBank[3]);
+                    break;
+                case 'A':
+                    setColor(colorBankLight[4]);
+                    break;
+                case 'a':
+                    setColor(colorBank[4]);
+                    break;
+                case 'B':
+                    setColor(colorBankLight[5]);
+                    break;
+                case 'b':
+                    setColor(colorBank[5]);
+                    break;
+                case 'P':
+                    setColor(colorBankLight[6]);
+                    break;
+                case 'p':
+                    setColor(colorBank[6]);
+                    break;
+                case 'M':
+                    setColor(colorBankLight[7]);
+                    break;
+                case 'm':
+                    setColor(colorBank[7]);
+                    break;
+                default:
+                    break;
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -159,7 +217,7 @@ function Fretboard() {
         if (note > 108) return; // note is out of range, so ignore it
         // console.log(`Selected note: ${note} on string index: ${stringIndex}`);
         if (playAudio && instrument) {
-            instrument.play(note, 0, { gain: 0.5, duration: 1.5 });
+            instrument.play(note, 0, { gain: 5, duration: 1.5 });
         }
 
         if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
@@ -236,7 +294,7 @@ function Fretboard() {
         setTuning(tuning); // update dropdown
         if (tuning !== 'custom') {
             setStrings(presetTunings[tuning]); // update the fretboard tuning
-            console.log("dropdown tuning strings:" + strings);
+            // console.log("dropdown tuning strings:" + strings);
         }
     };
 
@@ -423,7 +481,7 @@ function Fretboard() {
                             <div className="string-notes">
                                 {/* now map the notes onto the string just generated */}
                                 {getStringNotes(stringName, numFrets).map((note, j) => 
-                                // audible midi range is [0, 109]
+                                    // audible midi range is [0, 109]
                                     note < 109 && (
                                         <button
                                             key={`${note}-${stringName}`}
@@ -605,11 +663,23 @@ function Fretboard() {
                 </div>
             </div>
 
-            {/* temporary text */}
-            1 = extend fretboard from left, 2 = shrink fretboard from left
-            <div></div>
-            4 = extend fretboard from right, 3 = shrink fretboard from right
-
+            <div className="info">
+                <p style={{ fontWeight: 'bold' }}>
+                    Hotkeys:
+                </p>
+                <p>
+                    1 &#8594; extend fretboard from left, 2 &#8594; shrink fretboard from left
+                </p>
+                <p>
+                    4 &#8594; extend fretboard from right, 3 &#8594; shrink fretboard from right
+                </p> 
+                <p>
+                    esc &#8594; no color, r &#8594; red, o &#8594; orange, y &#8594; yellow, g &#8594; green, a &#8594; light blue, b &#8594; blue, p &#8594; purple, m &#8594; magenta
+                </p>
+                <p>
+                    shift + r &#8594; light red, etc.
+                </p>                        
+            </div>
         </div>
     )
 }
