@@ -3,7 +3,6 @@ import '../elements/Fretboard.css';
 import { IoArrowForwardCircle, IoArrowBackCircle, IoVolumeMedium, IoVolumeOff } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { toSvg } from 'html-to-image';
-import axios from 'axios';
 import Soundfont from 'soundfont-player';
 
 // midi notes correspond to notes
@@ -31,7 +30,7 @@ function Fretboard() {
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
     const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
-    const [color, setColor] = useState('none'); // can be any value in colorBank or 'none'
+    const [color, setColor] = useState('#ff5c5c'); // can be any value in colorBank or 'none'
     const [noteToColor, setNoteToColor] = useState({});
     
     // fret is 0-indexed, so the first fret is 0, second fret is 1, etc.
@@ -321,50 +320,6 @@ function Fretboard() {
         }); 
     };
 
-    // saving to db is only available when the user is logged in
-    const [savingToDB, setSavingToDB] = useState(false);
-    const [nameToSaveToDB, setNameToSaveToDB] = useState('');
-
-    const [userid] = useState(localStorage.getItem('userId'));
-
-    const handleSave = () => {
-        setSavingToDB(true);
-    };
-
-    const saveFretboardToDB = async () => {
-        // console.log("USERID=" + userid);
-        // dont update db unless user is logged in
-        // console.log("userid="+userid);  
-        // console.log("nameToSaveToDB="+nameToSaveToDB);
-        if (!userid) {
-            console.error('No user ID found in localStorage');
-            return;
-        }
-        // console.log("User ID=", userid);
-        // console.log("title=", nameToSaveToDB);
-        if (nameToSaveToDB === '') {
-            alert("Please enter a name for the fretboard diagram.");
-            return;
-        }
-        try {
-            const response = await axios.post(`http://localhost:5001/fretboards/${userid}`, {
-                title: nameToSaveToDB,
-                tuning: strings.join(', '), // convert array to string
-                firstVisibleFretIndex: firstVisibleFretIndex,
-                lastVisibleFretIndex: lastVisibleFretIndex,
-                noteToColor: noteToColor,
-            });
-            // console.log('Fretboard saved to database:', response.data);
-        } catch (error) {
-            console.error('Error saving fretboard to database:', error);
-            alert('Failed to save fretboard. Please try again.');
-            return;
-        }
-        // now reset since we are done
-        setNameToSaveToDB('');
-        setSavingToDB(false);
-    };
-
     // returns true if fretIndex is on the zero-th fret and the first visible fret is the zero-th fret
     // used for styling, making it apparent where the start of the fretboard is
     const isZerothFret = (fretIndex) => {
@@ -435,7 +390,7 @@ function Fretboard() {
     return (
         <div className="fretboard-container">
             <div className="fretboard-title">
-                Fretboard Diagram Creator
+                Fretboard Diagram Maker
             </div>
             <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets + 1) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
                 <div className="modify-fretboard-length-left">
