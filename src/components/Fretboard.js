@@ -296,6 +296,18 @@ function Fretboard() {
         let firstFretPosition = 100 / numFrets;
         // first notes of the strings (e.g. EADGBE in standard tuning) should be placed slightly before "zero-th" fret marker
         // only do so when its the zero-th fret, even if the user changes its visibility
+        if (lefty) {
+            let i;
+            for (i = 1; i < numFrets; i++) {
+                placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+            }
+            if (lastVisibleFretIndex === numFrets) {
+                placements.push((firstFretPosition * i) - firstFretPosition / 1.66);
+            } else {
+                placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+            }
+            return placements;
+        }
         let i = 2;
         if (firstVisibleFretIndex === 0) {
             placements.push(firstFretPosition - firstFretPosition / 3); // div by 3 is a nice offset to div by 2 (which is used for other note placements not on the 0th fret)
@@ -519,7 +531,7 @@ function Fretboard() {
 
                     {/* fret lines */}
                     {getFretMarkerPositions(numFrets).map((percent, i) => {
-                        // if (i != numFrets - 1) {
+                        if (i == numFrets - 1) return;
                             return ( 
                                 <div 
                                     className="fret-marker" 
@@ -531,8 +543,8 @@ function Fretboard() {
                                 >
                                 </div>
                             )
-                        // }
-                    })}
+                        }
+                    )}
                 </div>
 
                 <div className="modify-fretboard-length-right">
