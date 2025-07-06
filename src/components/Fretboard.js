@@ -644,12 +644,12 @@ function Fretboard() {
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
 
-                <button
+                {/* <button
                     className="toggle-flip-strings"
                     onClick={() => setFlipStrings(prev => !prev)}
                 >
                     {flipStrings ? < LuRefreshCcw size={30} /> : <LuRefreshCw size={30} />}
-                </button>
+                </button> */}
 
             </div>
 
