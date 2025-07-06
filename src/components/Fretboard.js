@@ -4,6 +4,7 @@ import { IoArrowForwardCircle, IoArrowBackCircle, IoVolumeMedium, IoVolumeOff } 
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { toSvg } from 'html-to-image';
 import Soundfont from 'soundfont-player';
+import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
 
 // midi notes correspond to notes
 // e.g., 64 = e4, 59 = B3, 55 = G3, 50 = D3, 45 = A2, 40 = E2, etc.
@@ -24,8 +25,9 @@ const presetTunings = {
 function Fretboard() {
     // toggles
     const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
-    const [playAudio, setPlayAudio] = useState(true);
+    const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
+    const [lefty, setLefty] = useState(false); // left hand or right hand
 
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
@@ -40,13 +42,13 @@ function Fretboard() {
     const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
 
     const increaseVisibleFretsLeft = () => {
-        if (firstVisibleFretIndex !== 0) {
+        if (firstVisibleFretIndex > 0) {
             setFirstVisibleFretIndex(prev => prev - 1);
         }
     };
     
     const decreaseVisibleFretsLeft = () => {
-         if (numFrets > 3) {
+        if (numFrets > 3) {
             setFirstVisibleFretIndex(prev => prev + 1);
         }
     };
@@ -60,6 +62,39 @@ function Fretboard() {
             setLastVisibleFretIndex(prev => prev - 1);
         }
     };
+
+    const onIncreaseLeft = () => {
+        if (lefty) increaseVisibleFretsRight();
+        else increaseVisibleFretsLeft();
+    };
+
+    const onDecreaseLeft = () => {
+        if (lefty) decreaseVisibleFretsRight();
+        else decreaseVisibleFretsLeft();
+    };
+
+    const onIncreaseRight = () => {
+        if (lefty) increaseVisibleFretsLeft();
+        else increaseVisibleFretsRight();
+    };
+
+    const onDecreaseRight = () => {
+        if (lefty) decreaseVisibleFretsLeft();
+        else decreaseVisibleFretsRight();
+    };
+
+    const canIncreaseLeft = lefty
+        ? true
+        : firstVisibleFretIndex > 0;
+    const canDecreaseLeft = lefty
+        ? lastVisibleFretIndex > firstVisibleFretIndex + 1
+        : firstVisibleFretIndex < lastVisibleFretIndex - 1;
+    const canIncreaseRight = lefty
+        ? firstVisibleFretIndex > 0
+        : true;
+    const canDecreaseRight = lefty
+        ? firstVisibleFretIndex < lastVisibleFretIndex - 1
+        : lastVisibleFretIndex > firstVisibleFretIndex + 1;
 
     const [editingIndex, setEditingIndex] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
@@ -103,16 +138,16 @@ function Fretboard() {
             }
             switch (e.key) {
                 case '4':
-                    increaseVisibleFretsRight();
+                    onIncreaseRight();
                     break;
                 case '3':
-                    decreaseVisibleFretsRight();
+                    onDecreaseRight();
                     break;
                 case '1':
-                    increaseVisibleFretsLeft();
+                    onIncreaseLeft();
                     break;
                 case '2':
-                    decreaseVisibleFretsLeft();
+                    onDecreaseLeft();
                     break;
                 case 'Escape':
                     setColor('none');
@@ -189,6 +224,11 @@ function Fretboard() {
         );
     }, []);
 
+    // toggle for left handed players
+    useEffect(() => {
+        
+    }, [lefty])
+
     // generate midi notes for the fretboard
     // allNotes is an array of midi notes from 0 to 127, representing all possible notes in midi
     const allNotes = Array.from({ length: 128 }, (_, i) => i);
@@ -196,17 +236,26 @@ function Fretboard() {
     // startingNote: the note the string starts at (e.g. E for E string)
     // gets all the notes that belong to the string
     const getStringNotes = (startingNote) => {
-        let highEStringNotes = [];
+        // 64 = high e
+        let stringNotes = [];
         // console.log(typeof startingNote, startingNote);
         // console.log(`Generating notes for string starting at: ${startingNote}`);
         const startIndex = allNotes[startingNote];
         // console.log(allNotes);
         // console.log(`Start index for ${startingNote}: ${startIndex}`);
         const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
-        for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
-            highEStringNotes.push(allNotes[i]);
+        if (lefty) {
+            for (let i = startIndex + lastVisibleFretIndex - 1; i >= startIndexWithOffset; i--) {
+                stringNotes.push(allNotes[i]);
+            }
+
+        } else {
+            for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
+                stringNotes.push(allNotes[i]);
+            }
         }
-        return highEStringNotes;
+        return stringNotes;
+        // return lefty ? stringNotes.reverse() : stringNotes;
     };
 
     // midi notes: 57=A3, 52=E3, etc.
@@ -323,7 +372,18 @@ function Fretboard() {
     // returns true if fretIndex is on the zero-th fret and the first visible fret is the zero-th fret
     // used for styling, making it apparent where the start of the fretboard is
     const isZerothFret = (fretIndex) => {
-        return firstVisibleFretIndex === 0 && fretIndex === 0;
+        if (lefty)
+            return lastVisibleFretIndex === numFrets && fretIndex === numFrets - 2;
+        else
+            return firstVisibleFretIndex === 0 && fretIndex === 0;
+    };
+
+    const fretLabels = () => {
+        let arr = Array.from(
+            { length: lastVisibleFretIndex - firstVisibleFretIndex },
+            (_, i) => firstVisibleFretIndex + i
+        );
+        return lefty ? arr.reverse() : arr;
     };
 
     // midi note to letter note conversion, returns react element
@@ -394,18 +454,18 @@ function Fretboard() {
             </div>
             <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets + 1) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
                 <div className="modify-fretboard-length-left">
-                    {firstVisibleFretIndex !== 0 && (
+                    {canIncreaseLeft && (
                         <button 
                             className="increase-frets-left"
-                            onClick={() => increaseVisibleFretsLeft()}
+                            onClick={onIncreaseLeft}
                         > 
                             <IoArrowBackCircle /> 
                         </button>
                     )}
-                    {numFrets > 3 && (
+                    {(numFrets > 3 && canDecreaseLeft) && (
                         <button
                             className="decrease-frets-left"
-                            onClick={() => decreaseVisibleFretsLeft()}
+                            onClick={onDecreaseLeft}
                         >
                             <IoArrowForwardCircle />
                         </button>
@@ -415,8 +475,8 @@ function Fretboard() {
                 {/* the fretboard itself; contains the clickable note */}
                 <div className="fretboard">
                     <div className="fret-labels">
-                        {Array.from({ length: lastVisibleFretIndex - firstVisibleFretIndex}).map((_, i) => {
-                            const fretIndex = firstVisibleFretIndex + i;
+                        {fretLabels().map((fretIndex, i) => {
+                            // const fretIndex = firstVisibleFretIndex + i;
                             return (
                             <div
                                 key={fretIndex}
@@ -462,7 +522,7 @@ function Fretboard() {
 
                     {/* fret lines */}
                     {getFretMarkerPositions(numFrets).map((percent, i) => {
-                        if (i != numFrets - 1) {
+                        // if (i != numFrets - 1) {
                             return ( 
                                 <div 
                                     className="fret-marker" 
@@ -474,21 +534,23 @@ function Fretboard() {
                                 >
                                 </div>
                             )
-                        }
+                        // }
                     })}
                 </div>
 
                 <div className="modify-fretboard-length-right">
-                    <button 
+                    {canIncreaseRight && (
+                        <button 
                         className="increase-frets-right"
-                        onClick={() => increaseVisibleFretsRight()}
+                        onClick={onIncreaseRight}
                     >
                         <IoArrowForwardCircle /> 
-                    </button>
-                    {numFrets > 3 && (
+                        </button>
+                    )}
+                    {(numFrets > 3 && canDecreaseRight) && (
                         <button 
                             className="decrease-frets-right"
-                            onClick={() => decreaseVisibleFretsRight()}
+                            onClick={onDecreaseRight}
                         >
                             <IoArrowBackCircle /> 
                         </button>
@@ -576,6 +638,13 @@ function Fretboard() {
                     onClick={() => setShowSharps(prev => !prev)}
                 >
                     {showSharps ? '♯' : '♭'}
+                </button>
+
+                <button
+                    className="toggle-hand"
+                    onClick={() => setLefty(prev => !prev)}
+                >
+                    {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
 
             </div>
