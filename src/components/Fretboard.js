@@ -5,6 +5,7 @@ import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { toSvg } from 'html-to-image';
 import Soundfont from 'soundfont-player';
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
+import { LuRefreshCcw, LuRefreshCw } from "react-icons/lu";
 
 // midi notes correspond to notes
 // e.g., 64 = e4, 59 = B3, 55 = G3, 50 = D3, 45 = A2, 40 = E2, etc.
@@ -28,6 +29,7 @@ function Fretboard() {
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
     const [lefty, setLefty] = useState(false); // left hand or right hand
+    const [flipStrings, setFlipStrings] = useState(false); // flip the strings 180 degrees
 
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
@@ -223,11 +225,6 @@ function Fretboard() {
             }
         );
     }, []);
-
-    // toggle for left handed players
-    useEffect(() => {
-        
-    }, [lefty])
 
     // generate midi notes for the fretboard
     // allNotes is an array of midi notes from 0 to 127, representing all possible notes in midi
@@ -491,7 +488,7 @@ function Fretboard() {
 
                     {/* .string-container is a workaround bc of the left/right arrows messing with .fretboard height */}
                     <div className="string-container" style={{minWidth: `${numFrets * 75}px`}}>
-                        {strings.map((stringName, stringIndex) => ( 
+                        {(flipStrings ? [...strings].reverse() : strings).map((stringName, stringIndex) => ( 
                         <div className="string" key={stringIndex}> {/* for the string itself */}
                             <div className="string-notes">
                                 {/* now map the notes onto the string just generated */}
@@ -645,6 +642,13 @@ function Fretboard() {
                     onClick={() => setLefty(prev => !prev)}
                 >
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
+                </button>
+
+                <button
+                    className="toggle-flip-strings"
+                    onClick={() => setFlipStrings(prev => !prev)}
+                >
+                    {flipStrings ? < LuRefreshCcw size={30} /> : <LuRefreshCw size={30} />}
                 </button>
 
             </div>
