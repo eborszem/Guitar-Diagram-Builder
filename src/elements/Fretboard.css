@@ -41,9 +41,13 @@
     justify-content: center;
     cursor: pointer;
     font-size: 30px;
-    color: black;
+    color: rgb(41, 41, 41);
     border-radius: 50%;
     position: relative; /* prevents .string-notes from being above */
+}
+
+body.dark .modify-number-strings button {
+    color: #ddd;
 }
 
 .modify-fretboard-length-left button,
@@ -55,17 +59,30 @@
     align-items: center;
     cursor: pointer;
     font-size: 40px;
-    color: black;
+    color: rgb(41, 41, 41);
+    /* color: black; */
     border-radius: 50%;
     /* padding: 10px; */
     margin: 10px 10px;
 }
 
+body.dark .modify-fretboard-length-left button,
+body.dark .modify-fretboard-length-right button {
+    color: #ddd;
+}
+
 .modify-fretboard-length-left button:hover,
 .modify-fretboard-length-right button:hover,
 .modify-number-strings button:hover {
-    color: #498ad9;
-    background-color: #e7f2ff;
+    color: #d94949;
+    background-color: #ffe7e7;
+}
+
+body.dark .modify-fretboard-length-left button:hover,
+body.dark .modify-fretboard-length-right button:hover,
+body.dark .modify-number-strings button:hover {
+    color: #ffe7e7;
+    background-color: #d94949;
 }
 
 .modify-fretboard-length-left button:active,
@@ -101,6 +118,10 @@
     margin-top: 2.5rem;
 }
 
+body.dark .string {
+    background-color: #ddd;
+}
+
 .string-notes {
     /* position: absolute; */
     position: relative;
@@ -116,8 +137,8 @@
 
 .fret-marker {
     position: absolute;
-    top: 2.5rem;
-    bottom: 0rem;
+    top: 2.55rem;
+    bottom: 0.05rem;
     /* width: 2px; */
     /* background-color: gray; */
     pointer-events: none;
@@ -132,6 +153,12 @@
     border-radius: 100%;
     width: 35px;
     height: 35px;
+}
+
+body.dark .note {
+    border: 1px solid #1b1b1b;
+    background-color: #ececec;
+    color: #1b1b1b;
 }
 
 .note:hover {
@@ -173,9 +200,14 @@
     color: gray;
 }
 
+body.dark .fret-label {
+    color: #ddd;
+}
+
 .color-btns-container {
     display: flex;
     flex-direction: column;
+    padding: 5px;
     /* border:#333 1px solid; */
     /* border-radius: 10px; */
 }
@@ -202,6 +234,10 @@
     /* border: 1px solid black */
 }
 
+body.dark .color-btn {
+    border-color: #000000;
+}
+
 .unset-color-btn {
     width: 30px;
     height: 40px;
@@ -212,12 +248,22 @@
     justify-content: center;
     align-items: center;
 }
+body.dark .unset-color-btn {
+    background-color: #222222;
+    color: #ddd;
+    border-color: black;
+}
 
 .color-btn.selected,
 .unset-color-btn.selected {
-    border: 2px solid #333;
+    border: 2.5px solid #333;
     /* transform: scale(0.95); */
     /* box-shadow: inset 0 0 7.5px rgba(0,0,0,0.5); */
+}
+
+body.dark .color-btn.selected,
+body.dark .unset-color-btn.selected {
+    border: 4px solid black;
 }
 
 .color-btn:first-child {
@@ -261,13 +307,26 @@
     border-radius: 50%;
 }
 
+body.dark .toggle-btns button {
+    color: #ddd;
+}
+
 .toggle-btns button:hover {
-    color: #498ad9;
-    background-color: #e7f2ff;
+    color: #d94949;
+    background-color: #ffe7e7;
+}
+
+body.dark .toggle-btns button:hover {
+    color: #ffe7e7;
+    background-color: #d94949;
 }
 
 .toggle-btns button:active {
     transform: scale(0.95);
+}
+
+.tuning-editor > div{
+    padding: 5px;
 }
 
 .tuning-editor p {
@@ -287,6 +346,11 @@
     color: black;
     /* width: 20px; */
     user-select: none;
+}
+
+body.dark .tuning-editor .retune-note-btn {
+    background-color: #141414;
+    color: #ddd;
 }
 
 .tuning-editor .retune-note-btn:hover {
@@ -309,8 +373,38 @@
     /* width: 20px; */
 }
 
-tuning-dropdown-container p {
+
+.tuning-dropdown-container p {
     user-select: none;
+}
+
+.tuning-dropdown {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.tuning-dropdown:hover,
+.reset-tuning:hover,
+.saving button:hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+}
+
+body.dark .tuning-dropdown {
+    background-color: #141414;
+    color: #ddd;
+}
+
+.reset-tuning,
+.saving button {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+body.dark .reset-tuning,
+body.dark .saving button {
+    background-color: #141414;
+    color: #ddd;
 }
 
 .info {
@@ -325,4 +419,8 @@ tuning-dropdown-container p {
     padding: 0;
     font-size: 14px;
     color: #333; 
+}
+
+body.dark .info p {
+    color: #adacac;
 }

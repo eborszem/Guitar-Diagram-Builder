@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from 'react'
 import '../elements/Fretboard.css';
-import { IoArrowForwardCircle, IoArrowBackCircle, IoArrowUpCircle, IoArrowDownCircle, IoVolumeMedium, IoVolumeOff } from "react-icons/io5";
+import { IoArrowForwardCircle, IoArrowBackCircle, IoArrowUpCircle, IoArrowDownCircle, IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
+import { IoIosSunny } from "react-icons/io";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { toSvg } from 'html-to-image';
 import Soundfont from 'soundfont-player';
@@ -29,6 +30,7 @@ function Fretboard() {
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
     const [lefty, setLefty] = useState(false); // left hand or right hand
+    const [isDarkMode, setIsDarkMode] = useState(false);
     // const [flipStrings, setFlipStrings] = useState(false); // flip the strings 180 degrees
 
     // coloring for diagrams
@@ -44,6 +46,10 @@ function Fretboard() {
 
     const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
     
+    useEffect(() => {
+        document.body.classList.toggle('dark', isDarkMode);
+    }, [isDarkMode, setIsDarkMode]);
+
     // functions for modifying the visible frets on the fretboard
     const increaseVisibleFretsLeft = () => {
         if (firstVisibleFretIndex > 0) {
@@ -268,6 +274,13 @@ function Fretboard() {
     // generate midi notes for the fretboard
     // allNotes is an array of midi notes from 0 to 127, representing all possible notes in midi
     const allNotes = Array.from({ length: 128 }, (_, i) => i);
+    // for (let midi = 0; midi <= 200; midi++) { // E1 = 28, G7 = 103
+    //     if (midi % 12 === 7 || midi % 12 === 0 || midi % 12 === 4 ) {
+    //         for (let stringIndex = 0; stringIndex <= 12; stringIndex++) {
+    //             noteToColor[`${midi}-${stringIndex}`] = '#ffbebe';
+    //         }
+    //     }
+    // }
     
     // startingNote: the midi value of a note (64 => E4 note)
     // getStringNotes returns all the notes that belong to the string
@@ -468,32 +481,36 @@ function Fretboard() {
     const convertNoteAndOctaveToMidi = (userInputNote) => {
         const noteMap = {
             'C': 0,
-            'C#': 1, 'Db': 1,
+            'C#': 1, 'DB': 1,
             'D': 2,
-            'D#': 3, 'Eb': 3,
+            'D#': 3, 'EB': 3,
             'E': 4,
             'F': 5,
-            'F#': 6, 'Gb': 6,
+            'F#': 6, 'GB': 6,
             'G': 7,
-            'G#': 8, 'Ab': 8,
+            'G#': 8, 'AB': 8,
             'A': 9,
-            'A#': 10, 'Bb': 10,
+            'A#': 10, 'BB': 10,
             'B': 11
         };
-        const match = userInputNote.match(/^([A-G][#b]?)(\d)$/);
+        const match = userInputNote.match(/^([A-G][#b]?)(\d+)$/);
+        const fail = "Invalid note format. Use Scientific Pitch Notation :)\nFormat: [note][octave]\nExamples: E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.";
         if (!match) {
-            alert("Invalid note format. Use C4, D#3, etc.");
+            alert(fail);
             return -1;
         }
-        const note = match[1];
+        const note = match[1].toUpperCase();
         if (noteMap[note] === undefined) {
-            alert("Invalid note format. Use C4, D#3, etc.");
-            return -1; // invalid note
+            alert(fail);
+            return -1;
         }
         const octave = parseInt(match[2], 10) + 1;
-        if (octave > 8) {
-            alert("Octaves begin to go out of range past 8.");
-            return -1; // octave begins to go out of range at this point
+
+        if ((octave > 9) ||
+            ((octave <= 1) && !(['A','A#','BB'].includes(note))) || 
+            ((octave === 9) && (note !== 'C'))) {
+            alert("Valid octave range: [A0, C8]");
+            return -1;
         }
         // console.log(`Unformatted note: ${note}, Octave: ${octave}`);
         return (octave * 12) + noteMap[note];
@@ -605,7 +622,9 @@ function Fretboard() {
                                     style={{ 
                                         left: `${percent}%`,
                                         width: isZerothFret(i) ? "3px" : "2px",
-                                        backgroundColor: isZerothFret(i) ? "black" : "gray"
+                                        backgroundColor: isZerothFret(i) ? 
+                                            (isDarkMode ? "white" : "black") : 
+                                            (isDarkMode ? "#8e8e8e" : "#717171")
                                     }}
                                 >
                                 </div>
@@ -689,7 +708,11 @@ function Fretboard() {
                     <p>
                         Current Tuning:
                     </p>
-                    <select id="tuning-dropdown" value={tuning} onChange={changeTuningViaDropdown}>
+                    <select
+                        className="tuning-dropdown" 
+                        value={tuning}
+                        onChange={changeTuningViaDropdown}
+                    >
                         {Object.entries(presetTunings).map(([tuningKey]) => {
                             if (tuningKey === 'custom' && tuning !== 'custom') {
                                 return null;
@@ -708,13 +731,14 @@ function Fretboard() {
                         Reset Tuning
                     </button>
                 )}
+
+                <div className="saving">
+                    <button onClick={downloadSVG}>Download SVG</button>
+                </div>
+
             </div>
 
-            <div className="saving">
-                <button onClick={downloadSVG}>Download SVG</button>
-            </div>
 
-            {/* toggle note visibility */}
             <div className="toggle-btns">
                 <button 
                     className="toggle-notes"
@@ -743,6 +767,13 @@ function Fretboard() {
                 >
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
+
+                {/* <button
+                    className="toggle-dark-mode"
+                    onClick={() => setIsDarkMode(prev => !prev)}
+                >
+                    {isDarkMode ? < IoMoon size={30} /> : <IoSunny size={30} />}
+                </button> */}
             </div>
 
             {/* color selector for making fretboard diagrams */}
