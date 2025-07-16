@@ -13,6 +13,7 @@ export const tuningsMidi = {
     'double-drop-d': [62, 59, 55, 50, 45, 38],
     'all fourths': [65, 60, 55, 50, 45, 40],
     '[all fourths]^2': [88, 83, 78, 73, 68, 63, 58, 53, 48, 43, 38, 33, 28],
+    'bass standard': [43, 38, 33, 28],
     'custom': [] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 

@@ -21,6 +21,7 @@ const presetTunings = {
     'double-drop-d': tuning['double-drop-d'],
     'all fourths': tuning['all fourths'],
     '[all fourths]^2': tuning['[all fourths]^2'],
+    'bass standard': tuning['bass standard'],
     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 
