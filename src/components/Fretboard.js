@@ -268,29 +268,22 @@ function Fretboard() {
     // allNotes is an array of midi notes from 0 to 127, representing all possible notes in midi
     const allNotes = Array.from({ length: 128 }, (_, i) => i);
     
-    // startingNote: the note the string starts at (e.g. E for E string)
-    // gets all the notes that belong to the string
-    const getStringNotes = (startingNote) => {
-        // 64 = high e
+    // startingNote: the midi value of a note (64 => E4 note)
+    // getStringNotes returns all the notes that belong to the string
+    const getStringNotes = (noteMidiValue) => {
         let stringNotes = [];
-        // console.log(typeof startingNote, startingNote);
-        // console.log(`Generating notes for string starting at: ${startingNote}`);
-        const startIndex = allNotes[startingNote];
-        // console.log(allNotes);
-        // console.log(`Start index for ${startingNote}: ${startIndex}`);
+        const startIndex = allNotes[noteMidiValue];
         const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
         if (lefty) {
             for (let i = startIndex + lastVisibleFretIndex - 1; i >= startIndexWithOffset; i--) {
                 stringNotes.push(allNotes[i]);
             }
-
         } else {
             for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
                 stringNotes.push(allNotes[i]);
             }
         }
         return stringNotes;
-        // return lefty ? stringNotes.reverse() : stringNotes;
     };
 
     // midi notes: 57=A3, 52=E3, etc.
