@@ -23,8 +23,8 @@
     justify-content: center; 
     margin-left: auto;
     margin-right: auto;
-    margin: 5px 0px;
-    padding: 0px
+    margin: 0px 0px;
+    padding: 10px 0px;
 }
 
 .modify-number-strings {
@@ -160,7 +160,6 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2rem;
     display: flex;
     justify-content: center;
     pointer-events: none;
@@ -169,7 +168,7 @@
 
 .fret-label {
     position: absolute;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(-30%);
     font-size: 0.8rem;
     color: gray;
 }
