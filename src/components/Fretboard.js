@@ -19,6 +19,7 @@ const presetTunings = {
     'dadgad': tuning['dadgad'],
     'double-drop-d': tuning['double-drop-d'],
     'all fourths': tuning['all fourths'],
+    '[all fourths]^2': tuning['[all fourths]^2'],
     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 
@@ -510,7 +511,7 @@ function Fretboard() {
 
             <div className="modify-number-strings">
                 <div className="modify-highest-string-index">
-                    {strings.length < 12 && (
+                    {strings.length <= 12 && (
                         <button
                             className="increase-highest-string-index"
                             onClick={onIncreaseHighestString}
@@ -635,7 +636,7 @@ function Fretboard() {
             
             <div className="modify-number-strings">
                     <div className="modify-lowest-string-index">
-                        {strings.length < 12 && (
+                        {strings.length <= 12 && (
                             <button
                                 className="increase-lowest-string-index"
                                 onClick={onIncreaseLowestString}
