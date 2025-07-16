@@ -8,12 +8,42 @@
     margin: 10px;
 }
 
+.fretboard-title-2 {
+    text-align: center;
+    font-style: italic;
+    margin: 20px 0;
+    font-family: 'Open Sans', sans-serif;
+    user-select: none;
+    margin: 10px;
+}
+
 .fretboard-interface {
     display: flex;
     align-items: center;
     justify-content: center; 
     margin-left: auto;
     margin-right: auto;
+    margin: 5px 0px;
+    padding: 0px
+}
+
+.modify-number-strings {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.modify-number-strings button {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 30px;
+    color: black;
+    border-radius: 50%;
+    position: relative; /* prevents .string-notes from being above */
 }
 
 .modify-fretboard-length-left button,
@@ -32,23 +62,24 @@
 }
 
 .modify-fretboard-length-left button:hover,
-.modify-fretboard-length-right button:hover {
+.modify-fretboard-length-right button:hover,
+.modify-number-strings button:hover {
     color: #498ad9;
     background-color: #e7f2ff;
 }
 
 .modify-fretboard-length-left button:active,
-.modify-fretboard-length-right button:active {
+.modify-fretboard-length-right button:active,
+.modify-number-strings button:active {
     transform: scale(0.95);
 }
 
 .fretboard {
-    /* flex: 1; */
     position: relative;
-    margin: 40px 0px;
+    /* margin: 40px 0px; */
+    margin-top: 0px;
+    margin-bottom: 20px;
     padding: 0;
-    /* overflow-y: hidden; */
-    /* overflow-x: auto; */
 }
 
 .string-container {
@@ -56,8 +87,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
-    padding: 2rem 0;
+    /* height: 100%; */
+    /* padding: 2rem 0; */
 }
 
 .string {
@@ -85,8 +116,8 @@
 
 .fret-marker {
     position: absolute;
-    top: 4.5rem;
-    bottom: 2rem;
+    top: 2.5rem;
+    bottom: 0rem;
     /* width: 2px; */
     /* background-color: gray; */
     pointer-events: none;

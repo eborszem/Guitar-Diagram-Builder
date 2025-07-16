@@ -1,26 +1,25 @@
-import { React, useEffect, useRef, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import '../elements/Fretboard.css';
-import { IoArrowForwardCircle, IoArrowBackCircle, IoVolumeMedium, IoVolumeOff } from "react-icons/io5";
+import { IoArrowForwardCircle, IoArrowBackCircle, IoArrowUpCircle, IoArrowDownCircle, IoVolumeMedium, IoVolumeOff } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { toSvg } from 'html-to-image';
 import Soundfont from 'soundfont-player';
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
-import { LuRefreshCcw, LuRefreshCw } from "react-icons/lu";
+import { tuning, tuningsMidi } from "./Tunings.js"
 
-// midi notes correspond to notes
-// e.g., 64 = e4, 59 = B3, 55 = G3, 50 = D3, 45 = A2, 40 = E2, etc.
 const presetTunings = {
-    'standard': [64, 59, 55, 50, 45, 40],
-    'drop-d': [64, 59, 55, 50, 45, 38],
-    'half-step-down': [63, 58, 54, 49, 44, 39],
-    'full-step-down': [62, 57, 53, 48, 43, 38],
-    'drop-c': [62, 57, 53, 48, 43, 36],
-    'open-d': [62, 57, 54, 50, 45, 38],
-    'open-g': [62, 59, 55, 50, 43, 38],
-    'open-c': [64, 60, 55, 48, 43, 36],
-    'dadgad': [62, 57, 55, 50, 45, 38],
-    'double-drop-d': [62, 59, 55, 50, 45, 38],
-    'custom': [] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
+    'standard': tuning['standard'],
+    'half-step-down': tuning['half-step-down'],
+    'full-step-down': tuning['full-step-down'],
+    'drop-d': tuning['drop-d'],
+    'drop-c': tuning['drop-c'],
+    'open-d': tuning['open-d'],
+    'open-c': tuning['open-c'],
+    'open-g': tuning['open-g'],
+    'dadgad': tuning['dadgad'],
+    'double-drop-d': tuning['double-drop-d'],
+    'all fourths': tuning['all fourths'],
+    'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 
 function Fretboard() {
@@ -29,7 +28,7 @@ function Fretboard() {
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
     const [lefty, setLefty] = useState(false); // left hand or right hand
-    const [flipStrings, setFlipStrings] = useState(false); // flip the strings 180 degrees
+    // const [flipStrings, setFlipStrings] = useState(false); // flip the strings 180 degrees
 
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
@@ -41,8 +40,10 @@ function Fretboard() {
     // playing the open strings (in standard tuning, [E, A, D, G, B, e]) is the equivalent of playing the 0th fret
     const [firstVisibleFretIndex, setFirstVisibleFretIndex] = useState(0); // value changes when the user expands or shrinks the fretboard from the left side
     const [lastVisibleFretIndex, setLastVisibleFretIndex] = useState(16); // value changes when the user expands or shrinks the fretboard from the right side
-    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
 
+    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
+    
+    // functions for modifying the visible frets on the fretboard
     const increaseVisibleFretsLeft = () => {
         if (firstVisibleFretIndex > 0) {
             setFirstVisibleFretIndex(prev => prev - 1);
@@ -98,16 +99,52 @@ function Fretboard() {
         ? firstVisibleFretIndex < lastVisibleFretIndex - 1
         : lastVisibleFretIndex > firstVisibleFretIndex + 1;
 
+    // default strings for fretboard
+    const [strings, setStrings] = useState([
+        {id: 0, midi: 64}, // E4
+        {id: 1, midi: 59}, // B3
+        {id: 2, midi: 55}, // G3
+        {id: 3, midi: 50}, // D3
+        {id: 4, midi: 45}, // A2
+        {id: 5, midi: 40}, // E2
+    ]); // tuning can quickly change by modifying this array of midi note
+    const [tuning, setTuning] = useState('standard'); // standard by default
+    
+    // functions for modifying the visible strings on the fretboard
+    const onIncreaseHighestString = () => {
+        const id = strings.length > 0 ? strings[0].id - 1 : 0;
+        setStrings([{id: id, midi: 64}, ...strings]); // add an extra E4 (midi = 64) string
+        console.log(strings);
+    };
+    
+    const onDecreaseHighestString = () => {
+        setStrings(strings.slice(1))
+        console.log(strings);
+    };
+
+    const onIncreaseLowestString = () => {
+        const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
+        setStrings([...strings, {id: id, midi: 40}]); // add an extra E2 (midi = 40) string
+        console.log(strings);
+    };
+
+    const onDecreaseLowestString = () => {
+        setStrings(strings.slice(0, -1));
+        console.log(strings);
+    };
+
     const [editingIndex, setEditingIndex] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
     
     useEffect(() => {
         // update letter by letter
-        setUpdatedNote(formatNoteToString(strings[editingIndex]));
+        let stringObj = strings.find((str) => str.id === editingIndex);
+        if (stringObj) {
+            setUpdatedNote(getNoteAndOctaveFromMidiValue(stringObj.midi));
+        }
+        //strings[editingIndex]
     }, [editingIndex, setEditingIndex]);
     
-    const [strings, setStrings] = useState([64, 59, 55, 50, 45, 40]); // tuning can quickly change by modifying this array of midi note
-    const [tuning, setTuning] = useState('standard'); // standard by default
 
     // utility function to check if two arrays are equal
     // used to check if the updated tuning by the user matches any preset options
@@ -118,16 +155,17 @@ function Fretboard() {
     // check if updated tuning by user matches any preset options
     useEffect(() => {
         let found = false;
-        for (const [name, notes] of Object.entries(presetTunings)) {
-            if (arraysEqual(notes, strings)) {
+        let currentMidiArray = strings.map(s => s.midi);
+        for (const [name, notes] of Object.entries(tuningsMidi)) {
+            if (arraysEqual(notes, currentMidiArray)) {
                 setTuning(name);
                 found = true;
+                break;
             }
         }
         if (!found) {
             setTuning("custom");
         }
-        // console.log("curr strings:", strings);
     }, [strings]);
 
     // keyboard shortcuts for increasing/decreasing visible frets
@@ -328,20 +366,31 @@ function Fretboard() {
         setUpdatedNote(e.target.value);
     };
 
-    const finishChangeTuning = (updatedNote_, index) => {
-        const updatedNote = unformatNote(updatedNote_);
-        if (updatedNote === -1) {
+    const finishChangeTuning = (updatedNoteAndOctave, index) => {
+        const noteMidiValue = convertNoteAndOctaveToMidi(updatedNoteAndOctave);
+        if (noteMidiValue === -1) {
             setEditingIndex(null); // reset index
             return; // return with no changes
         }
-        const newTuning = [...strings];
-        newTuning[index] = updatedNote;
-        setStrings(newTuning);
+        // const newTuning = [...strings];
+        // newTuning[index] = updatedNote;
+        // setStrings(newTuning);
+        setStrings(prev => 
+            prev.map(str => str.id === editingIndex ? {...str, midi: noteMidiValue} : str)
+        );
         setEditingIndex(null); // reset index
     };
 
+    // reset to default tuning
     const resetTuning = () => {
-        setStrings([64, 59, 55, 50, 45, 40]);
+        setStrings([
+            {id: 0, midi: 64}, // E4
+            {id: 1, midi: 59}, // B3
+            {id: 2, midi: 55}, // G3
+            {id: 3, midi: 50}, // D3
+            {id: 4, midi: 45}, // A2
+            {id: 5, midi: 40}, // E2
+        ]);
     }
 
     // for when the user selects a preset tuning from the dropdown
@@ -412,7 +461,7 @@ function Fretboard() {
     };
 
     // midi note to letter note conversion, returns string 
-    const formatNoteToString = (midiNoteValue) => {
+    const getNoteAndOctaveFromMidiValue = (midiNoteValue) => {
         const noteMap = showSharps
             ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
             : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -422,7 +471,7 @@ function Fretboard() {
     };
     
     // letter note to midi note conversion
-    const unformatNote = (userInputNote) => {
+    const convertNoteAndOctaveToMidi = (userInputNote) => {
         const noteMap = {
             'C': 0,
             'C#': 1, 'Db': 1,
@@ -461,6 +510,32 @@ function Fretboard() {
             <div className="fretboard-title">
                 Fretboard Diagram Maker
             </div>
+
+            <div className="fretboard-title-2">
+                now with adjustable string count!
+            </div>
+
+            <div className="modify-number-strings">
+                <div className="modify-highest-string-index">
+                    {strings.length < 12 && (
+                        <button
+                            className="increase-highest-string-index"
+                            onClick={onIncreaseHighestString}
+                        >
+                            <IoArrowUpCircle />
+                        </button>
+                    )}
+                    {strings.length > 1 && (
+                        <button
+                            className="decrease-highest-string-index"
+                            onClick={onDecreaseHighestString}
+                        >
+                            <IoArrowDownCircle />
+                        </button>
+                    )}
+                </div>
+            </div>
+
             <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets + 1) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
                 <div className="modify-fretboard-length-left">
                     {canIncreaseLeft && (
@@ -498,28 +573,26 @@ function Fretboard() {
                         })}
                     </div>
 
-                    {/* .string-container is a workaround bc of the left/right arrows messing with .fretboard height */}
                     <div className="string-container" style={{minWidth: `${numFrets * 75}px`}}>
-                        {(flipStrings ? [...strings].reverse() : strings).map((stringName, stringIndex) => ( 
-                        <div className="string" key={stringIndex}> {/* for the string itself */}
+                        {strings.map((stringObj) => (
+                        <div className="string" key={stringObj.id}>
                             <div className="string-notes">
                                 {/* now map the notes onto the string just generated */}
-                                {getStringNotes(stringName, numFrets).map((note, j) => 
+                                {getStringNotes(stringObj.midi, numFrets).map((note, j) => 
                                     // audible midi range is [0, 109]
                                     note < 109 && (
                                         <button
-                                            key={`${note}-${stringName}`}
+                                            key={`${note}-${stringObj.id}`}
                                             // only hide notes that don't have a color given to them
-                                            className={`note ${(hideNotes && !noteToColor[note + "-" + stringIndex]) ? 'hidden' : ''}`}
+                                            className={`note ${(hideNotes && !noteToColor[note + "-" + stringObj.id]) ? 'hidden' : ''}`}
                                             style={{
                                                 left: `${getNotePositions()[j]}%`,
                                                 // backgroundColor: noteColorArr[note]
-                                                backgroundColor: noteToColor[`${note}-${stringIndex}`] != null ? noteToColor[`${note}-${stringIndex}`] : ''
+                                                backgroundColor: noteToColor[`${note}-${stringObj.id}`] != null ? noteToColor[`${note}-${stringObj.id}`] : ''
                                             }}
-                                            onClick={() => selectNote(note, stringIndex)}
+                                            onClick={() => selectNote(note, stringObj.id)}
                                         >
-                                            {/* {formatNote(note)}-{stringName}-{stringIndex} */}
-                                            {/* {note} */}
+                                            {/* {note}.{stringObj.id} */}
                                             {formatNote(note)}
                                         </button>
                                     )
@@ -531,7 +604,7 @@ function Fretboard() {
 
                     {/* fret lines */}
                     {getFretMarkerPositions(numFrets).map((percent, i) => {
-                        if (i == numFrets - 1) return;
+                        if (i === numFrets - 1) return <></>;
                             return ( 
                                 <div 
                                     className="fret-marker" 
@@ -566,31 +639,52 @@ function Fretboard() {
                     )}
                 </div>
             </div>
+            
+            <div className="modify-number-strings">
+                    <div className="modify-lowest-string-index">
+                        {strings.length < 12 && (
+                            <button
+                                className="increase-lowest-string-index"
+                                onClick={onIncreaseLowestString}
+                            >
+                                <IoArrowDownCircle />
+                            </button>
+                        )}
+                        {strings.length > 1 && (
+                            <button
+                                className="decrease-lowest-string-index"
+                                onClick={onDecreaseLowestString}
+                            >
+                                <IoArrowUpCircle />
+                            </button>
+                        )}
+                    </div>
+            </div>
 
             <div className="tuning-editor">
                 <p>
                     Set Tuning:
                 </p>
                 <div className="tune-input">
-                    {strings.map((note, i) => (
-                        <div key={i}>
-                            {editingIndex === i ? (
+                    {strings.map((stringObj) => (
+                        <div key={stringObj.id}>
+                            {editingIndex === stringObj.id ? (
                                 <input
                                     value={updatedNote}
                                     onChange={(e) => updateTuningInputText(e)}
                                     onBlur={() => setEditingIndex(null)} // or maybe onBlur={() => finishChangeTuning(updatedNote, i)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
-                                            finishChangeTuning(updatedNote, i);
+                                            finishChangeTuning(updatedNote, stringObj.id);
                                         }
                                     }}
                                     autoFocus
                                 />
                             ) : (
-                                <button 
+                                <button
                                     className='retune-note-btn'
-                                    onClick={() => setEditingIndex(i)}>
-                                    {formatNote(note)}
+                                    onClick={() => setEditingIndex(stringObj.id)}>
+                                    {formatNote(stringObj.midi)}
                                 </button>
                             )}
                         </div>
@@ -655,14 +749,6 @@ function Fretboard() {
                 >
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
-
-                {/* <button
-                    className="toggle-flip-strings"
-                    onClick={() => setFlipStrings(prev => !prev)}
-                >
-                    {flipStrings ? < LuRefreshCcw size={30} /> : <LuRefreshCw size={30} />}
-                </button> */}
-
             </div>
 
             {/* color selector for making fretboard diagrams */}
