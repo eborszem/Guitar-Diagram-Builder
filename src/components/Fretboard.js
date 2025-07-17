@@ -523,10 +523,6 @@ function Fretboard() {
                 Fretboard Diagram Maker
             </div>
 
-            <div className="fretboard-title-2">
-                now with adjustable string count!
-            </div>
-
             <div className="modify-number-strings">
                 <div className="modify-highest-string-index">
                     {strings.length <= 12 && (
@@ -624,8 +620,8 @@ function Fretboard() {
                                         left: `${percent}%`,
                                         width: isZerothFret(i) ? "3px" : "2px",
                                         backgroundColor: isZerothFret(i) ? 
-                                            (isDarkMode ? "white" : "black") : 
-                                            (isDarkMode ? "#8e8e8e" : "#717171")
+                                            (isDarkMode ? "#797979" : "black") : 
+                                            (isDarkMode ? "#292929" : "#717171")
                                     }}
                                 >
                                 </div>

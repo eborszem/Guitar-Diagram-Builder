@@ -81,8 +81,8 @@ body.dark .modify-fretboard-length-right button {
 body.dark .modify-fretboard-length-left button:hover,
 body.dark .modify-fretboard-length-right button:hover,
 body.dark .modify-number-strings button:hover {
-    color: #ffe7e7;
-    background-color: #d94949;
+    color: #fdbebe;
+    background-color: #e86464;
 }
 
 .modify-fretboard-length-left button:active,
@@ -119,7 +119,7 @@ body.dark .modify-number-strings button:hover {
 }
 
 body.dark .string {
-    background-color: #ddd;
+    background-color: #4f4e4e;
 }
 
 .string-notes {
@@ -317,8 +317,8 @@ body.dark .toggle-btns button {
 }
 
 body.dark .toggle-btns button:hover {
-    color: #ffe7e7;
-    background-color: #d94949;
+    color: #fdbebe;
+    background-color: #e86464;
 }
 
 .toggle-btns button:active {
