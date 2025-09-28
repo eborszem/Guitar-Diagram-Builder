@@ -31,7 +31,10 @@ function Fretboard() {
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
     const [lefty, setLefty] = useState(false); // left hand or right hand
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const stored = localStorage.getItem('isDarkMode');
+        return stored !== null ? JSON.parse(stored) : false;
+    });
     // const [flipStrings, setFlipStrings] = useState(false); // flip the strings 180 degrees
 
     // coloring for diagrams
@@ -48,8 +51,17 @@ function Fretboard() {
     const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
     
     useEffect(() => {
+        // check if dark mode is enabled in localStorage
+        const storedDarkMode = localStorage.getItem('isDarkMode');
+        if (storedDarkMode !== null) {
+            setIsDarkMode(JSON.parse(storedDarkMode));
+        }
+    }, []);
+    
+    useEffect(() => {
         document.body.classList.toggle('dark', isDarkMode);
-    }, [isDarkMode, setIsDarkMode]);
+        localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
 
     // functions for modifying the visible frets on the fretboard
     const increaseVisibleFretsLeft = () => {
@@ -277,6 +289,10 @@ function Fretboard() {
     const allNotes = Array.from({ length: 128 }, (_, i) => i);
     // for (let midi = 0; midi <= 200; midi++) { // E1 = 28, G7 = 103
     //     if (midi % 12 === 7 || midi % 12 === 0 || midi % 12 === 4 ) {
+    //         for (let stringIndex = 0; stringIndex <= 12; stringIndex++) {
+    //             noteToColor[`${midi}-${stringIndex}`] = '#ff5c5c';
+    //         }
+    //     } else if (midi % 12 === 2 || midi % 12 === 5 || midi % 12 === 9 || midi % 12 === 11) {
     //         for (let stringIndex = 0; stringIndex <= 12; stringIndex++) {
     //             noteToColor[`${midi}-${stringIndex}`] = '#ffbebe';
     //         }
@@ -765,12 +781,12 @@ function Fretboard() {
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
 
-                {/* <button
+                <button
                     className="toggle-dark-mode"
                     onClick={() => setIsDarkMode(prev => !prev)}
                 >
                     {isDarkMode ? < IoMoon size={30} /> : <IoSunny size={30} />}
-                </button> */}
+                </button>
             </div>
 
             {/* color selector for making fretboard diagrams */}

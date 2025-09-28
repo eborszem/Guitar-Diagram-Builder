@@ -47,7 +47,8 @@
 }
 
 body.dark .modify-number-strings button {
-    color: #ddd;
+    color: #2b2b2b;
+    
 }
 
 .modify-fretboard-length-left button,
@@ -68,7 +69,7 @@ body.dark .modify-number-strings button {
 
 body.dark .modify-fretboard-length-left button,
 body.dark .modify-fretboard-length-right button {
-    color: #ddd;
+    color: #2b2b2b;
 }
 
 .modify-fretboard-length-left button:hover,
@@ -81,8 +82,8 @@ body.dark .modify-fretboard-length-right button {
 body.dark .modify-fretboard-length-left button:hover,
 body.dark .modify-fretboard-length-right button:hover,
 body.dark .modify-number-strings button:hover {
-    color: #fdbebe;
-    background-color: #e86464;
+    color: #e86464;
+    background-color: #e8646489
 }
 
 .modify-fretboard-length-left button:active,
@@ -157,7 +158,7 @@ body.dark .string {
 
 body.dark .note {
     border: 1px solid #1b1b1b;
-    background-color: #ececec;
+    background-color: #dddddd;
     color: #1b1b1b;
 }
 
@@ -201,7 +202,7 @@ body.dark .note {
 }
 
 body.dark .fret-label {
-    color: #ddd;
+    color: rgb(90, 90, 90);
 }
 
 .color-btns-container {
@@ -308,7 +309,7 @@ body.dark .unset-color-btn.selected {
 }
 
 body.dark .toggle-btns button {
-    color: #ddd;
+    color: #2b2b2b;
 }
 
 .toggle-btns button:hover {
@@ -317,8 +318,8 @@ body.dark .toggle-btns button {
 }
 
 body.dark .toggle-btns button:hover {
-    color: #fdbebe;
-    background-color: #e86464;
+    color: #e86464;
+    background-color: #e8646489
 }
 
 .toggle-btns button:active {
@@ -422,5 +423,6 @@ body.dark .saving button {
 }
 
 body.dark .info p {
-    color: #adacac;
+    color: #606060;
+
 }
