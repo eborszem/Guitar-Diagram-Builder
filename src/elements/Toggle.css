@@ -1,0 +1,39 @@
+.toggle-btns {
+    all: unset;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+}
+
+.toggle-btns button {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 40px;
+    color: black;
+    border-radius: 20%;
+}
+
+body.dark .toggle-btns button {
+    color: #3b3b3b;
+}
+
+.toggle-btns button:hover {
+    color: rgb(68, 146, 255);
+    background-color: rgba(68, 146, 255, 0.211);
+}
+
+body.dark .toggle-btns button:hover {
+    color: rgb(68, 146, 255);
+}
+
+.toggle-btns button:active {
+    transform: scale(0.95);
+}

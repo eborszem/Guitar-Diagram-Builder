@@ -1,0 +1,52 @@
+
+.modify-number-strings {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.modify-number-frets button,
+.modify-number-strings button {
+    box-sizing: border-box;
+    all: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 50px;
+    color: rgb(41, 41, 41);
+    border-radius: 20%;
+    z-index: 10;
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+}
+
+.modify-number-frets button {
+    margin: 10px;
+}
+
+.modify-number-frets button:hover,
+.modify-number-strings button:hover {
+    color: rgb(68, 146, 255);
+    background-color: rgba(68, 146, 255, 0.211);
+}
+
+.modify-number-frets button:active,
+.modify-number-strings button:active {
+    transform: scale(0.95);
+}
+
+body.dark .modify-number-frets button,
+body.dark .modify-number-strings button {
+    color: #3b3b3b;
+}
+
+body.dark .modify-number-frets button:hover,
+body.dark .modify-number-strings button:hover {
+    color: rgb(68, 146, 255);
+}

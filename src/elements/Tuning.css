@@ -1,0 +1,132 @@
+.tuning-editor {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.svg-and-reset-tune {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+}
+
+.tune-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tune-input {
+    display: flex;
+    justify-content: center;
+}
+
+.tuning-editor > div {
+    padding: 5px;
+}
+
+.tuning-editor p {
+    padding: 0px;
+    margin: 0px;
+    user-select: none;
+}
+
+.tuning-editor .retune-note-btn {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    margin: 0px 1px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    width: 20px;              /* fixed width */
+    height: 20px;
+}
+
+body.dark .tuning-editor .retune-note-btn {
+    background-color: #141414;
+    color: #ddd;
+}
+
+.tuning-editor .retune-note-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.tuning-editor input {
+    all: unset;
+    /* display: inline-block; */
+    /* box-sizing: border-box; */
+    white-space: nowrap;
+    padding: 5px 10px;
+    margin: 0px 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* width: 20px; */
+}
+
+.tune-dropdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.tune-dropdown-container p {
+    user-select: none;
+}
+
+.tuning-dropdown {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 27.5px;
+    
+}
+
+.tuning-dropdown:hover,
+.reset-tuning:hover,
+.saving button:hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+}
+
+body.dark .tuning-dropdown {
+    background-color: #141414;
+    color: #ddd;
+}
+
+.reset-tuning {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.reset-tuning,
+.saving button {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    height: 27.5px;
+}
+
+body.dark .reset-tuning,
+body.dark .saving button {
+    background-color: #141414;
+    color: #ddd;
+}
+

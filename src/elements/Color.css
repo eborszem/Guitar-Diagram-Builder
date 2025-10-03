@@ -1,0 +1,80 @@
+.color-btns-container {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    /* border:#333 1px solid; */
+    /* border-radius: 10px; */
+}
+
+.color-btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.color-btn,
+.unset-color-btn {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 40px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border:#333 1px solid;
+    margin: 1px 1px;
+    user-select: none;
+    /* border: 1px solid black */
+}
+
+body.dark .color-btn {
+    border-color: #000000;
+}
+
+.unset-color-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #f4f4f4;
+    border-radius: 20%;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.dark .unset-color-btn {
+    background-color: #222222;
+    color: #ddd;
+    border-color: black;
+}
+
+.color-btn.selected,
+.unset-color-btn.selected {
+    border: 2.5px solid #333;
+    /* transform: scale(0.95); */
+    /* box-shadow: inset 0 0 7.5px rgba(0,0,0,0.5); */
+}
+
+body.dark .color-btn.selected,
+body.dark .unset-color-btn.selected {
+    border: 4px solid black;
+}
+
+.color-btn:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.color-btn:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.color-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    left: -20px; /* account for inline width of unset-color-btn */
+}
