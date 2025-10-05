@@ -1,117 +1,27 @@
-.fretboard-interface {
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    margin-left: auto;
-    margin-right: auto;
-    margin: 0px 0px;
-    padding: 5px 0px;
+.fretboard-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+    margin: 20px 0;
+    font-family: 'Open Sans', sans-serif;
+    user-select: none;
+    margin: 10px;
 }
 
-.fretboard {
-    position: relative;
-    /* margin: 40px 0px; */
-    margin-top: 0px;
-    margin-bottom: 20px;
-    padding: 0;
-}
-
-.string-container {
-    position: relative;
+.info {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    /* height: 100%; */
-    /* padding: 2rem 0; */
-}
-
-.string {
-    position: relative;
-    display: flex;
-    /* align-items: center; */
-    height: 1px;
-    width: 100%;
-    background-color: black;
-    margin-top: 2.5rem;
-}
-
-body.dark .string {
-    background-color: #4f4e4e;
-}
-
-.string-notes {
-    /* position: absolute; */
-    position: relative;
-    height: 3rem;
-    width: 100%;
-    /* display: flex;
-    justify-content: center;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    gap: 20px; */
-    /* padding: 10px; */
-}
-
-.fret-marker {
-    position: absolute;
-    top: 2.55rem;
-    bottom: 0.05rem;
-    /* width: 2px; */
-    /* background-color: gray; */
-    pointer-events: none;
-}
-
-.note {
-    position: absolute;
-    transform: translateX(-50%);
-    top: -35%;
-    border: 1px solid #ababab;
-    /* border: 1px solid #ccc; */
-    border-radius: 100%;
-    width: 35px;
-    height: 35px;
-}
-
-body.dark .note {
-    border: 1px solid #1b1b1b;
-    background-color: #dddddd;
-    color: #1b1b1b;
-}
-
-.note:hover {
-    /* color: #498ad9;
-    background-color: #e7f2ff;
-    border-color: #498ad9; */
-    box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
-    cursor: pointer;
-}
-
-.note:active {
-    transform: translateX(-50%) scale(0.95);
-}
-
-.note.hidden {
-    display: none;
-}
-
-.fret-labels {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
     pointer-events: none;
     user-select: none;
 }
 
-.fret-label {
-    position: absolute;
-    transform: translateX(-50%) translateY(-30%);
-    font-size: 0.8rem;
-    color: gray;
+.info p {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #333; 
 }
 
-body.dark .fret-label {
-    color: rgb(90, 90, 90);
+body.dark .info p {
+    color: #ddd;
 }

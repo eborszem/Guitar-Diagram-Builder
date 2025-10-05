@@ -1,8 +1,7 @@
 import '../elements/Color.css';
 
 import { MdFormatColorReset } from "react-icons/md";
-export const ColorSelector = ({ colors, color, setColor }) => {
-    const {colorBank, colorBankLight} = colors;
+export const ColorSelector = ({ colorBanks, color, setColor }) => {
     return (
         <div className="color-selector">   
             <button
@@ -10,7 +9,7 @@ export const ColorSelector = ({ colors, color, setColor }) => {
                 onClick={() => setColor('none')}
             ><MdFormatColorReset/></button>
             <div className="color-btns-container">
-                {[colorBank, colorBankLight].map((arr) => (
+                {Object.values(colorBanks).map((arr) => (
                     <div className="color-btns">
                         {arr.map((c) => (
                             <button

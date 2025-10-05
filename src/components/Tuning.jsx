@@ -21,7 +21,7 @@ const presetTunings = {
 
 export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
     const [tuning, setTuning] = useState('standard');
-    const [editingIndex, setEditingIndex] = useState(null);
+    const [retuningStringId, setRetuningStringId] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
     
     // user can change the tuning of the fretboard by clicking on the note boxes below the fretboard and editing them
@@ -50,21 +50,6 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
             setTuning("custom");
         }
     }, [strings, setTuning]);
-
-    const finishChangeTuning = (updatedNoteAndOctave, index) => {
-        const noteMidiValue = convertNoteAndOctaveToMidi(updatedNoteAndOctave);
-        if (noteMidiValue === -1) {
-            setEditingIndex(null); // reset index
-            return; // return with no changes
-        }
-        // const newTuning = [...strings];
-        // newTuning[index] = updatedNote;
-        // setStrings(newTuning);
-        setStrings(prev => 
-            prev.map(str => str.id === editingIndex ? {...str, midi: noteMidiValue} : str)
-        );
-        setEditingIndex(null); // reset index
-    };
 
     // letter note to midi note conversion
     const convertNoteAndOctaveToMidi = (userInputNote) => {
@@ -105,6 +90,30 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
         return (octave * 12) + noteMap[note];
     };
 
+    const finishChangeTuning = (updatedNoteAndOctave) => {
+        const noteMidiValue = convertNoteAndOctaveToMidi(updatedNoteAndOctave);
+        if (noteMidiValue === -1) {
+            setRetuningStringId(null); // reset index
+            return; // return with no changes
+        }
+        setStrings(prev => 
+            prev.map(str => str.id === retuningStringId ? {...str, midi: noteMidiValue} : str)
+        );
+        setRetuningStringId(null); // reset index
+    };
+
+    // prefills retune input box with current note
+    useEffect(() => {
+        let stringObj = strings.find((str) => str.id === retuningStringId);
+        if (!stringObj) return;
+        const noteMap = showSharps
+        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        let note = noteMap[stringObj.midi % 12];
+        const octave = Math.floor(stringObj.midi / 12) - 1;
+        setUpdatedNote(note + octave);
+    }, [retuningStringId]);
+
     // reset to default tuning
     const resetTuning = () => {
         setStrings([
@@ -119,12 +128,10 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
 
     // for when the user selects a preset tuning from the dropdown
     const changeTuningViaDropdown = (e) => {
-        // console.log("event val ===" + e.target.value);
         const tuning = e.target.value;
         setTuning(tuning); // update dropdown
         if (tuning !== 'custom') {
             setStrings(presetTunings[tuning]); // update the fretboard tuning
-            // console.log("dropdown tuning strings:" + strings);
         }
     };
 
@@ -150,25 +157,6 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
         }); 
     };
 
-    // midi note to letter note conversion, returns string 
-    const getNoteAndOctaveFromMidiValue = (midiNoteValue) => {
-        const noteMap = showSharps
-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-        let note = noteMap[midiNoteValue % 12];
-        const octave = Math.floor(midiNoteValue / 12) - 1;
-        return note + octave;
-    };
-
-    useEffect(() => {
-        // update letter by letter
-        let stringObj = strings.find((str) => str.id === editingIndex);
-        if (stringObj) {
-            setUpdatedNote(getNoteAndOctaveFromMidiValue(stringObj.midi));
-        }
-        //strings[editingIndex]
-    }, [editingIndex]);
-
     return (
         <>
             <div className="tuning-editor">
@@ -177,11 +165,11 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
                     <div className="tune-input">
                         {strings.map((stringObj) => (
                             <div key={stringObj.id}>
-                                {editingIndex === stringObj.id ? (
+                                {retuningStringId === stringObj.id ? (
                                     <input
                                         value={updatedNote}
                                         onChange={(e) => updateTuningInputText(e)}
-                                        onBlur={() => setEditingIndex(null)} // or maybe onBlur={() => finishChangeTuning(updatedNote, i)}
+                                        onBlur={() => setRetuningStringId(null)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 finishChangeTuning(updatedNote, stringObj.id);
@@ -192,7 +180,7 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
                                 ) : (
                                     <button
                                         className='retune-note-btn'
-                                        onClick={() => setEditingIndex(stringObj.id)}>
+                                        onClick={() => setRetuningStringId(stringObj.id)}>
                                         {formatNote(stringObj.midi)}
                                     </button>
                                 )}
@@ -219,17 +207,31 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
                 </div>
             </div>
             <div className="svg-and-reset-tune">
-                    <div className="saving">
-                        <button onClick={downloadSVG}>Download SVG</button>
-                    </div>
-                    <div className="reset-tuning-wrapper">
-                        {tuning !== 'standard' && (
-                            <button className="reset-tuning" onClick={resetTuning}>
-                                Reset Tuning
-                            </button>
-                        )}
-                    </div>
+                <div className="saving">
+                    <button onClick={downloadSVG}>Download SVG</button>
+                </div>
+                <div className="reset-tuning-wrapper">
+                    {tuning !== 'standard' && (
+                        <button className="reset-tuning" onClick={resetTuning}>Reset Tuning</button>
+                    )}
+                </div>
             </div>
         </>
     );
 }
+
+// const presetTunings = {
+//     'standard': tuning['standard'],
+//     'half-step-down': tuning['half-step-down'],
+//     'full-step-down': tuning['full-step-down'],
+//     'drop-d': tuning['drop-d'],
+//     'drop-c': tuning['drop-c'],
+//     'open-d': tuning['open-d'],
+//     'open-c': tuning['open-c'],
+//     'open-g': tuning['open-g'],
+//     'dadgad': tuning['dadgad'],
+//     'double-drop-d': tuning['double-drop-d'],
+//     'all fourths': tuning['all fourths'],
+//     'bass standard': tuning['bass standard'],
+//     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
+// };

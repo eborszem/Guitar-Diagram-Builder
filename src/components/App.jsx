@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react"
-import Fretboard from './Fretboard';
+import Interface from './Interface';
 import '../elements/App.css';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Fretboard />} />
+                    <Route path="/" element={<Interface />} />
                 </Routes>
                 <Analytics />
             </div>
