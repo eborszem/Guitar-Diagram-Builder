@@ -3,11 +3,8 @@ import '../elements/Fretboard.css';
 import { FretControls } from './Controls.jsx';
 import Soundfont from 'soundfont-player';
 
+export const FretboardInterface = ({ noteToColor, setNoteToColor, strings, toggles, noteColor, formatNote }) => {
 
-
-export const FretboardInterface = ({ strings, toggles, noteColor, formatNote }) => {
-
-    const [noteToColor, setNoteToColor] = useState({});
     const {hideNotes, isDarkMode, lefty, playAudio} = toggles;
     const {color, setColor, colorBank, colorBankLight} = noteColor;
     
@@ -18,6 +15,7 @@ export const FretboardInterface = ({ strings, toggles, noteColor, formatNote }) 
     
     const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
     
+    // if fretboard is left handed, the side being increased or decreased is inverted
     const onIncreaseLeft = () => lefty ? increaseVisibleFretsRight() : increaseVisibleFretsLeft();
     const onDecreaseLeft = () => lefty ? decreaseVisibleFretsRight() : decreaseVisibleFretsLeft();
     const onIncreaseRight = () => lefty ? increaseVisibleFretsLeft() : increaseVisibleFretsRight();
@@ -33,77 +31,34 @@ export const FretboardInterface = ({ strings, toggles, noteColor, formatNote }) 
     useEffect(() => {
         const handleKeyDown = (e) => {
             const tagName = e.target.tagName.toLowerCase();
-            if (tagName === 'input' || tagName === 'textarea' || e.target.isContentEditable) {
-                // user is typing, so ignore
-                return;
-            }
-            switch (e.key) {
-                case '4':
-                    onIncreaseRight();
-                    break;
-                case '3':
-                    onDecreaseRight();
-                    break;
-                case '1':
-                    onIncreaseLeft();
-                    break;
-                case '2':
-                    onDecreaseLeft();
-                    break;
-                case 'Escape':
-                    setColor('none');
-                    break;
-                case 'R':
-                    setColor(colorBankLight[0]);
-                    break;
-                case 'r':
-                    setColor(colorBank[0]);
-                    break;
-                case 'O':
-                    setColor(colorBankLight[1]);
-                    break;
-                case 'o':
-                    setColor(colorBank[1]);
-                    break;
-                case 'Y':
-                    setColor(colorBankLight[2]);
-                    break;
-                case 'y':
-                    setColor(colorBank[2]);
-                    break;
-                case 'G':
-                    setColor(colorBankLight[3]);
-                    break;
-                case 'g':
-                    setColor(colorBank[3]);
-                    break;
-                case 'A':
-                    setColor(colorBankLight[4]);
-                    break;
-                case 'a':
-                    setColor(colorBank[4]);
-                    break;
-                case 'B':
-                    setColor(colorBankLight[5]);
-                    break;
-                case 'b':
-                    setColor(colorBank[5]);
-                    break;
-                case 'P':
-                    setColor(colorBankLight[6]);
-                    break;
-                case 'p':
-                    setColor(colorBank[6]);
-                    break;
-                case 'M':
-                    setColor(colorBankLight[7]);
-                    break;
-                case 'm':
-                    setColor(colorBank[7]);
-                    break;
-                default:
-                    break;
-            }
+            // user is typing, so ignore
+            if (tagName === 'input' || tagName === 'textarea' || e.target.isContentEditable) return;
+            const shortcuts = {
+                '4': onIncreaseRight,
+                '3': onDecreaseRight,
+                '1': onIncreaseLeft,
+                '2': onDecreaseLeft,
+
+                'Escape': () => setColor('none'),
+                'R': () => setColor(colorBankLight[0]),
+                'r': () => setColor(colorBank[0]),
+                'O': () => setColor(colorBankLight[1]),
+                'o': () => setColor(colorBank[1]),
+                'Y': () => setColor(colorBankLight[2]),
+                'y': () => setColor(colorBank[2]),
+                'G': () => setColor(colorBankLight[3]),
+                'g': () => setColor(colorBank[3]),
+                'A': () => setColor(colorBankLight[4]),
+                'a': () => setColor(colorBank[4]),
+                'B': () => setColor(colorBankLight[5]),
+                'b': () => setColor(colorBank[5]),
+                'P': () => setColor(colorBankLight[6]),
+                'p': () => setColor(colorBank[6]),
+                'M': () => setColor(colorBankLight[7]),
+                'm': () => setColor(colorBank[7]),
+            };
+            const action = shortcuts[e.key];
+            if (action) action();
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => {

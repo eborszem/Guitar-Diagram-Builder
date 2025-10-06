@@ -18,6 +18,7 @@ function Fretboard() {
         return stored ? JSON.parse(stored) : false;
     });
 
+    const [noteToColor, setNoteToColor] = useState({});
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
     const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
@@ -71,6 +72,8 @@ function Fretboard() {
                 toggles={{ hideNotes, isDarkMode, lefty, playAudio }}
                 noteColor={{ color, setColor, colorBank, colorBankLight }}
                 formatNote={formatNote}
+                noteToColor={noteToColor}
+                setNoteToColor={setNoteToColor}
             />
             
             <StringControls
@@ -84,6 +87,8 @@ function Fretboard() {
                 setStrings={setStrings}
                 showSharps={showSharps}
                 formatNote={formatNote}
+                noteToColor={noteToColor}
+                setNoteToColor={setNoteToColor}
             />
 
             <FretboardToggles

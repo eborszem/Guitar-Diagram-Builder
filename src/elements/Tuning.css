@@ -6,7 +6,7 @@
     gap: 10px;
 }
 
-.svg-and-reset-tune {
+.diagram-actions {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -63,6 +63,10 @@ body.dark .tuning-editor .retune-note-btn {
     background-color: #e0e0e0;
 }
 
+body.dark .tuning-editor .retune-note-btn:hover {
+    background-color: #212121;
+}
+
 .tuning-editor input {
     all: unset;
     /* display: inline-block; */
@@ -90,12 +94,13 @@ body.dark .tuning-editor .retune-note-btn {
     border: 1px solid #ccc;
     border-radius: 4px;
     height: 27.5px;
-    
 }
 
 .tuning-dropdown:hover,
 .reset-tuning:hover,
-.saving button:hover {
+.saving button:hover,
+.json-download button:hover,
+.json-import:hover {
     cursor: pointer;
     background-color: #e0e0e0;
 }
@@ -103,6 +108,11 @@ body.dark .tuning-editor .retune-note-btn {
 body.dark .tuning-dropdown {
     background-color: #141414;
     color: #ddd;
+}
+
+body.dark .tuning-dropdown:hover {
+    cursor: pointer;
+    background-color: #212121;
 }
 
 .reset-tuning {
@@ -117,16 +127,38 @@ body.dark .tuning-dropdown {
 }
 
 .reset-tuning,
-.saving button {
+.saving button,
+.json-download button,
+.json-import {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
     height: 27.5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+
+.json-import {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0px 5px;
+    font-size: 14px;
 }
 
 body.dark .reset-tuning,
-body.dark .saving button {
+body.dark .saving button,
+body.dark .json-download button,
+body.dark .json-import {
     background-color: #141414;
     color: #ddd;
 }
 
+body.dark .reset-tuning:hover,
+body.dark .saving button:hover,
+body.dark .json-download button:hover,
+body.dark .json-import:hover {
+    background-color: #212121;
+}

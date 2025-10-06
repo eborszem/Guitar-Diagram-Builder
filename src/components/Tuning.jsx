@@ -19,7 +19,7 @@ const presetTunings = {
     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 
-export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
+export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showSharps, formatNote }) => {
     const [tuning, setTuning] = useState('standard');
     const [retuningStringId, setRetuningStringId] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
@@ -135,7 +135,6 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
         }
     };
 
-    // export the fretboard as svg upon request
     const downloadSVG = () => {
         const fretboardNode = document.getElementById('fretboard-interface');
         toSvg(fretboardNode, {
@@ -155,6 +154,36 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
         .catch(err => {
             console.error('Failed to save fretboard as SVG:', err);
         }); 
+    };
+
+    const downloadJSON = () => {
+        const data = {
+            strings: strings,
+            noteToColor: noteToColor
+        }
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'fretboard-diagram.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const importJSON = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (data.noteToColor) setNoteToColor(data.noteToColor);
+                if (data.strings) setStrings(data.strings);
+            } catch (err) {
+                console.error('Invalid JSON file', err);
+            }
+        };
+        reader.readAsText(file);
     };
 
     return (
@@ -206,10 +235,23 @@ export const Tuning = ({ strings, setStrings, showSharps, formatNote }) => {
                         </select>
                 </div>
             </div>
-            <div className="svg-and-reset-tune">
+            <div className="diagram-actions">
                 <div className="saving">
                     <button onClick={downloadSVG}>Download SVG</button>
                 </div>
+                <div className="json-download">
+                    <button onClick={downloadJSON} title="Save your diagram as JSON so you can reuse it later">Download JSON</button>
+                </div>
+                <label className="json-import" title="Import diagram from JSON">
+                    Import JSON
+                    <input 
+                        className="json-import-input"
+                        type="file"
+                        accept=".json"
+                        onChange={importJSON}
+                        style={{ display: 'none'}}
+                    />
+                </label>
                 <div className="reset-tuning-wrapper">
                     {tuning !== 'standard' && (
                         <button className="reset-tuning" onClick={resetTuning}>Reset Tuning</button>
