@@ -93,7 +93,12 @@ body.dark .tuning-editor .retune-note-btn:hover {
 .tuning-dropdown {
     border: 1px solid #ccc;
     border-radius: 4px;
-    height: 27.5px;
+    color: black;
+    font-size: 15px;
+    min-height: 30px; 
+    height: auto;
+    text-align: center;
+
 }
 
 .tuning-dropdown:hover,
@@ -130,12 +135,15 @@ body.dark .tuning-dropdown:hover {
 .saving button,
 .json-download button,
 .json-import {
+    font-size: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    height: 27.5px;
+    min-height: 30px; 
+    height: auto;
     cursor: pointer;
     background-color: #f0f0f0;
+    color: black;
 }
 
 .json-import {
@@ -145,7 +153,6 @@ body.dark .tuning-dropdown:hover {
     align-items: center;
     text-align: center;
     padding: 0px 5px;
-    font-size: 14px;
 }
 
 body.dark .reset-tuning,
