@@ -115,7 +115,16 @@ function Fretboard() {
                 <p> 1 &#8594; extend fretboard from left, 2 &#8594; shrink fretboard from left </p>
                 <p> 4 &#8594; extend fretboard from right, 3 &#8594; shrink fretboard from right </p> 
                 <p> esc &#8594; no color, r &#8594; red, o &#8594; orange, y &#8594; yellow, g &#8594; green, a &#8594; light blue, b &#8594; blue, p &#8594; purple, m &#8594; magenta </p>
-                <p> shift + r &#8594; light red, etc. </p>                        
+                <p> shift + r &#8594; light red, etc. </p>  
+                <p><b>What do the numbers after notes mean?</b></p>
+                    <p>
+                        The numbers after notes indicate their octave using scientific pitch notation. 
+                        For example, <b>C4</b> is middle C, <b>A4</b> is the A above middle C, and <b>G3</b> is the G below middle C.
+                    </p>
+                    <p>
+                        On a standard tuned guitar (E A D G B E), the strings correspond to: <b>E2</b>, <b>A2</b>, <b>D3</b>, <b>G3</b>, <b>B3</b>, <b>E4</b>.
+                    </p>
+
             </div>
         </div>
     )
