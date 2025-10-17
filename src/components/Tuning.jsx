@@ -201,7 +201,7 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
                                         onBlur={() => setRetuningStringId(null)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
-                                                finishChangeTuning(updatedNote, stringObj.id);
+                                                finishChangeTuning(updatedNote);
                                             }
                                         }}
                                         autoFocus
@@ -209,7 +209,8 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
                                 ) : (
                                     <button
                                         className='retune-note-btn'
-                                        onClick={() => setRetuningStringId(stringObj.id)}>
+                                        onClick={() => setRetuningStringId(stringObj.id)}
+                                    >
                                         {formatNote(stringObj.midi)}
                                     </button>
                                 )}

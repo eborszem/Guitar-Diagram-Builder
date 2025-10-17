@@ -5,9 +5,18 @@ import { FretboardInterface } from './Fretboard.jsx';
 import { FretboardToggles } from './Toggles.jsx';
 import { ColorSelector } from './ColorSelector.jsx';
 import { Tuning } from './Tuning.jsx';
-import { IoMdMusicalNote } from "react-icons/io";
 
-function Fretboard() {
+function Interface({
+    strings,
+    setStrings,
+    noteToColor,
+    setNoteToColor,
+    color,
+    setColor,
+    curFretboardId,
+    setCurFretboardId,
+    setPrevFretboardId
+}) {
     // toggles
     const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
@@ -18,11 +27,9 @@ function Fretboard() {
         return stored ? JSON.parse(stored) : false;
     });
 
-    const [noteToColor, setNoteToColor] = useState({});
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
     const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
-    const [color, setColor] = useState('#ff5c5c'); // can be any value in colorBank or 'none'
 
     // dark mode check
     useEffect(() => {
@@ -46,21 +53,8 @@ function Fretboard() {
         );
     };
 
-    // default strings for fretboard
-    // tuning can quickly change by modifying this array of midi notes
-    const [strings, setStrings] = useState([
-        {id: 0, midi: 64}, // E4
-        {id: 1, midi: 59}, // B3
-        {id: 2, midi: 55}, // G3
-        {id: 3, midi: 50}, // D3
-        {id: 4, midi: 45}, // A2
-        {id: 5, midi: 40}, // E2
-    ]);
-
     return (
-        <div className="fretboard-container">
-            <div className="fretboard-title"><IoMdMusicalNote style={{ transform: 'translateY(5px)'}} />Fretboard Diagram Maker</div>
-
+        <>
             <StringControls
                 side="highest"
                 strings={strings}
@@ -74,6 +68,10 @@ function Fretboard() {
                 formatNote={formatNote}
                 noteToColor={noteToColor}
                 setNoteToColor={setNoteToColor}
+                
+                curFretboardId={curFretboardId}
+                setCurFretboardId={setCurFretboardId}
+                setPrevFretboardId={setPrevFretboardId}
             />
             
             <StringControls
@@ -110,24 +108,27 @@ function Fretboard() {
                 setColor={setColor}
             />
 
-            <div className="info">
-                <p><b>Hotkeys</b>:</p>
-                <p> 1 &#8594; extend fretboard from left, 2 &#8594; shrink fretboard from left </p>
-                <p> 4 &#8594; extend fretboard from right, 3 &#8594; shrink fretboard from right </p> 
-                <p> esc &#8594; no color, r &#8594; red, o &#8594; orange, y &#8594; yellow, g &#8594; green, a &#8594; light blue, b &#8594; blue, p &#8594; purple, m &#8594; magenta </p>
-                <p> shift + r &#8594; light red, etc. </p>  
-                <p><b>What do the numbers after notes mean?</b></p>
-                    <p>
-                        The numbers after notes indicate their octave using scientific pitch notation. 
-                        For example, <b>C4</b> is middle C, <b>A4</b> is the A above middle C, and <b>G3</b> is the G below middle C.
-                    </p>
-                    <p>
-                        On a standard tuned guitar (E A D G B E), the strings correspond to: <b>E2</b>, <b>A2</b>, <b>D3</b>, <b>G3</b>, <b>B3</b>, <b>E4</b>.
-                    </p>
-
+            <div className="toggle-btns">
+                {[1,2,3,4,5,6,7,8,9].map((idx) =>
+                    <button
+                        className="fretboard-idx"
+                        onClick={() => {
+                            setPrevFretboardId(curFretboardId);
+                            setCurFretboardId(idx);
+                        }}
+                        style={{
+                            fontWeight: "bold",
+                            fontSize: "20px",
+                            color: idx === curFretboardId ? "rgb(68, 146, 255)" : "", 
+                            backgroundColor: idx === curFretboardId ? "rgba(68, 146, 255, 0.211)" : "",
+                        }}
+                    >
+                        {idx}
+                    </button>
+                )}
             </div>
-        </div>
+        </>
     )
 }
 
-export default Fretboard;
+export default Interface;

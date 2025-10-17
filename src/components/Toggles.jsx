@@ -5,7 +5,18 @@ import { IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
 
-export const FretboardToggles = ({ hideNotes, setHideNotes, playAudio, setPlayAudio, showSharps, setShowSharps, lefty, setLefty, isDarkMode, setIsDarkMode }) => {
+export const FretboardToggles = ({
+    hideNotes,
+    setHideNotes,
+    playAudio,
+    setPlayAudio,
+    showSharps,
+    setShowSharps,
+    lefty,
+    setLefty,
+    isDarkMode,
+    setIsDarkMode,
+}) => {
     return (
         <div className="toggle-btns">
             <button className="toggle-notes" onClick={() => setHideNotes(prev => !prev)}>

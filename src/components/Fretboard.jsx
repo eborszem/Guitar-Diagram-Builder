@@ -1,9 +1,19 @@
-import { React, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../elements/Fretboard.css';
 import { FretControls } from './Controls.jsx';
 import Soundfont from 'soundfont-player';
 
-export const FretboardInterface = ({ noteToColor, setNoteToColor, strings, toggles, noteColor, formatNote }) => {
+export const FretboardInterface = ({
+    noteToColor,
+    setNoteToColor,
+    strings,
+    toggles,
+    noteColor,
+    formatNote,
+    curFretboardId,
+    setCurFretboardId,
+    setPrevFretboardId
+}) => {
 
     const {hideNotes, isDarkMode, lefty, playAudio} = toggles;
     const {color, setColor, colorBank, colorBankLight} = noteColor;
@@ -34,10 +44,20 @@ export const FretboardInterface = ({ noteToColor, setNoteToColor, strings, toggl
             // user is typing, so ignore
             if (tagName === 'input' || tagName === 'textarea' || e.target.isContentEditable) return;
             const shortcuts = {
-                '4': onIncreaseRight,
-                '3': onDecreaseRight,
-                '1': onIncreaseLeft,
-                '2': onDecreaseLeft,
+                'w': onIncreaseLeft,
+                's': onDecreaseLeft,
+                'd': onIncreaseRight,
+                'a': onDecreaseRight,
+
+                '1': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(1);},
+                '2': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(2);},
+                '3': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(3);},
+                '4': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(4);},
+                '5': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(5);},
+                '6': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(6);},
+                '7': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(7);},
+                '8': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(8);},
+                '9': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(9);},
 
                 'Escape': () => setColor('none'),
                 'R': () => setColor(colorBankLight[0]),
@@ -48,8 +68,8 @@ export const FretboardInterface = ({ noteToColor, setNoteToColor, strings, toggl
                 'y': () => setColor(colorBank[2]),
                 'G': () => setColor(colorBankLight[3]),
                 'g': () => setColor(colorBank[3]),
-                'A': () => setColor(colorBankLight[4]),
-                'a': () => setColor(colorBank[4]),
+                'L': () => setColor(colorBankLight[4]),
+                'l': () => setColor(colorBank[4]),
                 'B': () => setColor(colorBankLight[5]),
                 'b': () => setColor(colorBank[5]),
                 'P': () => setColor(colorBankLight[6]),
@@ -90,7 +110,10 @@ export const FretboardInterface = ({ noteToColor, setNoteToColor, strings, toggl
         if (playAudio && instrument) {
             instrument.play(note, 0, { gain: 1, duration: 1.5 });
         }
-
+        // console.log("start---------");
+        // console.log(color);
+        // console.log(noteToColor);
+        // console.log("end---------");
         if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
             setNoteToColor((prev) => {
                 const updated = { ...prev };

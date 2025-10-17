@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import Interface from './Interface';
+import InterfaceManager from './InterfaceManager';
 import '../elements/App.css';
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<Interface />} />
+                    <Route path="/" element={<InterfaceManager />} />
                 </Routes>
                 <Analytics />
                 <SpeedInsights />
