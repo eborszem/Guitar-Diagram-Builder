@@ -53,6 +53,32 @@ function Interface({
         );
     };
 
+    const handleShare = async () => {
+        try {
+            const data = {
+                tuning: strings.map(s => s.midi).join("_"),
+                notetocolor: noteToColor
+            };
+
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+            const res = await fetch(`${backendUrl}/api/fretboards`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            });
+
+            if (!res.ok) {
+                throw new Error("failed to save fretboard");
+            }
+            const resData = await res.json();
+            navigator.clipboard.writeText(window.location.origin + resData["shareable-link"]);
+            alert("Share link copied!");
+        } catch (err) {
+            console.log(err);
+            alert("Failed to generate share link");
+        }
+    }
+
     return (
         <>
             <StringControls
@@ -100,6 +126,7 @@ function Interface({
                 setLefty={setLefty}
                 isDarkMode={isDarkMode}
                 setIsDarkMode={setIsDarkMode}
+                onShare={handleShare}
             />
 
             <ColorSelector

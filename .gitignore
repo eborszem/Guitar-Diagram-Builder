@@ -25,3 +25,4 @@ yarn-error.log*
 ideas.txt
 /public/notes
 /public/.DS_Store
+.vercel

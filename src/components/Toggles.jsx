@@ -4,18 +4,15 @@ import '../elements/Toggle.css';
 import { IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
+import { FaShare } from "react-icons/fa6";
 
 export const FretboardToggles = ({
-    hideNotes,
-    setHideNotes,
-    playAudio,
-    setPlayAudio,
-    showSharps,
-    setShowSharps,
-    lefty,
-    setLefty,
-    isDarkMode,
-    setIsDarkMode,
+    hideNotes, setHideNotes,
+    playAudio, setPlayAudio,
+    showSharps, setShowSharps,
+    lefty, setLefty,
+    isDarkMode, setIsDarkMode,
+    onShare
 }) => {
     return (
         <div className="toggle-btns">
@@ -37,6 +34,10 @@ export const FretboardToggles = ({
 
             <button className="toggle-dark-mode" onClick={() => setIsDarkMode(prev => !prev)}>
                 {isDarkMode ? < IoMoon size={30} /> : <IoSunny size={30} />}
+            </button>
+
+            <button className="share" onClick={onShare}>
+                <FaShare size={30} />
             </button>
         </div>
     )

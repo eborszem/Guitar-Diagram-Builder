@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from "react-router-dom";
 import Interface from './Interface.jsx'
 import { IoMdMusicalNote } from "react-icons/io";
 
 function InterfaceManager() {
+
     const standardTuning = [
         {id: 0, midi: 64}, // E4
         {id: 1, midi: 59}, // B3
@@ -15,6 +17,47 @@ function InterfaceManager() {
     const [strings, setStrings] = useState(standardTuning);
     const [noteToColor, setNoteToColor] = useState({});
     const [color, setColor] = useState({});
+
+    const { id } = useParams(); // for share links
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!id) return;
+        async function fetchFretboard() {
+            try {
+                const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+                const res = await fetch(`${backendUrl}/share/${id}`);
+                if (!res.ok) {
+                    navigate("/");
+                    return;
+                }    
+                const data = await res.json();
+                console.log("DATA=",data);
+                console.log("NOTETOCOLOR=",data.notetocolor);
+                const midiString = data.tuning;
+                const midiValues = midiString.split("_").map(Number);
+                const strings_ = midiValues.map((midi, idx) => ({
+                    id: idx,
+                    midi: midi
+                }))
+
+                setStrings(strings_);
+                setNoteToColor(data.notetocolor);
+                setColor('#ff5c5c');
+
+                setInterfaces(prev =>
+                    prev.map(f =>
+                        f.id === 1
+                            ? { ...f, strings: strings_, noteToColor: data.notetocolor, color: '#ff5c5c' }
+                            : f
+                    )
+                );
+                setCurFretboardId(1);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        fetchFretboard();
+    }, [id]);
 
     const [interfaces, setInterfaces] = useState(
         Array.from({length: 10}, (_, i) => ({
