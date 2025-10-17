@@ -108,10 +108,12 @@ function Interface({
                 setColor={setColor}
             />
 
-            <div className="toggle-btns">
+            <div className="switch-fretboards">
+                <p>Switch Fretboard:</p>
+                <div className="toggle-btns">
                 {[1,2,3,4,5,6,7,8,9].map((idx) =>
                     <button
-                        className="fretboard-idx"
+                        className="fretboard-btn"
                         onClick={() => {
                             setPrevFretboardId(curFretboardId);
                             setCurFretboardId(idx);
@@ -121,11 +123,13 @@ function Interface({
                             fontSize: "20px",
                             color: idx === curFretboardId ? "rgb(68, 146, 255)" : "", 
                             backgroundColor: idx === curFretboardId ? "rgba(68, 146, 255, 0.211)" : "",
+                            border: idx === curFretboardId ? "2px solid rgb(68, 146, 255)" : "1px solid #333",
                         }}
                     >
                         {idx}
                     </button>
                 )}
+                </div>
             </div>
         </>
     )

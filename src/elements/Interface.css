@@ -8,6 +8,21 @@
     margin: 10px;
 }
 
+.switch-fretboards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    font-size: 16px;
+}
+
+.switch-fretboards p {
+    margin-top: 0px;
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
 .info {
     margin-top: 20px;
     display: flex;

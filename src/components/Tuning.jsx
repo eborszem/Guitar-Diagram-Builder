@@ -190,7 +190,7 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
         <>
             <div className="tuning-editor">
                 <div className="tune-wrapper">
-                    <p><b>Set Tuning</b>:</p>
+                    <p><b>Set Tuning:</b></p>
                     <div className="tune-input">
                         {strings.map((stringObj) => (
                             <div key={stringObj.id}>
@@ -219,7 +219,7 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
                     </div>
                 </div>
                 <div className="tune-dropdown-wrapper">
-                    <p><b>Current Tuning</b>:</p>
+                    <p><b>Current Tuning:</b></p>
                         <select
                             className="tuning-dropdown" 
                             value={tuning}
