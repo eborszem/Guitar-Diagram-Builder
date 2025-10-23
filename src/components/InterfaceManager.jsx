@@ -31,8 +31,8 @@ function InterfaceManager() {
                     return;
                 }    
                 const data = await res.json();
-                console.log("DATA=",data);
-                console.log("NOTETOCOLOR=",data.notetocolor);
+                // console.log("DATA=",data);
+                // console.log("NOTETOCOLOR=",data.notetocolor);
                 const midiString = data.tuning;
                 const midiValues = midiString.split("_").map(Number);
                 const strings_ = midiValues.map((midi, idx) => ({

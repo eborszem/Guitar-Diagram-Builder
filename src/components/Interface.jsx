@@ -21,7 +21,10 @@ function Interface({
     const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
     const [showSharps, setShowSharps] = useState(true); // sharps or flats
-    const [lefty, setLefty] = useState(false); // left hand or right hand
+    const [lefty, setLefty] = useState(() => {  // left hand or right hand
+        const stored = localStorage.getItem('lefty');
+        return stored ? JSON.parse(stored) : false;
+    });
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const stored = localStorage.getItem('isDarkMode');
         return stored ? JSON.parse(stored) : false;
@@ -30,12 +33,28 @@ function Interface({
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
     const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
+    const colorMap = {
+        '#ff5c5c': '#ffbebe',
+        '#ffbf5c': '#ffe5be',
+        '#fff85c': '#fffcbe',
+        '#9cff5c': '#d7ffbe',
+        '#5cf0ff': '#bef9ff',
+        '#5c67ff': '#c1beff',
+        '#b25cff': '#e0beff',
+        '#ff5cfd': '#ffbefe'
+    }
+
 
     // dark mode check
     useEffect(() => {
         document.body.classList.toggle('dark', isDarkMode);
         localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
     }, [isDarkMode]);
+
+    // lefty check
+    useEffect(() => {
+        localStorage.setItem('lefty', JSON.stringify(lefty));
+    }, [lefty]);
 
     // converts a midi note value to its corresponding note in scientific pitch notation (e.g. 64 --> E4, 59 --> B3)
     // in the soundfont-player library, middle C (C4) has midi note value 60
@@ -51,6 +70,57 @@ function Interface({
                 <sub>{octave}</sub>
             </>
         );
+    };
+
+    const [root, setRoot] = useState("C");
+
+    const noteToMidi = () => {
+        const noteMap = showSharps
+            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        for (let i = 0; i < noteMap.length; i++) {
+            if (noteMap[i] === root) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    const modes = {
+        "Major (Ionian)": [0, 2, 4, 5, 7, 9, 11],
+        "Dorian": [0, 2, 3, 5, 7, 9, 10],
+        "Phrygian": [0, 1, 3, 5, 7, 8, 10],
+        "Lydian": [0, 2, 4, 6, 7, 9, 11],
+        "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
+        "Minor (Aeolian)": [0, 2, 3, 5, 7, 8, 10],
+        "Locrian": [0, 1, 3, 5, 6, 8, 10]
+    }
+
+    const generateScale = (modeName) => {
+        setNoteToColor({});
+        // first, get all notes in scale
+        let midiRoot = noteToMidi(root);
+        let mode = modes[modeName];
+
+        // second, set noteToColor mapping for every string
+        let tmp = []; // temporary noteToColor mapping
+        console.log(midiRoot);
+        for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
+            // valid midi range is 21 to 108
+            for (let midi = 0; midi <= 108; midi++) {
+                if (midi % 12 !== midiRoot) continue;
+                tmp[midi + "-"  + strings[stringIdx].id] = color;
+                for (let i = 1; i < mode.length; i++) {
+                    let noteMidi = midi + mode[i];
+                    if (noteMidi >= 21 && noteMidi <= 108) {
+                        tmp[noteMidi + "-"  + strings[stringIdx].id] = colorMap[color];
+                    }
+                }
+            }
+        }
+        console.log("TMP=",tmp);
+        setNoteToColor(tmp);
+        
     };
 
     const handleShare = async () => {
@@ -94,7 +164,6 @@ function Interface({
                 formatNote={formatNote}
                 noteToColor={noteToColor}
                 setNoteToColor={setNoteToColor}
-                
                 curFretboardId={curFretboardId}
                 setCurFretboardId={setCurFretboardId}
                 setPrevFretboardId={setPrevFretboardId}
@@ -113,6 +182,9 @@ function Interface({
                 formatNote={formatNote}
                 noteToColor={noteToColor}
                 setNoteToColor={setNoteToColor}
+                generateScale={generateScale}
+                root={root}
+                setRoot={setRoot}
             />
 
             <FretboardToggles
@@ -127,6 +199,8 @@ function Interface({
                 isDarkMode={isDarkMode}
                 setIsDarkMode={setIsDarkMode}
                 onShare={handleShare}
+                setRoot={setRoot}
+                setNoteToColor={setNoteToColor}
             />
 
             <ColorSelector
@@ -148,7 +222,7 @@ function Interface({
                         style={{
                             fontWeight: "bold",
                             fontSize: "20px",
-                            color: idx === curFretboardId ? "rgb(68, 146, 255)" : "", 
+                            color: idx === curFretboardId ? "rgb(68, 146, 255)" : (isDarkMode ? "#ddd" : ""), 
                             backgroundColor: idx === curFretboardId ? "rgba(68, 146, 255, 0.211)" : "",
                             border: idx === curFretboardId ? "2px solid rgb(68, 146, 255)" : "1px solid #333",
                         }}

@@ -1,0 +1,81 @@
+.scale-interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.scale-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 5px;
+
+}
+
+.scale-dropdown-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    gap: 5px;
+}
+
+.scale-dropdown-wrapper p {
+    margin: 0;
+}
+
+.scale-dropdown {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: black;
+    font-size: 15px;
+    min-height: 30px; 
+    height: auto;
+    text-align: center;
+}
+
+.scale-dropdown:hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+}
+
+body.dark .scale-dropdown {
+    background-color: #141414;
+    color: #ddd;
+}
+
+body.dark .scale-dropdown:hover {
+    cursor: pointer;
+    background-color: #212121;
+}
+
+.generate-scale button {
+    margin-left: 15px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    min-height: 30px; 
+    height: auto;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.generate-scale button:hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+}
+
+body.dark .generate-scale button {
+    background-color: #141414;
+    color: #ddd;
+}
+
+
+body.dark .generate-scale button:hover {
+    background-color: #212121;
+}

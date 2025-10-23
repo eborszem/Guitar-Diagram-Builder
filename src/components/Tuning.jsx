@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../elements/Tuning.css';
 import { toSvg } from 'html-to-image';
 import { tuning, tuningsMidi } from "./Tunings.jsx"
+import { Scale } from './Scale.jsx';
 
 const presetTunings = {
     'standard': tuning['standard'],
@@ -19,7 +20,17 @@ const presetTunings = {
     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
 };
 
-export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showSharps, formatNote }) => {
+export const Tuning = ({
+    noteToColor,
+    setNoteToColor,
+    strings, 
+    setStrings,
+    showSharps,
+    formatNote,
+    generateScale,
+    root,
+    setRoot
+}) => {
     const [tuning, setTuning] = useState('standard');
     const [retuningStringId, setRetuningStringId] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
@@ -190,7 +201,7 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
         <>
             <div className="tuning-editor">
                 <div className="tune-wrapper">
-                    <p><b>Set Tuning:</b></p>
+                    <p className="tuning-text">Set Custom Tuning:</p>
                     <div className="tune-input">
                         {strings.map((stringObj) => (
                             <div key={stringObj.id}>
@@ -219,7 +230,7 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
                     </div>
                 </div>
                 <div className="tune-dropdown-wrapper">
-                    <p><b>Current Tuning:</b></p>
+                    <p className="tuning-text">Current Tuning:</p>
                         <select
                             className="tuning-dropdown" 
                             value={tuning}
@@ -236,6 +247,14 @@ export const Tuning = ({ noteToColor, setNoteToColor, strings, setStrings, showS
                         </select>
                 </div>
             </div>
+
+            <Scale
+                showSharps={showSharps}
+                generateScale={generateScale}
+                root={root}
+                setRoot={setRoot}
+            />
+
             <div className="diagram-actions">
                 <div className="saving">
                     <button onClick={downloadSVG}>Download SVG</button>

@@ -37,3 +37,11 @@ body.dark .toggle-btns button:hover {
 .toggle-btns button:active {
     transform: scale(0.95);
 }
+
+.toggle-and-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+}
