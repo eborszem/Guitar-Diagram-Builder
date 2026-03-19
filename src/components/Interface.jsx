@@ -145,7 +145,7 @@ function Interface({
             alert("Share link copied!");
         } catch (err) {
             console.log(err);
-            alert("Failed to generate share link");
+            alert("I am unfortunately out of free cloud credits, please use the JSON download/import feature instead!");
         }
     }
 
