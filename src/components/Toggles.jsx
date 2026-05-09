@@ -1,6 +1,7 @@
 
 import '../elements/Toggle.css';
 
+import { React, useEffect, useState } from 'react'
 import { IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
@@ -14,8 +15,18 @@ export const FretboardToggles = ({
     isDarkMode, setIsDarkMode,
     onShare,
     setRoot,
-    setNoteToColor
+    setNoteToColor,
+    noteLabel, setNoteLabel, noteLabelArr, keyForInterval, setKeyForInterval
 }) => {
+    const notesArr = noteLabel !== 3 ? (
+        showSharps
+            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+    ) : (
+        showSharps
+            ? ['I', 'I#', 'II', 'II#', 'III', 'IV','IV#', 'V', 'V#', 'VI', 'VI#', 'VII']
+            : ['I', 'IIb', 'II', 'IIIb', 'III', 'IV','Vb', 'V', 'VIb', 'VI', 'VIIb', 'VII']
+    );
     return (
         <div className="toggle-btns">
             <div className="toggle-and-label">
@@ -71,17 +82,46 @@ export const FretboardToggles = ({
 
 
             <div className="toggle-and-label">
-                <button className="toggle-dark-mode" onClick={() => setIsDarkMode(prev => !prev)}>
-                    {isDarkMode ? < IoMoon size={30} /> : <IoSunny size={30} />}
+                <button
+                    className={'toggle-note-label'}
+                    onClick={() =>
+                    setNoteLabel((prev) => (prev + 1) % noteLabelArr.length)
+                    }
+                >
+                    {noteLabel === 0 && <>C<sub>3</sub></>}
+                    {noteLabel === 1 && <>C</>}
+                    {noteLabel === 2 && <>I</>}
+                    {noteLabel === 3 && <>X</>}
                 </button>
-                {isDarkMode ? "Dark mode" : "Light mode"}
+
+                {noteLabelArr[noteLabel]}
             </div>
 
-            <div className="toggle-and-label">
+            {noteLabel === 2 && (
+                <div className="key-select">
+                    <select className="key-dropdown" value={keyForInterval} onChange={((e) => {setKeyForInterval(e.target.value)})}>
+                        {notesArr.map((key) => (
+                            <option key={key} value={key}>
+                                {key}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                
+            )}
+
+            {/* <div className="toggle-and-label">
                 <button className="share" onClick={onShare}>
                     <FaShare size={30} />
                 </button>
                 Share link
+            </div> */}
+
+            <div className="toggle-and-label">
+                <button className="toggle-dark-mode" onClick={() => setIsDarkMode(prev => !prev)}>
+                    {isDarkMode ? < IoMoon size={30} /> : <IoSunny size={30} />}
+                </button>
+                {isDarkMode ? "Dark mode" : "Light mode"}
             </div>
 
             <div className="toggle-and-label">
@@ -96,6 +136,7 @@ export const FretboardToggles = ({
                 </button>
                 Clear
             </div>
+            
         </div>
     )
 }

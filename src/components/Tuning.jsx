@@ -222,7 +222,7 @@ export const Tuning = ({
                                         className='retune-note-btn'
                                         onClick={() => setRetuningStringId(stringObj.id)}
                                     >
-                                        {formatNote(stringObj.midi)}
+                                        {formatNote(stringObj.midi, true)}
                                     </button>
                                 )}
                             </div>

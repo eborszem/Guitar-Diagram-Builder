@@ -30,6 +30,11 @@ function Interface({
         return stored ? JSON.parse(stored) : false;
     });
 
+    const noteLabelArr = ['Octave', 'No Octave', 'Interval', 'None'];
+    const [noteLabel, setNoteLabel] = useState(0);
+
+    const [keyForInterval, setKeyForInterval] = useState('C');
+
     // coloring for diagrams
     const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
     const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
@@ -58,18 +63,34 @@ function Interface({
 
     // converts a midi note value to its corresponding note in scientific pitch notation (e.g. 64 --> E4, 59 --> B3)
     // in the soundfont-player library, middle C (C4) has midi note value 60
-    const formatNote = (midiNoteValue) => {
-        const noteMap = showSharps
-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-        let note = noteMap[midiNoteValue % 12];
-        const octave = Math.floor(midiNoteValue / 12) - 1;
-        return (
-            <>
-                {note}
-                <sub>{octave}</sub>
-            </>
-        );
+    // defaultSPN is used to ensure custom tuning note names remain in scientific pitch notation
+    const formatNote = (midiNoteValue, defaultSPN) => {
+        if (defaultSPN || noteLabel === 0 || noteLabel === 1) { // spn labels or no spn labels
+            const notes = showSharps
+                ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+            let note = notes[midiNoteValue % notes.length];
+            const octave = Math.floor(midiNoteValue / notes.length) - 1;
+            return (noteLabel === 0 || defaultSPN === true) ? (<>{note}<sub>{octave}</sub></>) : (<>{note}</>);
+        } else if (noteLabel === 2) { // interval labels; user selects key, then intervals show respective to the key
+            const notes = showSharps
+                ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+            let keyMidi = notes.indexOf(keyForInterval); // get the first midi value of the key (key of f will be 5, c will be 0, etc)
+            let note = midiNoteValue % notes.length;
+            if (keyMidi > note) {
+                note += 12;
+            }
+            const intervals = showSharps
+                ? ['I', 'I#', 'II', 'II#', 'III', 'IV','IV#', 'V', 'V#', 'VI', 'VI#', 'VII']
+                : ['I', 'IIb', 'II', 'IIIb', 'III', 'IV','Vb', 'V', 'VIb', 'VI', 'VIIb', 'VII'];
+            // let note = intervals[midiNoteValue % 12];
+            return <>{intervals[note - keyMidi]}</>
+        } else { // no labels
+            return <></>;
+        }
+        
     };
 
     const [root, setRoot] = useState("C");
@@ -123,31 +144,31 @@ function Interface({
         
     };
 
-    const handleShare = async () => {
-        try {
-            const data = {
-                tuning: strings.map(s => s.midi).join("_"),
-                notetocolor: noteToColor
-            };
+    // const handleShare = async () => {
+    //     try {
+    //         const data = {
+    //             tuning: strings.map(s => s.midi).join("_"),
+    //             notetocolor: noteToColor
+    //         };
 
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
-            const res = await fetch(`${backendUrl}/api/fretboards`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(data)
-            });
+    //         const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+    //         const res = await fetch(`${backendUrl}/api/fretboards`, {
+    //             method: "POST",
+    //             headers: {"Content-Type": "application/json"},
+    //             body: JSON.stringify(data)
+    //         });
 
-            if (!res.ok) {
-                throw new Error("failed to save fretboard");
-            }
-            const resData = await res.json();
-            navigator.clipboard.writeText(window.location.origin + resData["shareable-link"]);
-            alert("Share link copied!");
-        } catch (err) {
-            console.log(err);
-            alert("I am unfortunately out of free cloud credits, please use the JSON download/import feature instead!");
-        }
-    }
+    //         if (!res.ok) {
+    //             throw new Error("failed to save fretboard");
+    //         }
+    //         const resData = await res.json();
+    //         navigator.clipboard.writeText(window.location.origin + resData["shareable-link"]);
+    //         alert("Share link copied!");
+    //     } catch (err) {
+    //         console.log(err);
+    //         alert("I am unfortunately out of free cloud credits, please use the JSON download/import feature instead!");
+    //     }
+    // }
 
     return (
         <>
@@ -198,9 +219,15 @@ function Interface({
                 setLefty={setLefty}
                 isDarkMode={isDarkMode}
                 setIsDarkMode={setIsDarkMode}
-                onShare={handleShare}
+                // onShare={handleShare}
                 setRoot={setRoot}
                 setNoteToColor={setNoteToColor}
+                noteLabel={noteLabel}
+                setNoteLabel={setNoteLabel}
+                noteLabelArr={noteLabelArr}
+                formatNote={formatNote}
+                keyForInterval={keyForInterval}
+                setKeyForInterval={setKeyForInterval}
             />
 
             <ColorSelector

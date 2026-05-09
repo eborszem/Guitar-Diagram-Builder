@@ -10,7 +10,7 @@ function App() {
             <div className="App">
                 <Routes>
                     <Route path="/" element={<InterfaceManager />} />
-                    <Route path="/share/:id" element={<InterfaceManager />} />
+                    {/* <Route path="/share/:id" element={<InterfaceManager />} /> */}
                 </Routes>
                 <Analytics />
                 <SpeedInsights />
