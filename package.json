@@ -4,6 +4,8 @@
     "proxy": "http://localhost:5000",
     "private": true,
     "dependencies": {
+        "@mdi/js": "^7.4.47",
+        "@mdi/react": "^1.6.1",
         "@testing-library/dom": "^10.4.0",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/react": "^16.3.0",

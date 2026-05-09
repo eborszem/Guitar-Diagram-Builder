@@ -45,3 +45,22 @@ body.dark .toggle-btns button:hover {
     align-items: center;
     font-size: 10px;
 }
+
+.icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+}
+.icon + .icon {
+    margin-left: -32px;
+}

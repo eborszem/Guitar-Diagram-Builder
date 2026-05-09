@@ -6,6 +6,8 @@ import { IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
 import { FaShare, FaTrashCan } from "react-icons/fa6";
+import Icon from '@mdi/react';
+import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiRomanNumeral1 } from '@mdi/js';
 
 export const FretboardToggles = ({
     hideNotes, setHideNotes,
@@ -83,17 +85,23 @@ export const FretboardToggles = ({
 
             <div className="toggle-and-label">
                 <button
-                    className={'toggle-note-label'}
+                    className={"toggle-note-label"}
                     onClick={() =>
                     setNoteLabel((prev) => (prev + 1) % noteLabelArr.length)
                     }
                 >
-                    {noteLabel === 0 && <>C<sub>3</sub></>}
-                    {noteLabel === 1 && <>C</>}
-                    {noteLabel === 2 && <>I</>}
-                    {noteLabel === 3 && <>X</>}
-                </button>
+                    {noteLabel === 0 && (
+                        <div className="icons">
+                            <div className="icon"><Icon path={mdiAlphaC} size={2} /></div>
+                            <div className="icon"><Icon path={mdiNumeric3} size={2} /></div>
+                        </div>
+                    )}
+                    {noteLabel === 1 && <div className="icon"><Icon path={mdiAlphaC} size={2} /></div>}
+                    {noteLabel === 2 && <div className="icon"><Icon path={mdiRomanNumeral1} size={2} /></div>}
 
+
+                    {noteLabel === 3 && <div className="icon"><Icon path={mdiAlphaX} size={2} /></div>}
+                </button>
                 {noteLabelArr[noteLabel]}
             </div>
 

@@ -30,7 +30,7 @@ function Interface({
         return stored ? JSON.parse(stored) : false;
     });
 
-    const noteLabelArr = ['Octave', 'No Octave', 'Interval', 'None'];
+    const noteLabelArr = ['Octave', 'No Octave', 'Interval', 'Blank'];
     const [noteLabel, setNoteLabel] = useState(0);
 
     const [keyForInterval, setKeyForInterval] = useState('C');
