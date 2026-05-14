@@ -124,7 +124,7 @@ function Interface({
         let mode = modes[modeName];
 
         // second, set noteToColor mapping for every string
-        let tmp = []; // temporary noteToColor mapping
+        let tmp = {}; // temporary noteToColor mapping
         console.log(midiRoot);
         for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
             // valid midi range is 21 to 108
