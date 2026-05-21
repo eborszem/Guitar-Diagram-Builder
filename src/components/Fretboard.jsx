@@ -6,85 +6,23 @@ import Soundfont from 'soundfont-player';
 export const FretboardInterface = ({
     noteToColor,
     setNoteToColor,
+    isColorPickerMode,
+    setIsColorPickerMode,
     strings,
     toggles,
     noteColor,
     formatNote,
     curFretboardId,
     setCurFretboardId,
-    setPrevFretboardId
+    setPrevFretboardId,
+    firstVisibleFretIndex,
+    lastVisibleFretIndex,
 }) => {
 
     const {hideNotes, isDarkMode, lefty, playAudio} = toggles;
     const {color, setColor, colorBank, colorBankLight} = noteColor;
     
-    // fret is 0-indexed, so the first fret is 0, second fret is 1, etc.
-    // playing the open strings (in standard tuning, [E, A, D, G, B, e]) is the equivalent of playing the 0th fret
-    const [firstVisibleFretIndex, setFirstVisibleFretIndex] = useState(0); // value changes when the user expands or shrinks the fretboard from the left side
-    const [lastVisibleFretIndex, setLastVisibleFretIndex] = useState(16); // value changes when the user expands or shrinks the fretboard from the right side
-    
-    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex;
-    
-    // if fretboard is left handed, the side being increased or decreased is inverted
-    const onIncreaseLeft = () => lefty ? increaseVisibleFretsRight() : increaseVisibleFretsLeft();
-    const onDecreaseLeft = () => lefty ? decreaseVisibleFretsRight() : decreaseVisibleFretsLeft();
-    const onIncreaseRight = () => lefty ? increaseVisibleFretsLeft() : increaseVisibleFretsRight();
-    const onDecreaseRight = () => lefty ? decreaseVisibleFretsLeft() : decreaseVisibleFretsRight();
-
-    // functions for modifying the visible frets on the fretboard
-    const increaseVisibleFretsLeft = () => firstVisibleFretIndex > 0 && setFirstVisibleFretIndex(prev => prev - 1);
-    const decreaseVisibleFretsLeft = () => numFrets > 3 && setFirstVisibleFretIndex(prev => prev + 1);
-    const increaseVisibleFretsRight = () => setLastVisibleFretIndex(prev => prev + 1);
-    const decreaseVisibleFretsRight = () => numFrets > 3 && setLastVisibleFretIndex(prev => prev - 1);
-
-    // keyboard shortcuts for increasing/decreasing visible frets
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            const tagName = e.target.tagName.toLowerCase();
-            // user is typing, so ignore
-            if (tagName === 'input' || tagName === 'textarea' || e.target.isContentEditable) return;
-            const shortcuts = {
-                'w': onIncreaseLeft,
-                's': onDecreaseLeft,
-                'd': onIncreaseRight,
-                'a': onDecreaseRight,
-
-                '1': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(1);},
-                '2': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(2);},
-                '3': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(3);},
-                '4': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(4);},
-                '5': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(5);},
-                '6': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(6);},
-                '7': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(7);},
-                '8': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(8);},
-                '9': () => { setPrevFretboardId(curFretboardId); setCurFretboardId(9);},
-
-                'Escape': () => setColor('none'),
-                'R': () => setColor(colorBankLight[0]),
-                'r': () => setColor(colorBank[0]),
-                'O': () => setColor(colorBankLight[1]),
-                'o': () => setColor(colorBank[1]),
-                'Y': () => setColor(colorBankLight[2]),
-                'y': () => setColor(colorBank[2]),
-                'G': () => setColor(colorBankLight[3]),
-                'g': () => setColor(colorBank[3]),
-                'L': () => setColor(colorBankLight[4]),
-                'l': () => setColor(colorBank[4]),
-                'B': () => setColor(colorBankLight[5]),
-                'b': () => setColor(colorBank[5]),
-                'P': () => setColor(colorBankLight[6]),
-                'p': () => setColor(colorBank[6]),
-                'M': () => setColor(colorBankLight[7]),
-                'm': () => setColor(colorBank[7]),
-            };
-            const action = shortcuts[e.key];
-            if (action) action();
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [onIncreaseLeft, onDecreaseLeft, onIncreaseRight, onDecreaseRight, setColor, colorBank, colorBankLight]);
+    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex + 1;
 
     // load the soundfont library on page load, prevents audio delay
     const [instrument, setInstrument] = useState(null);
@@ -110,6 +48,17 @@ export const FretboardInterface = ({
         if (playAudio && instrument) {
             instrument.play(note, 0, { gain: 1, duration: 1.5 });
         }
+
+        if (isColorPickerMode) {
+            setIsColorPickerMode(false);
+            if (!(noteToColor[`${note}-${stringIndex}`])) {
+                setColor("none");
+                return;
+            }
+            setColor(noteToColor[`${note}-${stringIndex}`]);
+            return;
+        }
+        
         // console.log("start---------");
         // console.log(color);
         // console.log(noteToColor);
@@ -135,14 +84,15 @@ export const FretboardInterface = ({
         const startIndex = noteMidiValue;
         const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
         if (lefty) {
-            for (let i = startIndex + lastVisibleFretIndex - 1; i >= startIndexWithOffset; i--) {
+            for (let i = startIndex + lastVisibleFretIndex; i >= startIndexWithOffset; i--) {
                 stringNotes.push(i);
             }
         } else {
-            for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex; i++) {
+            for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex + 1; i++) {
                 stringNotes.push(i);
             }
         }
+        console.log(stringNotes);
         return stringNotes;
     };
 
@@ -158,7 +108,7 @@ export const FretboardInterface = ({
             for (i = 1; i < numFrets; i++) {
                 placements.push((firstFretPosition * i) - (firstFretPosition / 2));
             }
-            if (lastVisibleFretIndex === numFrets) {
+            if (lastVisibleFretIndex === numFrets - 1) {
                 placements.push((firstFretPosition * i) - firstFretPosition / 1.66);
             } else {
                 placements.push((firstFretPosition * i) - (firstFretPosition / 2));
@@ -184,7 +134,7 @@ export const FretboardInterface = ({
     // used for styling, making it apparent where the start of the fretboard is
     const isZerothFret = (fretIndex) => {
         if (lefty)
-            return lastVisibleFretIndex === numFrets && fretIndex === numFrets - 2;
+            return lastVisibleFretIndex === numFrets - 1 && fretIndex === numFrets - 2;
         else
             return firstVisibleFretIndex === 0 && fretIndex === 0;
     };
@@ -196,7 +146,7 @@ export const FretboardInterface = ({
 
     const fretLabels = () => {
         let arr = Array.from(
-            { length: lastVisibleFretIndex - firstVisibleFretIndex },
+            { length: lastVisibleFretIndex - firstVisibleFretIndex + 1},
             (_, i) => firstVisibleFretIndex + i
         );
         return lefty ? arr.reverse() : arr;
@@ -212,15 +162,7 @@ export const FretboardInterface = ({
     };
 
     return (
-        <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets + 1) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
-            <FretControls
-                side="left"
-                canIncrease={canIncreaseLeft}
-                canDecrease={canDecreaseLeft}
-                onIncrease={onIncreaseLeft}
-                onDecrease={onDecreaseLeft}
-                numFrets={numFrets}
-            />
+        <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
 
             {/* the fretboard itself; contains the clickable note */}
             <div className="fretboard">
@@ -272,29 +214,19 @@ export const FretboardInterface = ({
                 {/* fret line dividers */}
                 {getFretMarkerPositions(numFrets).map((percent, i) => {
                     if (i === numFrets - 1) return <></>;
-                        return ( 
-                            <div 
-                                className="fret-marker" 
-                                style={{ 
-                                    left: `${percent}%`,
-                                    width: isZerothFret(i) ? "3px" : "2px",
-                                    backgroundColor: isZerothFret(i) ? (isDarkMode ? "#797979" : "black") : (isDarkMode ? "#292929" : "#717171")
-                                }}
-                            >
-                            </div>
-                        )
-                    }
-                )}
+                    return ( 
+                        <div 
+                            className="fret-marker" 
+                            style={{ 
+                                left: `${percent}%`,
+                                width: isZerothFret(i) ? "3px" : "2px",
+                                backgroundColor: isZerothFret(i) ? (isDarkMode ? "#727272" : "black") : (isDarkMode ? "#292929" : "#717171")
+                            }}
+                        >
+                        </div>
+                    )
+                })}
             </div>
-
-            <FretControls
-                side="right"
-                canIncrease={canIncreaseRight}
-                canDecrease={canDecreaseRight}
-                onIncrease={onIncreaseRight}
-                onDecrease={onDecreaseRight}
-                numFrets={numFrets}
-            />
         </div>
     )
 }

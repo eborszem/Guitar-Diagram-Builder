@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     user-select: none;
     margin-bottom: 5px;
 }
@@ -10,9 +10,9 @@
 .scale-text {
     font-size: 16px;
     font-weight: bold;
+    font-variant: small-caps;
     margin-top: 0;
     margin-bottom: 5px;
-
 }
 
 .scale-dropdown-wrapper {
@@ -28,6 +28,19 @@
     margin: 0;
 }
 
+.label-and-dropdown {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-and-dropdown p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    font-variant: small-caps;
+    margin-bottom: 3px;
+}
+
 .scale-dropdown {
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -36,6 +49,7 @@
     min-height: 30px; 
     height: auto;
     text-align: center;
+    max-width: 130px;
 }
 
 .scale-dropdown:hover {
@@ -54,7 +68,6 @@ body.dark .scale-dropdown:hover {
 }
 
 .generate-scale button {
-    margin-left: 15px;
     font-size: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;

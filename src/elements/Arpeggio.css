@@ -1,0 +1,25 @@
+.notes-in-arpeggio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 2px 5px;
+    max-width: 300px;
+    margin: 0 auto;
+
+}
+
+.notes-in-arpeggio label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50px;
+}
+
+.notes-in-arpeggio input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.notes-in-arpeggio input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
+

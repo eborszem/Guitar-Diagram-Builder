@@ -1,33 +1,28 @@
 .tuning-editor {
+    /* position: absolute; */
+    left: 50px;
+    width: fit-content;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    background-color: #f8f8f8;
+    border: 1.5px solid #f4f4f4;
+    border-radius: 10px;
 }
+
 
 .tuning-text {
     font-size: 16px;
     margin-bottom: 5px;
     font-weight: bold;
+    font-variant: small-caps;
 }
-
-.diagram-actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 6px;
-    user-select: none;
-}
-
-.tune-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+/* 
+.retuning-input {
+    width: 100%;
+} */
 
 .tune-input {
     display: flex;
@@ -75,9 +70,10 @@ body.dark .tuning-editor .retune-note-btn:hover {
 }
 
 .tuning-editor input {
-    all: unset;
+
     /* display: inline-block; */
     /* box-sizing: border-box; */
+    width: 20px;
     white-space: nowrap;
     padding: 5px 10px;
     margin: 0px 5px;
@@ -88,8 +84,6 @@ body.dark .tuning-editor .retune-note-btn:hover {
 .tune-dropdown-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 .tune-dropdown-wrapper p {
     font-size: 16px;
@@ -117,11 +111,7 @@ body.dark .tuning-editor .retune-note-btn:hover {
 
 }
 
-.tuning-dropdown:hover,
-.reset-tuning:hover,
-.saving button:hover,
-.json-download button:hover,
-.json-import:hover {
+.tuning-dropdown:hover {
     cursor: pointer;
     background-color: #e0e0e0;
 }
@@ -137,17 +127,34 @@ body.dark .tuning-dropdown:hover {
 }
 
 .reset-tuning {
-    display: inline-flex;
+    all: unset;
+    /* display: inline-flex; */
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    /* padding: 5px 10px; */
+    /* border: 3px solid #ccc; */
+    font-size: 35px;
+    border-radius: 100px;
+    background-color: #f0f0f0;
+    color: rgb(33, 33, 33);
     box-sizing: border-box;
+    background-color: transparent;
     cursor: pointer;
+    margin: 0;
+    padding: 0;
 }
 
-.reset-tuning,
+.toggle-btns#refresh{
+    margin-left: 10px;
+}
+
+.reset-tuning:hover {
+    cursor: pointer;
+    color: rgb(82, 82, 82);
+    transform: scale(1.05);
+}
+
 .saving button,
 .json-download button,
 .json-import {
@@ -184,4 +191,14 @@ body.dark .saving button:hover,
 body.dark .json-download button:hover,
 body.dark .json-import:hover {
     background-color: #212121;
+}
+
+
+body.dark .tuning-editor {
+    background-color: rgba(0, 0, 0, 0.455);
+    border-color: black;
+}
+
+body.dark .tuning-block-container {
+    border-color: rgba(0, 0, 0, 0.237);
 }

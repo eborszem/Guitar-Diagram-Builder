@@ -1,0 +1,24 @@
+.download-text {
+    font-size: 16px;
+    font-weight: bold;
+    font-variant: small-caps;
+    margin: 0;
+    user-select: none;
+
+}
+.diagram-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    user-select: none;
+}
+
+.saving button:hover,
+.json-download button:hover,
+.json-import:hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+}

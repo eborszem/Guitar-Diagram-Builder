@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import '../elements/Tuning.css';
-import { toSvg } from 'html-to-image';
 import { tuning, tuningsMidi } from "./Tunings.jsx"
 import { Scale } from './Scale.jsx';
+import { IoRefresh } from "react-icons/io5";
 
 const presetTunings = {
     'standard': tuning['standard'],
@@ -27,7 +27,6 @@ export const Tuning = ({
     setStrings,
     showSharps,
     formatNote,
-    generateScale,
     root,
     setRoot
 }) => {
@@ -146,91 +145,11 @@ export const Tuning = ({
         }
     };
 
-    const downloadSVG = () => {
-        const fretboardNode = document.getElementById('fretboard-interface');
-        toSvg(fretboardNode, {
-            filter: (node) => {
-                // removes the arrow buttons on both sides of the fretboard
-                return !(
-                    node.classList?.contains('modify-number-frets')
-                );
-            }
-        })
-        .then(dataUrl => {
-            const link = document.createElement('a');
-            link.download = 'fretboard.svg';
-            link.href = dataUrl;
-            link.click();
-        })
-        .catch(err => {
-            console.error('Failed to save fretboard as SVG:', err);
-        }); 
-    };
-
-    const downloadJSON = () => {
-        const data = {
-            strings: strings,
-            noteToColor: noteToColor
-        }
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'fretboard-diagram.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const importJSON = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const data = JSON.parse(event.target.result);
-                if (data.noteToColor) setNoteToColor(data.noteToColor);
-                if (data.strings) setStrings(data.strings);
-            } catch (err) {
-                console.error('Invalid JSON file', err);
-            }
-        };
-        reader.readAsText(file);
-    };
-
     return (
-        <>
+        <div className="tuning-block">
             <div className="tuning-editor">
-                <div className="tune-wrapper">
-                    <p className="tuning-text">Set Custom Tuning:</p>
-                    <div className="tune-input">
-                        {strings.map((stringObj) => (
-                            <div key={stringObj.id}>
-                                {retuningStringId === stringObj.id ? (
-                                    <input
-                                        value={updatedNote}
-                                        onChange={(e) => updateTuningInputText(e)}
-                                        onBlur={() => setRetuningStringId(null)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                finishChangeTuning(updatedNote);
-                                            }
-                                        }}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <button
-                                        className='retune-note-btn'
-                                        onClick={() => setRetuningStringId(stringObj.id)}
-                                    >
-                                        {formatNote(stringObj.midi, true)}
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
                 <div className="tune-dropdown-wrapper">
-                    <p className="tuning-text">Current Tuning:</p>
+                    <p className="tuning-text">Current Tuning</p>
                         <select
                             className="tuning-dropdown" 
                             value={tuning}
@@ -246,39 +165,44 @@ export const Tuning = ({
                             })}
                         </select>
                 </div>
+                
+                <div className="tune-dropdown-wrapper">
+                    <p className="tuning-text">Set Custom Tuning</p>
+                    <div className="tune-input">
+                        {strings.map((stringObj) => (
+                            <div key={stringObj.id}>
+                                {retuningStringId === stringObj.id ? (
+                                    <input
+                                        value={updatedNote}
+                                        onChange={(e) => updateTuningInputText(e)}
+                                        onBlur={() => setRetuningStringId(null)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                finishChangeTuning(updatedNote);
+                                            }
+                                        }}
+                                        autoFocus
+                                    >
+                                        </input>
+                                ) : (
+                                    <button
+                                        className='retune-note-btn'
+                                        onClick={() => setRetuningStringId(stringObj.id)}
+                                    >
+                                        {formatNote(stringObj.midi, true)}
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-
-            <Scale
-                showSharps={showSharps}
-                generateScale={generateScale}
-                root={root}
-                setRoot={setRoot}
-            />
-
-            <div className="diagram-actions">
-                <div className="saving">
-                    <button onClick={downloadSVG}>Download SVG</button>
-                </div>
-                <div className="json-download">
-                    <button onClick={downloadJSON} title="Save your diagram as JSON so you can reuse it later">Download JSON</button>
-                </div>
-                <label className="json-import" title="Import diagram from JSON">
-                    Import JSON
-                    <input 
-                        className="json-import-input"
-                        type="file"
-                        accept=".json"
-                        onChange={importJSON}
-                        style={{ display: 'none'}}
-                    />
-                </label>
-                <div className="reset-tuning-wrapper">
-                    {tuning !== 'standard' && (
-                        <button className="reset-tuning" onClick={resetTuning}>Reset Tuning</button>
-                    )}
-                </div>
+            <div className="toggle-btns">
+                {tuning !== 'standard' && (
+                    <button className="toggle-btns" id="refresh" onClick={resetTuning}><IoRefresh /></button>
+                )}
             </div>
-        </>
+        </div>
     );
 }
 

@@ -1,9 +1,83 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    /* font-variant: small-caps; */
+    width: 100%;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    padding: 4px;
+}
+
+body.dark .header {
+    background-color: rgb(10, 10, 10);
+    border-color: #000000;
+}
+
+.header-toggles {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
+
+.interface-and-tuning-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 10px;
+    gap: 5px;
+}
+
+
+.tuning-block-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    border-radius: 10px;
+    border: 1.5px solid rgba(0, 0, 0, 0.237);
+    /* margin-left: 10px; */
+    margin-top: 5px;
+
+}
+
+.tuning-block {
+    display: flex;
+    padding: 10px;
+}
+
+.interface-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+
+    /* padding: 20px; */
+}
+
+.fretboard-interface-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: -400px;
+}
+
 .fretboard-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
     margin: 20px 0;
-    font-family: "Nunito", sans-serif;
+    font-family: "Noto Sans", sans-serif;
     user-select: none;
     margin: 10px;
     font-optical-sizing: auto;
@@ -67,4 +141,103 @@ body.dark .info p {
 body.dark .info kbd {
     background-color: #555;
     color: #fff;
+}
+
+.fretboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-block-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* width: 500px; */
+    min-width: 0;
+    width: 350px;
+    border-radius: 10px;
+    border: 1.5px solid #f4f4f4;
+    border-color: rgba(0, 0, 0, 0.237);
+    position: relative;
+}
+
+.settings-block {
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f8f8;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+    width: 300px;
+    gap: 10px;
+    border: 1.5px solid #f4f4f4;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.settings-block > * {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.settings-block:last-child {
+    margin-bottom: 10px;
+}
+
+.settings-block#tuning {
+    width: auto;
+    margin: 0;
+    padding: 5px 10px;
+    position: absolute;
+
+}
+
+body.dark .settings-block {
+    background-color: rgba(0, 0, 0, 0.455);
+    border: 1.5px solid #000000;
+}
+
+.switch-fretboards p {
+    font-size: 16px;
+    font-weight: bold;
+    font-variant: small-caps;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.switch-fretboard-btns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    gap: 10px;
+}
+
+.fretboard-btn,
+.current-fretboard-btn {
+    font-size: 16px;
+    font-weight: bold;
+    width: 30px;
+    height: 30px;
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: black;
+    border-radius: 20%;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+}
+
+.fretboard-btn:hover {
+    color: rgb(30, 30, 30);
+    background-color: rgba(171, 171, 171, 0.211);
 }
