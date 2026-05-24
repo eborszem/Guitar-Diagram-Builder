@@ -122,7 +122,27 @@ function Interface({
                 : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
             let note = notes[midiNoteValue % notes.length];
             const octave = Math.floor(midiNoteValue / notes.length) - 1;
-            return (noteLabel === 0 || defaultSPN === true) ? (<>{note}<sub>{octave}</sub></>) : (<>{note}</>);
+            return (noteLabel === 0 || defaultSPN === true) ? 
+                (<p style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    margin: 0
+                }}>
+                    <span>{note}</span>
+                    <span
+                        style={{
+                            fontSize: "0.85em",
+                            lineHeight: 1,
+                            transform: "translateY(2px)"
+                        }}
+                    >
+                        {octave}
+                    </span>
+                </p>) : (
+                    <>
+                        {note}
+                    </>
+                );
         } else if (noteLabel === 2) { // interval labels; user selects key, then intervals show respective to the key
             const notes = showSharps
                 ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -269,7 +289,6 @@ function Interface({
                                     noteLabel={noteLabel}
                                     setNoteLabel={setNoteLabel}
                                     noteLabelArr={noteLabelArr}
-                                    formatNote={formatNote}
                                     keyForInterval={keyForInterval}
                                     setKeyForInterval={setKeyForInterval}
                                 />

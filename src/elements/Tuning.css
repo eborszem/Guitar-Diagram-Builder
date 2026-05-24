@@ -10,8 +10,16 @@
     background-color: #f8f8f8;
     border: 1.5px solid #f4f4f4;
     border-radius: 10px;
+    height: fit-content;
+    
 }
 
+.tuning-block {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+}
 
 .tuning-text {
     font-size: 16px;
@@ -146,7 +154,7 @@ body.dark .tuning-dropdown:hover {
 }
 
 .toggle-btns#refresh{
-    margin-left: 10px;
+    font-size: 32px;
 }
 
 .reset-tuning:hover {

@@ -14,23 +14,27 @@ export const NeckSetup = ({
     const [last, setLast] = useState("");
 
     const onIncreaseHighestString = () => {
+        if (strings.length >= 15) return;
         const id = strings.length > 0 ? strings[0].id - 1 : 0;
         setStrings([{id: id, midi: 64}, ...strings]); // add an extra E4 (midi = 64) string
         console.log(strings);
     };
 
     const onDecreaseHighestString = () => {
+        if (strings.length <= 1) return;
         setStrings(strings.slice(1))
         console.log(strings);
     };
 
     const onIncreaseLowestString = () => {
+        if (strings.length >= 15) return;
         const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
         setStrings([...strings, {id: id, midi: 40}]); // add an extra E2 (midi = 40) string
         console.log(strings);
     };
 
     const onDecreaseLowestString = () => {
+        if (strings.length <= 1) return;
         setStrings(strings.slice(0, -1));
         console.log(strings);
     };

@@ -77,7 +77,7 @@ export const Tuning = ({
             'A#': 10, 'BB': 10,
             'B': 11
         };
-        const match = userInputNote.match(/^([A-G][#b]?)(\d+)$/);
+        const match = userInputNote.match(/^([A-G][#b]?)(\d+)$/i);
         const fail = "Invalid note format. Use Scientific Pitch Notation :)\nFormat: [note][octave]\nExamples: E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.";
         if (!match) {
             alert(fail);
@@ -197,11 +197,13 @@ export const Tuning = ({
                     </div>
                 </div>
             </div>
-            <div className="toggle-btns">
-                {tuning !== 'standard' && (
-                    <button className="toggle-btns" id="refresh" onClick={resetTuning}><IoRefresh /></button>
-                )}
-            </div>
+            {tuning !== 'standard' && (
+                <div className="tuning-editor">
+                    <div className="toggle-btns">
+                        <button className="toggle-btns" id="refresh" onClick={resetTuning}><IoRefresh /></button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

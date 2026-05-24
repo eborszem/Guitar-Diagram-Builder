@@ -37,6 +37,7 @@ body.dark .toggle-btns button {
     font-weight: bold;
     font-variant: small-caps;
     margin: 0;
+    margin-bottom: 5px;
     user-select: none;
 }
 
@@ -84,4 +85,18 @@ body.dark .toggle-btns button:hover {
 
 .icons .icon:nth-child(2) {
     margin-top: 10px;
+}
+
+.key-select {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.key-text {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    font-variant: small-caps;
+    margin-bottom: 3px;
 }

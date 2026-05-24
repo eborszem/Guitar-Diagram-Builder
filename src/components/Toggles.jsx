@@ -72,7 +72,7 @@ export const FretboardToggles = ({
                     <button
                         className={"toggle-note-label"}
                         onClick={() =>
-                        setNoteLabel((prev) => (prev + 1) % noteLabelArr.length)
+                            setNoteLabel((prev) => (prev + 1) % noteLabelArr.length)
                         }
                     >
                         {noteLabel === 0 && (
@@ -83,8 +83,6 @@ export const FretboardToggles = ({
                         )}
                         {noteLabel === 1 && <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>}
                         {noteLabel === 2 && <div className="icon"><Icon path={mdiRomanNumeral1} size={2.5} /></div>}
-
-
                         {noteLabel === 3 && <div className="icon"><Icon path={mdiAlphaX} size={2.5} /></div>}
                     </button>
                     {noteLabelArr[noteLabel]}
@@ -92,6 +90,7 @@ export const FretboardToggles = ({
 
                 {noteLabel === 2 && (
                     <div className="key-select">
+                        <p className="key-text">Root</p>
                         <select className="scale-dropdown" value={keyForInterval} onChange={((e) => {setKeyForInterval(e.target.value)})}>
                             {notesArr.map((key) => (
                                 <option key={key} value={key}>
