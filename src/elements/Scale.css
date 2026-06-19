@@ -24,6 +24,8 @@
     gap: 5px;
 }
 
+
+
 .scale-dropdown-wrapper p {
     margin: 0;
 }
@@ -50,46 +52,66 @@
     height: auto;
     text-align: center;
     max-width: 130px;
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    border-radius: 4px;
+    box-sizing: border-box;
+    min-height: 30px; 
+
+    height: auto;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .097);
+}
+
+.scale-dropdown#scale {
+    text-transform: lowercase;
+    font-variant: small-caps;
+    font-size: 15.5px;
 }
 
 .scale-dropdown:hover {
     cursor: pointer;
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.161);
 }
 
 body.dark .scale-dropdown {
     background-color: #141414;
-    color: #ddd;
+    color: #fffff8;
 }
 
 body.dark .scale-dropdown:hover {
     cursor: pointer;
-    background-color: #212121;
+    background-color: rgba(0, 0, 0, 0.468);
 }
 
 .generate-scale button {
     font-size: 15px;
-    border: 1px solid #ccc;
+    font-weight: 600;
+    font-variant: small-caps;
+    border: 1px solid rgba(0, 0, 0, 0.097);
     border-radius: 4px;
     box-sizing: border-box;
     min-height: 30px; 
     height: auto;
     cursor: pointer;
-    background-color: #f0f0f0;
-    color: black;
+    background-color: rgba(0, 0, 0, .097);
+    /* background-color: #f0f0f0; */
+    /* color: black; */
 }
 
 .generate-scale button:hover {
-    cursor: pointer;
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.161);
+}
+
+.generate-scale button:active {
+    transform: scale(0.95);
 }
 
 body.dark .generate-scale button {
     background-color: #141414;
-    color: #ddd;
+    color: #fffff8;
 }
 
 
 body.dark .generate-scale button:hover {
-    background-color: #212121;
+    background-color: rgba(0, 0, 0, 0.468);
 }

@@ -51,6 +51,12 @@
     margin-bottom: 5px;
 }
 
+.neck-setup-input label {
+    
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
 .neck-setup-interface {
     display: flex;
     flex-direction: column;
@@ -78,4 +84,61 @@
 
 .neck-setup-string-control-group button svg {
     margin-top: 4px;
+}
+
+.change-strings {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.arrows-and-svg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrows-and-svg button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .097);
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    height: auto;
+    border-radius: 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    width: 53px;
+    height: 20px;
+    margin-left: 5px;
+    font-size: 50px;
+}
+
+.arrows-and-svg button svg {
+    width: 32px;
+    height: 32px;
+}
+
+.arrows-and-svg button:hover {
+    background-color: rgba(0, 0, 0, 0.161);
+}
+
+body.dark .arrows-and-svg button:hover {
+    background-color: rgba(0, 0, 0, 0.468);
+}
+
+.arrows-and-svg button:active {
+    transform: scale(0.95);
+}
+
+body.dark .arrows-and-svg button svg {
+    color: #fffff1;
+}
+
+body.dark .arrows-and-svg button {
+    background-color: #141414;
 }

@@ -32,11 +32,12 @@ export const ColorSelector = ({
                     >
                         <MdFormatColorReset />
                     </button>
-                    {"No Color"}
+                    {"no color"}
                 </div>
 
                 <div className="color-and-label">
                     <input
+                        id="label"
                         type="color"
                         value={color === 'none' ? '#000000' : color}
                         onChange={(e) => {
@@ -45,7 +46,7 @@ export const ColorSelector = ({
                         }}
                         className={`color ${color !== 'none' ? 'selected' : ''}`}
                     />
-                    {"Color"}
+                    <label htmlFor="label" style={{ whiteSpace: 'nowrap' }}>select color</label>
                 </div>
 
                 <div className="color-and-label">
@@ -55,11 +56,12 @@ export const ColorSelector = ({
                             setIsColorPickerMode(prev => !prev);
                         }}
                         className={`color-picker ${isColorPickerMode ? 'selected' : ''}`}
+                        aria-label="Toggle color picker"
                     >
                         <CgColorPicker size={30}/>
                     </button>
-                        {isColorPickerMode }
-                    {"Color Picker"}
+                        {isColorPickerMode}
+                    {"color picker"}
                 </div> 
             </div>
 
@@ -67,14 +69,14 @@ export const ColorSelector = ({
                 {allColors.map((c, index) => (
                         <div
                             key={index}
-                            type="color"
+                            type="color-options"
                             value={c}
                             onClick={() => {
                                 setColor(c);
                                 setIsColorPickerMode(false);
                             }}
                             style={{ backgroundColor: c }}
-                            className={`color ${color === c ? 'selected' : ''}`}
+                            className={`color-options ${color === c ? 'selected' : ''}`}
                         />
                     ))}
             </div>

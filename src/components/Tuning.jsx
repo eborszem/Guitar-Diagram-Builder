@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import '../elements/Tuning.css';
 import { tuning, tuningsMidi } from "./Tunings.jsx"
 import { Scale } from './Scale.jsx';
-import { IoRefresh } from "react-icons/io5";
-
+import { RiResetLeftFill } from "react-icons/ri";
+import { GrFormRefresh } from "react-icons/gr";
 const presetTunings = {
     'standard': tuning['standard'],
     'half-step-down': tuning['half-step-down'],
@@ -21,11 +21,9 @@ const presetTunings = {
 };
 
 export const Tuning = ({
-    noteToColor,
-    setNoteToColor,
-    strings, 
-    setStrings,
-    showSharps,
+    fretboard,
+    fretboards,
+    updateFretboard,
     formatNote,
     root,
     setRoot
@@ -33,6 +31,8 @@ export const Tuning = ({
     const [tuning, setTuning] = useState('standard');
     const [retuningStringId, setRetuningStringId] = useState(null);
     const [updatedNote, setUpdatedNote] = useState('');
+
+    const strings = fretboard.strings;
     
     // user can change the tuning of the fretboard by clicking on the note boxes below the fretboard and editing them
     const updateTuningInputText = (e) => {
@@ -59,7 +59,7 @@ export const Tuning = ({
         if (!found) {
             setTuning("custom");
         }
-    }, [strings, setTuning]);
+    }, [fretboard, setTuning]);
 
     // letter note to midi note conversion
     const convertNoteAndOctaveToMidi = (userInputNote) => {
@@ -106,9 +106,13 @@ export const Tuning = ({
             setRetuningStringId(null); // reset index
             return; // return with no changes
         }
-        setStrings(prev => 
-            prev.map(str => str.id === retuningStringId ? {...str, midi: noteMidiValue} : str)
-        );
+        updateFretboard(fretboard.id, {
+            strings: fretboard.strings.map(str =>
+                str.id === retuningStringId
+                    ? {...str, midi: noteMidiValue}
+                    : str
+            )
+        });
         setRetuningStringId(null); // reset index
     };
 
@@ -116,7 +120,7 @@ export const Tuning = ({
     useEffect(() => {
         let stringObj = strings.find((str) => str.id === retuningStringId);
         if (!stringObj) return;
-        const noteMap = showSharps
+        const noteMap = fretboard.showSharps
         ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
         : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
         let note = noteMap[stringObj.midi % 12];
@@ -126,100 +130,101 @@ export const Tuning = ({
 
     // reset to default tuning
     const resetTuning = () => {
-        setStrings([
-            {id: 0, midi: 64}, // E4
-            {id: 1, midi: 59}, // B3
-            {id: 2, midi: 55}, // G3
-            {id: 3, midi: 50}, // D3
-            {id: 4, midi: 45}, // A2
-            {id: 5, midi: 40}, // E2
-        ]);
-    }
+        updateFretboard(fretboard.id, {
+            strings: [
+                {id: 0, midi: 64}, // E4
+                {id: 1, midi: 59}, // B3
+                {id: 2, midi: 55}, // G3
+                {id: 3, midi: 50}, // D3
+                {id: 4, midi: 45}, // A2
+                {id: 5, midi: 40}, // E2
+            ]
+        });
+    };
 
     // for when the user selects a preset tuning from the dropdown
     const changeTuningViaDropdown = (e) => {
         const tuning = e.target.value;
         setTuning(tuning); // update dropdown
         if (tuning !== 'custom') {
-            setStrings(presetTunings[tuning]); // update the fretboard tuning
+            updateFretboard(fretboard.id, { strings: presetTunings[tuning] }); // update the fretboard tuning
         }
     };
 
     return (
-        <div className="tuning-block">
-            <div className="tuning-editor">
-                <div className="tune-dropdown-wrapper">
-                    <p className="tuning-text">Current Tuning</p>
-                        <select
-                            className="tuning-dropdown" 
-                            value={tuning}
-                            onChange={changeTuningViaDropdown}
-                        >
-                            {Object.entries(presetTunings).map(([tuningKey]) => {
-                                if (tuningKey === 'custom' && tuning !== 'custom') {
-                                    return null;
-                                }
-                                return (
-                                    <option key={tuningKey} value={tuningKey}>{tuningKey}</option>
-                                );
-                            })}
-                        </select>
-                </div>
-                
-                <div className="tune-dropdown-wrapper">
-                    <p className="tuning-text">Set Custom Tuning</p>
-                    <div className="tune-input">
-                        {strings.map((stringObj) => (
-                            <div key={stringObj.id}>
-                                {retuningStringId === stringObj.id ? (
-                                    <input
-                                        value={updatedNote}
-                                        onChange={(e) => updateTuningInputText(e)}
-                                        onBlur={() => setRetuningStringId(null)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                finishChangeTuning(updatedNote);
-                                            }
-                                        }}
-                                        autoFocus
-                                    >
-                                        </input>
-                                ) : (
-                                    <button
-                                        className='retune-note-btn'
-                                        onClick={() => setRetuningStringId(stringObj.id)}
-                                    >
-                                        {formatNote(stringObj.midi, true)}
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+        <div className="tuning-block-container">
+            <div className="tuning-block">
+                <div className="tuning-editor">
+                    <div className="tune-dropdown-wrapper">
+                        <label className="tuning-text">current tuning</label>
+                            <select
+                                id="tuning-dropdown"
+                                className="tuning-dropdown"
+                                value={tuning}
+                                onChange={changeTuningViaDropdown}
+                            >
+                                {Object.entries(presetTunings).map(([tuningKey]) => {
+                                    if (tuningKey === 'custom' && tuning !== 'custom') {
+                                        return null;
+                                    }
+                                    return (
+                                        <option key={tuningKey} value={tuningKey}>{tuningKey}</option>
+                                    );
+                                })}
+                            </select>
+                    </div>
+                    
+                    <div className="tune-dropdown-wrapper">
+                        <p className="tuning-text">adjust tuning per string
+                            <span style={{marginLeft: "5px"}}>(</span>
+                            <span 
+                                style={{
+                                    textDecoration: "underline dotted",
+                                    cursor: "help",
+                                    display: "inline-block",
+
+                                }}
+                                title="Click on a note to edit the tuning for that string. Use scientific pitch notation (e.g. E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.). SPN is a standard way to denote musical notes with their corresponding octaves, making it easier to specify tunings accurately."
+                            >
+                                spn
+                            </span>
+                            <span>)</span>
+                        </p>
+                        <div className="tune-input">
+                            {strings.map((stringObj) => (
+                                <div key={stringObj.id}>
+                                    {retuningStringId === stringObj.id ? (
+                                        <input
+                                            value={updatedNote}
+                                            onChange={(e) => updateTuningInputText(e)}
+                                            onBlur={() => setRetuningStringId(null)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    finishChangeTuning(updatedNote);
+                                                }
+                                            }}
+                                            autoFocus
+                                        >
+                                            </input>
+                                    ) : (
+                                        <button
+                                            className='retune-note-btn'
+                                            onClick={() => setRetuningStringId(stringObj.id)}
+                                        >
+                                            {formatNote(stringObj.midi, fretboard.id, true)}
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
             {tuning !== 'standard' && (
-                <div className="tuning-editor">
-                    <div className="toggle-btns">
-                        <button className="toggle-btns" id="refresh" onClick={resetTuning}><IoRefresh /></button>
-                    </div>
+                <div className="toggle-btns">
+                    <button className="toggle-btns" id="refresh" onClick={resetTuning}><GrFormRefresh /></button>
                 </div>
             )}
         </div>
     );
 }
-
-// const presetTunings = {
-//     'standard': tuning['standard'],
-//     'half-step-down': tuning['half-step-down'],
-//     'full-step-down': tuning['full-step-down'],
-//     'drop-d': tuning['drop-d'],
-//     'drop-c': tuning['drop-c'],
-//     'open-d': tuning['open-d'],
-//     'open-c': tuning['open-c'],
-//     'open-g': tuning['open-g'],
-//     'dadgad': tuning['dadgad'],
-//     'double-drop-d': tuning['double-drop-d'],
-//     'all fourths': tuning['all fourths'],
-//     'bass standard': tuning['bass standard'],
-//     'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
-// };

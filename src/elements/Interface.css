@@ -4,11 +4,11 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    /* font-variant: small-caps; */
     width: 100%;
-    background-color: #f8f8f8;
+    background-color: #fffff8;
     border-bottom: 1px solid #ddd;
-    padding: 4px;
+    padding: 2.5px 0px;
+
 }
 
 body.dark .header {
@@ -26,51 +26,31 @@ body.dark .header {
 .interface-and-tuning-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 100%;
-    margin-left: 10px;
     gap: 5px;
-}
-
-
-.tuning-block-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    width: fit-content;
-    border-radius: 10px;
-    border: 1.5px solid rgba(0, 0, 0, 0.237);
-    /* margin-left: 10px; */
-    margin-top: 5px;
-
-}
-
-.tuning-block {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
 }
 
 .interface-container {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-
-
-    /* padding: 20px; */
+    align-items: flex-start;
+    width: 100%;
 }
 
 .fretboard-interface-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: -260px;
+    align-items: flex-start;
+    padding: 0px 40px;
+    
 }
+
+/* .fretboard-interface-container > :last-child {
+    margin-right: 43px;
+    align-self: flex-end;
+} */
 
 .fretboard-title {
     position: absolute;
@@ -79,12 +59,11 @@ body.dark .header {
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
-    margin: 20px 0;
-    font-family: "Noto Sans", sans-serif;
+    font-family: "Space Mono", sans-serif;
     user-select: none;
-    margin: 10px;
     font-optical-sizing: auto;
     font-style: normal;
+    white-space: nowrap;
 }
 
 .switch-fretboards {
@@ -156,40 +135,39 @@ body.dark .info kbd {
 .settings-block-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    /* width: 500px; */
-    min-width: 0;
-    width: 350px;
+    width: fit-content;
+    padding: 5px;
+    height: fit-content;
     border-radius: 10px;
-    border: 1.5px solid #f4f4f4;
-    border-color: rgba(0, 0, 0, 0.237);
+    background-color: rgba(246, 255, 82, 0.039);
+    border: 2px solid rgba(0, 0, 0, 0.149);
     position: relative;
+    gap: 5px;
+    margin: 5px;
+    margin-top: -85px; /* TODO: find better way to do this */
+}
+
+body.dark .settings-block-container {
+    background-color: #212223;
 }
 
 .settings-block {
     display: flex;
     flex-direction: column;
-    background-color: #f8f8f8;
+    background-color: rgba(246, 255, 82, 0.039);
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 2.5px;
     padding: 10px;
-    margin-top: 7px;
     width: 300px;
     gap: 10px;
-    border: 1.5px solid #f4f4f4;
-    min-width: 0;
-    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.097);
 }
 
 .settings-block > * {
-    max-width: 100%;
+    max-width: 95%;
     min-width: 0;
-}
-
-.settings-block:last-child {
-    margin-bottom: 10px;
 }
 
 .settings-block#tuning {
@@ -201,46 +179,61 @@ body.dark .info kbd {
 }
 
 body.dark .settings-block {
-    background-color: rgba(0, 0, 0, 0.455);
+    background-color: #191a1b;
     border: 1.5px solid #000000;
 }
 
-.switch-fretboards p {
-    font-size: 16px;
-    font-weight: bold;
-    font-variant: small-caps;
-    margin-top: 0;
-    margin-bottom: 5px;
+.corner-dropdown-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s ease;
 }
 
-.switch-fretboard-btns {
+.corner-dropdown-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.add-remove-fretboard-btns {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    gap: 10px;
+    gap: 5px;
 }
 
-.fretboard-btn,
-.current-fretboard-btn {
-    font-size: 16px;
-    font-weight: bold;
-    width: 30px;
-    height: 30px;
+.add-remove-fretboard-btns button {
     all: unset;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
+    font-size: 40px;
     color: black;
-    border-radius: 20%;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
 }
 
-.fretboard-btn:hover {
-    color: rgb(30, 30, 30);
-    background-color: rgba(171, 171, 171, 0.211);
+body.dark .add-remove-fretboard-btns button {
+    color: #fffff8;
+    
+}
+
+.add-remove-fretboard-btns button:hover {
+    color: rgb(231, 172, 62);
+    background-color: rgba(255, 193, 68, 0.211);
+}
+
+body.dark .add-remove-fretboard-btns button:hover {
+    color: rgb(179, 179, 179);
+    background-color: rgba(133, 133, 133, 0.211);
+}
+
+.add-remove-fretboard-btns button:active {
+    transform: scale(0.95);
+}
+
+.add-remove-fretboard-btns button svg {
+    font-size: 30px;
 }

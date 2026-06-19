@@ -12,13 +12,29 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-
     user-select: none;
+}
+
+.saving button,
+.json-download button,
+.json-import {
+    background-color: rgba(0, 0, 0, .097);
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    font-weight: bold;
+    font-variant: small-caps;
+    width: 100px;
+    height: 40px;
 }
 
 .saving button:hover,
 .json-download button:hover,
 .json-import:hover {
     cursor: pointer;
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.161);
+}
+
+.saving button:active,
+.json-download button:active,
+.json-import:active {
+    transform: scale(0.95);
 }

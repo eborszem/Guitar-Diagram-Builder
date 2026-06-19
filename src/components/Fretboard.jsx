@@ -1,29 +1,32 @@
 import { useEffect, useState } from 'react'
 import '../elements/Fretboard.css';
-import { FretControls } from './Controls.jsx';
 import Soundfont from 'soundfont-player';
 
 export const FretboardInterface = ({
-    noteToColor,
-    setNoteToColor,
-    isColorPickerMode,
-    setIsColorPickerMode,
-    strings,
-    toggles,
-    noteColor,
-    formatNote,
+    fretboard,
+    fretboards,
     curFretboardId,
     setCurFretboardId,
-    setPrevFretboardId,
-    firstVisibleFretIndex,
-    lastVisibleFretIndex,
+    updateFretboard,
+    color,
+    setColor,
+    isColorPickerMode,
+    setIsColorPickerMode,
+    toggles,
+    formatNote
 }) => {
 
-    const {hideNotes, isDarkMode, lefty, playAudio} = toggles;
-    const {color, setColor, colorBank, colorBankLight} = noteColor;
+    const {isDarkMode, lefty, playAudio} = toggles;
     
-    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex + 1;
+    const firstVisibleFretIndex = fretboard.firstVisibleFretIndex;
+    const lastVisibleFretIndex = fretboard.lastVisibleFretIndex;
+    const noteToColor = fretboard.noteToColor;
 
+    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex + 1;
+    
+    useEffect(() => {
+        // console.log("noteToColor changed:", noteToColor);
+    }, [noteToColor]);
     // load the soundfont library on page load, prevents audio delay
     const [instrument, setInstrument] = useState(null);
     useEffect(() => {
@@ -49,6 +52,7 @@ export const FretboardInterface = ({
             instrument.play(note, 0, { gain: 1, duration: 1.5 });
         }
 
+        const noteToColor = fretboard.noteToColor;
         if (isColorPickerMode) {
             setIsColorPickerMode(false);
             if (!(noteToColor[`${note}-${stringIndex}`])) {
@@ -64,22 +68,32 @@ export const FretboardInterface = ({
         // console.log(noteToColor);
         // console.log("end---------");
         if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
-            setNoteToColor((prev) => {
-                const updated = { ...prev };
-                delete updated[`${note}-${stringIndex}`];
-                return updated;
-            });
+            // console.log("if1:"+noteColor);
+            delete noteToColor[`${note}-${stringIndex}`];
+            updateFretboard(fretboard.id, { noteToColor });
+            // console.log("-noteToColor:");
+            // for (const [key, value] of Object.entries(noteToColor)) { console.log(key, value); }
+
+            // console.log("color="+color);
         } else if (color !== 'none') { // if a color has been set, then apply it to the note
-            setNoteToColor((prev) => ({
-                ...prev,
-                [`${note}-${stringIndex}`]: color
-            }));
+            // console.log("if2:"+noteColor);
+            // console.log("[`${note}-${stringIndex}`]: color => " + note +", "+stringIndex + ": " +color);
+            updateFretboard(fretboard.id, {
+                noteToColor: {
+                    ...noteToColor,
+                    [`${note}-${stringIndex}`]: color
+                }
+            });
+            // console.log("-noteToColor:");
+            // for (const [key, value] of Object.entries(noteToColor)) { console.log(key, value); }
+            // console.log("color="+color);
         }
     };
 
     // noteMidiValue: the midi value of a note (64 => E4 note)
     // getStringNotes returns all the notes that belong to the string
     const getStringNotes = (noteMidiValue) => {
+        
         let stringNotes = [];
         const startIndex = noteMidiValue;
         const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
@@ -88,11 +102,11 @@ export const FretboardInterface = ({
                 stringNotes.push(i);
             }
         } else {
+            // console.log("startIndexWithOffset="+startIndexWithOffset+"; startIndex="+startIndex+"; lastVisibleFretIndex="+lastVisibleFretIndex);
             for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex + 1; i++) {
                 stringNotes.push(i);
             }
         }
-        console.log(stringNotes);
         return stringNotes;
     };
 
@@ -139,11 +153,6 @@ export const FretboardInterface = ({
             return firstVisibleFretIndex === 0 && fretIndex === 0;
     };
 
-    const canIncreaseLeft = lefty ? true : firstVisibleFretIndex > 0;
-    const canDecreaseLeft = lefty ? lastVisibleFretIndex > firstVisibleFretIndex + 1 : firstVisibleFretIndex < lastVisibleFretIndex - 1;
-    const canIncreaseRight = lefty ? firstVisibleFretIndex > 0 : true;
-    const canDecreaseRight = lefty ? firstVisibleFretIndex < lastVisibleFretIndex - 1 : lastVisibleFretIndex > firstVisibleFretIndex + 1;
-
     const fretLabels = () => {
         let arr = Array.from(
             { length: lastVisibleFretIndex - firstVisibleFretIndex + 1},
@@ -162,8 +171,20 @@ export const FretboardInterface = ({
     };
 
     return (
-        <div id="fretboard-interface" className="fretboard-interface" style={{ minWidth: `${(numFrets) * 75}px` }}> {/* adding 1 to numFrets prevents buttons from overflowing */}
-
+        <div 
+            id="fretboard-interface"
+            // className="fretboard-interface"  
+            className={`fretboard-interface ${fretboard.id === curFretboardId ? 'active' : 'inactive'}`}
+            style={{
+                minWidth: `${(numFrets) * 75}px`,
+                cursor: curFretboardId === fretboard.id ? "auto" : "pointer",
+            }}
+            onClick={() => {
+                if (curFretboardId !== fretboard.id) {
+                    setCurFretboardId(fretboard.id);
+                }
+            }}
+        >
             {/* the fretboard itself; contains the clickable note */}
             <div className="fretboard">
                 <div className="fret-labels">
@@ -181,28 +202,29 @@ export const FretboardInterface = ({
                     })}
                 </div>
 
-                <div className="string-container" style={{minWidth: `${numFrets * 75}px`}}>
-                    {strings.map((stringObj) => (
+                <div className="string-container" style={{ minWidth: `${numFrets * 75}px` }}>
+                    {fretboard.strings.map((stringObj) => (
                     <div className="string" key={stringObj.id}>
                         <div className="string-notes">
                             {/* now map the notes onto the string just generated */}
-                            {getStringNotes(stringObj.midi, numFrets).map((note, j) => 
+                            {getStringNotes(stringObj.midi).map((note, j) => 
                                 // audible midi range is [0, 109]
                                 note < 109 && (
                                     <button
                                         key={`${note}-${stringObj.id}`}
                                         // only hide notes that don't have a color given to them
-                                        className={`note ${(hideNotes && !noteToColor[note + "-" + stringObj.id]) ? 'hidden' : ''}`}
+                                        className={`note ${(fretboard.hideNotes && !noteToColor[note + "-" + stringObj.id]) ? 'hidden' : ''}`}
                                         style={{
                                             left: `${getNotePositions()[j]}%`,
                                             // backgroundColor: noteColorArr[note]
-                                            backgroundColor: noteToColor[`${note}-${stringObj.id}`] != null ? noteToColor[`${note}-${stringObj.id}`] : ''
+                                            backgroundColor: noteToColor[`${note}-${stringObj.id}`] != null ? noteToColor[`${note}-${stringObj.id}`] : '',
+                                            pointerEvents: curFretboardId === fretboard.id ? "auto" : "none"
                                         }}
                                         onClick={() => selectNote(note, stringObj.id)}
                                     >
                                         {/* {note}.{stringObj.id} */}
                                         {/* {note} */}
-                                        {formatNote(note, false)}
+                                        {formatNote(note, fretboard.id, false)}
                                     </button>
                                 )
                             )}
@@ -220,7 +242,7 @@ export const FretboardInterface = ({
                             style={{ 
                                 left: `${percent}%`,
                                 width: isZerothFret(i) ? "3px" : "2px",
-                                backgroundColor: isZerothFret(i) ? (isDarkMode ? "#727272" : "black") : (isDarkMode ? "#292929" : "#717171")
+                                backgroundColor: isZerothFret(i) ? (isDarkMode ? "#727272" : "black") : (isDarkMode ? "#434343" : "#717171")
                             }}
                         >
                         </div>

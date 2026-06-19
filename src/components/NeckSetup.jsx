@@ -1,130 +1,188 @@
 import { useState, useEffect } from "react";
 import "./../elements/NeckSetup.css";
-import { FaPlus, FaMinus } from "react-icons/fa";
-
+import { FaPlus, FaMinus, FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
 export const NeckSetup = ({
-    strings,
-    setStrings,
-    firstVisibleFretIndex,
-    setFirstVisibleFretIndex,
-    lastVisibleFretIndex,
-    setLastVisibleFretIndex,
+    fretboard,
+    updateFretboard,
+    isDarkMode
 }) => {
-    const [first, setFirst] = useState("");
-    const [last, setLast] = useState("");
-
+    const strings = fretboard.strings;
     const onIncreaseHighestString = () => {
         if (strings.length >= 15) return;
         const id = strings.length > 0 ? strings[0].id - 1 : 0;
-        setStrings([{id: id, midi: 64}, ...strings]); // add an extra E4 (midi = 64) string
-        console.log(strings);
+        updateFretboard(fretboard.id, {
+            strings: [
+                {id, midi: 64}, // new E4 string
+                ...strings
+            ]
+        });
+        // console.log(strings); 
     };
 
     const onDecreaseHighestString = () => {
         if (strings.length <= 1) return;
-        setStrings(strings.slice(1))
-        console.log(strings);
+        updateFretboard(fretboard.id, {
+            strings: strings.slice(1)
+        });
+        // console.log(strings);
     };
 
     const onIncreaseLowestString = () => {
         if (strings.length >= 15) return;
         const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
-        setStrings([...strings, {id: id, midi: 40}]); // add an extra E2 (midi = 40) string
-        console.log(strings);
+        updateFretboard(fretboard.id, {
+            strings: [
+                ...strings,
+                {id, midi: 40} // new E2 string
+            ]
+        });
+        // console.log(strings);
     };
 
     const onDecreaseLowestString = () => {
         if (strings.length <= 1) return;
-        setStrings(strings.slice(0, -1));
-        console.log(strings);
+        updateFretboard(fretboard.id, {
+            strings: strings.slice(0, -1)
+        });
+        // console.log(strings);
     };
-
-    useEffect(() => {
-        setFirst(firstVisibleFretIndex ?? "");
-    }, [firstVisibleFretIndex]);
-
-    useEffect(() => {
-        setLast(lastVisibleFretIndex ?? "");
-    }, [lastVisibleFretIndex]);
-
+    
     const handleFirstChange = (e) => {
         const val = e.target.value;
-        if (Number(val) > lastVisibleFretIndex) {
-            setFirst(lastVisibleFretIndex);
-            setFirstVisibleFretIndex(lastVisibleFretIndex);
+        if (Number(val) > fretboard.lastVisibleFretIndex) {
+            updateFretboard(fretboard.id, { firstVisibleFretIndex: fretboard.lastVisibleFretIndex })
             return;
         } else if (Number(val) < 0) {
-            setFirst(0);
-            setFirstVisibleFretIndex(0);
+            updateFretboard(fretboard.id, { firstVisibleFretIndex: 0 })
             return;
         }
-
-        setFirst(val);
-        setFirstVisibleFretIndex(val === "" ? 0 : Number(val));
+        updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(val)})
     };
 
     const handleLastChange = (e) => {
         const val = e.target.value;
-        if (Number(val) < firstVisibleFretIndex) {
-            setLast(firstVisibleFretIndex);
-            setLastVisibleFretIndex(firstVisibleFretIndex);
+        if (Number(val) < fretboard.firstVisibleFretIndex) {
+            updateFretboard(fretboard.id, { lastVisibleFretIndex: fretboard.firstVisibleFretIndex })
             return;
         } else if (Number(val) < 0) {
-            setLast(0);
-            setLastVisibleFretIndex(0);
+            updateFretboard(fretboard.id, { lastVisibleFretIndex: 0 })
             return;
         }
-
-        setLast(val);
-        setLastVisibleFretIndex(val === "" ? 0 : Number(val));
+        updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(val)})
     };
+
+    const svg = () => {
+        const color = isDarkMode ? "#fffff8" : "black";
+        return (
+            <svg 
+                viewBox="0 0 64 42" 
+                width="64px" 
+                height="42px" 
+                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+                xmlns="http://www.w3.org/2000/svg"
+                >
+
+                <rect x="7" y="4" width="4" height="36" rx="1.5" ry="1.5" fill={color} />
+                <rect x="7" y="3" width="53" height="5" rx="1.5" ry="1.5" fill="#ff4500" />
+                <rect x="7" y="11" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="18" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="25" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="31.5" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="38" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+            </svg>
+            );
+    }
+
+    const svg2 = () => {
+        const color = isDarkMode ? "#fffff8" : "black";
+        return (
+            <svg 
+                viewBox="0 0 64 42" 
+                width="64px" 
+                height="42px" 
+                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                <rect x="7" y="3" width="4" height="36" rx="1.5" ry="1.5" fill={color} />
+                <rect x="7" y="3" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="10" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="17" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="24" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="30.5" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="35" width="53" height="5" rx="1.5" ry="1.5" fill="#ff4500" />
+            </svg>
+        );
+    }
 
     return (
         <div className="neck-setup-interface">
             <p className="neck-setup-text">neck setup</p>
 
             <div className="neck-setup-input">
-                <label>Frets</label>
-
+                <label htmlFor="first-fret">frets</label>
                 <input
+                    id="first-fret"
                     type="number"
-                    value={first}
+                    value={fretboard.firstVisibleFretIndex}
                     onChange={handleFirstChange}
-                    onBlur={() => setFirstVisibleFretIndex(Number(first) || 0)}
+                    onBlur={() => updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex) })}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            setFirstVisibleFretIndex(Number(first) || 0);
+                            updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex) });
                         }
                     }}
-                    style={{ width: "60px", margin: "0 8px" }}
+                    style={{ width: "40px", margin: "0 8px" }}
                 />
 
-                <label>to</label>
+                <label htmlFor="last-fret">to</label>
 
                 <input
+                    id="last-fret"
                     type="number"
-                    value={last}
+                    value={fretboard.lastVisibleFretIndex}
                     onChange={handleLastChange}
                     onBlur={() =>
-                        setLastVisibleFretIndex(Number(last) || 0)
+                        updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex) })
                     }
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            setLastVisibleFretIndex(Number(last) || 0);
+                            updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex) })
                         }
                     }}
-                    style={{ width: "60px", margin: "0 8px" }}
+                    style={{ width: "40px", margin: "0 8px" }}
                 />
             </div>
 
-            <div className="neck-setup-strings">
+            <div className="change-strings">
+                <div className="arrows-and-svg">
+                    <button type="button" aria-label="Increase highest string" onClick={onIncreaseHighestString}>
+                        <IoMdArrowDropup />
+                    </button>
+                    {svg()}
+                    <button type="button" aria-label="Decrease highest string" onClick={onDecreaseHighestString}>
+                        <IoMdArrowDropdown />
+                    </button>
+                </div>
+                <div className="arrows-and-svg">
+                    <button type="button" aria-label="Increase highest string" onClick={onDecreaseLowestString}>
+                        <IoMdArrowDropup />
+                    </button>
+                    {svg2()}
+                    <button type="button" aria-label="Decrease highest string" onClick={onIncreaseLowestString}>
+                        <IoMdArrowDropdown />
+                    </button>
+                </div>
+            </div>
+            
+            {/* <div className="neck-setup-strings">
                 <div className="generate-scale">
-                    <label className="string-label">Top String</label>
+                    {svg()}
                     <div className="neck-setup-string-control-group">
-                        <button type="button" onClick={onIncreaseHighestString}>
+                        <button type="button" aria-label="Increase highest string" onClick={onIncreaseHighestString}>
                             <FaPlus />
                         </button>
-                        <button type="button" onClick={onDecreaseHighestString}>
+                        <button type="button" aria-label="Decrease highest string" onClick={onDecreaseHighestString}>
                             <FaMinus />
                         </button>
                     </div>
@@ -132,15 +190,15 @@ export const NeckSetup = ({
                 <div className="generate-scale">
                     <label className="string-label">Bottom String</label>
                     <div className="neck-setup-string-control-group">
-                        <button type="button" onClick={onIncreaseLowestString}>
+                        <button type="button" aria-label="Increase lowest string" onClick={onIncreaseLowestString}>
                             <FaPlus />
                         </button>
-                        <button type="button" onClick={onDecreaseLowestString}>
+                        <button type="button" aria-label="Decrease lowest string" onClick={onDecreaseLowestString}>
                             <FaMinus />
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

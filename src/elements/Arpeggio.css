@@ -9,17 +9,27 @@
 
 .notes-in-arpeggio label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 50px;
+    gap: 6px;
+    width: 100%;
+}
+
+.notes-in-arpeggio label span {
+    display: inline-block;
+    width: 20px;
 }
 
 .notes-in-arpeggio input[type="checkbox"] {
     cursor: pointer;
+    margin: 0 5px;
+    accent-color: #c2c2b7;
 }
 
 .notes-in-arpeggio input[type="checkbox"]:disabled {
     cursor: not-allowed;
+    accent-color: #c2c2b7;
 }
 
-
+body.dark .notes-in-arpeggio input[type="checkbox"] {
+    accent-color: auto;
+}

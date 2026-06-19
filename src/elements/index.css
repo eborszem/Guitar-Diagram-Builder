@@ -1,12 +1,11 @@
 body {
     margin: 0;
-    font-family: "Roboto", sans-serif;
+    font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: white;
     color: black;
-    width: max-content;
-    min-width: 100%;
+    width: 100%;
 }
 
 code {
@@ -15,5 +14,5 @@ code {
 
 body.dark {
     background-color: #141414;
-    color: #ddd;
+    color: #fffff1;
 }

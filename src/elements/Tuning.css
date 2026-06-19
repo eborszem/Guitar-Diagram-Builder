@@ -7,19 +7,38 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    background-color: #f8f8f8;
-    border: 1.5px solid #f4f4f4;
-    border-radius: 10px;
+    background-color: rgba(246, 255, 82, 0.039);
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    border-radius: 3px;
     height: fit-content;
-    
+    min-width: 450px;
+}
+
+.tuning-block-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    border-radius: 10px;
+    /* border: 1.5px solid rgba(0, 0, 0, 0.237); */
+    /* background-color: #fffff8; */
+    background-color: rgba(246, 255, 82, 0.039);
+    border: 2px solid rgba(0, 0, 0, 0.237);
+    /* margin-left: 10px; */
+    margin-top: 5px;
+    margin-left: 350px; /* TODO: find better way to do this */
 }
 
 .tuning-block {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
     gap: 10px;
-
 }
+
 
 .tuning-text {
     font-size: 16px;
@@ -27,10 +46,6 @@
     font-weight: bold;
     font-variant: small-caps;
 }
-/* 
-.retuning-input {
-    width: 100%;
-} */
 
 .tune-input {
     display: flex;
@@ -51,10 +66,11 @@
     all: unset;
     cursor: pointer;
     padding: 5px 10px;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    background-color: rgba(0, 0, 0, 0.097);
     margin: 0px 1px;
     border-radius: 5px;
-    background-color: #f0f0f0;
     color: black;
     display: flex;
     justify-content: center;
@@ -70,11 +86,11 @@ body.dark .tuning-editor .retune-note-btn {
 }
 
 .tuning-editor .retune-note-btn:hover {
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.161);
 }
 
 body.dark .tuning-editor .retune-note-btn:hover {
-    background-color: #212121;
+    background-color: rgba(0, 0, 0, 0.468);
 }
 
 .tuning-editor input {
@@ -92,9 +108,17 @@ body.dark .tuning-editor .retune-note-btn:hover {
 .tune-dropdown-wrapper {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
-.tune-dropdown-wrapper p {
+
+
+
+.tuning-text {
     font-size: 16px;
+    display: inline-block;
+    margin: 5px;
+    width: fit-content;
+    /* padding: 5px; */
 }
 
 .tune-dropdown-container {
@@ -109,7 +133,8 @@ body.dark .tuning-editor .retune-note-btn:hover {
 }
 
 .tuning-dropdown {
-    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    background-color: rgba(0, 0, 0, 0.097);
     border-radius: 4px;
     color: black;
     font-size: 15px;
@@ -121,7 +146,7 @@ body.dark .tuning-editor .retune-note-btn:hover {
 
 .tuning-dropdown:hover {
     cursor: pointer;
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.161);
 }
 
 body.dark .tuning-dropdown {
@@ -131,30 +156,16 @@ body.dark .tuning-dropdown {
 
 body.dark .tuning-dropdown:hover {
     cursor: pointer;
-    background-color: #212121;
+    background-color: rgba(0, 0, 0, 0.468);
 }
 
-.reset-tuning {
-    all: unset;
-    /* display: inline-flex; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* padding: 5px 10px; */
-    /* border: 3px solid #ccc; */
-    font-size: 35px;
-    border-radius: 100px;
-    background-color: #f0f0f0;
-    color: rgb(33, 33, 33);
-    box-sizing: border-box;
-    background-color: transparent;
-    cursor: pointer;
-    margin: 0;
-    padding: 0;
-}
 
-.toggle-btns#refresh{
-    font-size: 32px;
+.toggle-btns#refresh {
+    position: absolute;
+    margin-left: 75px;
+    font-size: 48px;
+    height: 50px;
+    width: 50px;
 }
 
 .reset-tuning:hover {
@@ -203,10 +214,10 @@ body.dark .json-import:hover {
 
 
 body.dark .tuning-editor {
-    background-color: rgba(0, 0, 0, 0.455);
+    background-color: #191a1b;
     border-color: black;
 }
 
 body.dark .tuning-block-container {
-    border-color: rgba(0, 0, 0, 0.237);
+    background-color: #212223;
 }

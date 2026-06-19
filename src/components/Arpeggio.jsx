@@ -2,7 +2,8 @@ import { useState } from "react";
 import "./../elements/Arpeggio.css";
 
 export const Arpeggio = ({
-    showSharps,
+    fretboard,
+    updateFretboard,
     setNoteToColor,
     color,
     root, setRoot,
@@ -24,7 +25,7 @@ export const Arpeggio = ({
         "B": 11
     };
 
-    const notes = showSharps ? [
+    const notes = fretboard.showSharps ? [
         "C", "C#", "D", "D#", "E", "F",
         "F#", "G", "G#", "A", "A#", "B"
     ] : [
@@ -53,38 +54,22 @@ export const Arpeggio = ({
     };
 
     const noteToMidi = (note) => {
-        const noteMap = showSharps
+        const noteMap = fretboard.showSharps
             ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
             : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-            console.log("noteToMidi: root=", root);
         for (let i = 0; i < noteMap.length; i++) {
-            console.log("noteToMidi: checking ", noteMap[i], " against ", note);
             if (noteMap[i] === note) {
-                console.log("noteToMidi: found match at index ", i);
                 return i;
             }
         }
         return -1;
     }
 
-    const scales = {
-        "Major (Ionian)": [0, 2, 4, 5, 7, 9, 11],
-        "Dorian": [0, 2, 3, 5, 7, 9, 10],
-        "Phrygian": [0, 1, 3, 5, 7, 8, 10],
-        "Lydian": [0, 2, 4, 6, 7, 9, 11],
-        "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
-        "Natural Minor (Aeolian)": [0, 2, 3, 5, 7, 8, 10],
-        "Harmonic Minor": [0, 2, 3, 5, 7, 8, 11],
-        "Melodic Minor Ascending": [0, 2, 3, 5, 7, 9, 11],
-        "Locrian": [0, 1, 3, 5, 6, 8, 10],
-        "Pentatonic Major": [0, 2, 4, 7, 9],
-        "Pentatonic Minor": [0, 3, 5, 7, 10],
-    }
-
     const generateArpeggio = () => {
         if (color === "none") return;
-        setNoteToColor({});
+        updateFretboard(fretboard.id, { noteToColor: {} });
         let tmp = {}; // temporary noteToColor mapping
+        const strings = fretboard.strings;
         for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
             for (let midi = 0; midi <= 108; midi++) {
                 if (midi % 12 === noteToMidi(root)) {
@@ -94,7 +79,7 @@ export const Arpeggio = ({
                 }
             }
         }
-        setNoteToColor(tmp);
+        updateFretboard(fretboard.id, { noteToColor: tmp });
     };
 
     const isNoteInArpeggio = (note) => {
@@ -112,8 +97,9 @@ export const Arpeggio = ({
             <p className="scale-text">arpeggio generator</p>
             <div className="scale-dropdown-wrapper">
                 <div className="label-and-dropdown">
-                    <p>Root</p>
+                    <label htmlFor="root" className="scale-text">root</label>
                     <select
+                        id="root"
                         className="scale-dropdown"
                         value={root}
                         onChange={(e) => {setRoot(e.target.value); 
@@ -127,12 +113,13 @@ export const Arpeggio = ({
                 </div>
 
                 <div className="label-and-dropdown">
-                    <p>Notes</p>
+                    <label htmlFor="notes" className="scale-text">notes in arpeggio</label>
                     <div className="notes-in-arpeggio">
                         {notes.map((note) => (
-                            <label key={note}>
-                                {note}
+                            <label key={note} htmlFor={note}>
+                                <span>{note}</span>
                                 <input
+                                    id={note}
                                     key={note}
                                     value={note}
                                     type="checkbox"
@@ -156,7 +143,7 @@ export const Arpeggio = ({
                     <p style={{ visibility: "hidden" }}>.</p>
                     <div className="generate-scale">
                         <button onClick={() => generateArpeggio(arpeggio)}>
-                            Generate
+                            generate
                         </button>
                     </div>
                 </div>

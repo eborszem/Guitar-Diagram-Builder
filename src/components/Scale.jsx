@@ -2,14 +2,13 @@ import { useState } from "react";
 import "./../elements/Scale.css";
 
 export const Scale = ({
-    setNoteToColor,
-    showSharps,
+    fretboard,
+    updateFretboard,
     root,
     setRoot,
-    color,
-    strings
+    color
 }) => {
-    const notes = showSharps ? [
+    const notes = fretboard.showSharps ? [
         "C", "C#", "D", "D#", "E", "F",
         "F#", "G", "G#", "A", "A#", "B"
     ] : [
@@ -42,7 +41,7 @@ export const Scale = ({
     };
 
     const noteToMidi = () => {
-        const noteMap = showSharps
+        const noteMap = fretboard.showSharps
             ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
             : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
         for (let i = 0; i < noteMap.length; i++) {
@@ -69,16 +68,17 @@ export const Scale = ({
 
     const generateScale = (scaleName) => {
         if (color === "none") return;
-        setNoteToColor({});
+
+        updateFretboard(fretboard.id, { noteToColor: {} });
 
         let midiRoot = noteToMidi(root);
         let scale = scales[scaleName];
-        console.log("midiRoot=", midiRoot, "scale=", scale);
+        // console.log("midiRoot=", midiRoot, "scale=", scale);
         let tmp = {}; // temporary noteToColor mapping
 
         const rootColor = color;
         const scaleColor = lightenHex(color, 0.6);
-
+        const strings = fretboard.strings;
         for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
             // valid midi range is 21 to 108
             for (let midi = 0; midi <= 108; midi++) {
@@ -92,8 +92,7 @@ export const Scale = ({
                 }
             }
         }
-        // console.log("TMP=",tmp);
-        setNoteToColor(tmp);
+        updateFretboard(fretboard.id, { noteToColor: tmp });
         
     };
 
@@ -102,8 +101,9 @@ export const Scale = ({
             <p className="scale-text">scale generator</p>
             <div className="scale-dropdown-wrapper">
                 <div className="label-and-dropdown">
-                    <p>Root</p>
+                    <label htmlFor="root" className="scale-text">root</label>
                     <select
+                        id="root"
                         className="scale-dropdown"
                         value={root}
                         onChange={(e) => setRoot(e.target.value)}
@@ -115,8 +115,9 @@ export const Scale = ({
                 </div>
                 
                 <div className="label-and-dropdown">
-                    <p>Scale</p>
+                    <label className="scale-text">scale</label>
                     <select
+                        id="scale"
                         className="scale-dropdown"
                         value={scale}
                         onChange={(e) => setScale(e.target.value)}
@@ -130,8 +131,8 @@ export const Scale = ({
                 <div className="label-and-dropdown">
                     <p style={{ visibility: "hidden" }}>.</p>
                     <div className="generate-scale">
-                        <button onClick={() => generateScale(scale)}>
-                            Generate
+                        <button className="gen-btn-text" onClick={() => generateScale(scale)}>
+                            generate
                         </button>
                     </div>
                 </div>

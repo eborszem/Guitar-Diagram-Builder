@@ -1,5 +1,6 @@
 import { React, useEffect, useState, useRef } from 'react'
 import '../elements/Interface.css';
+
 import { StringControls } from './Controls.jsx';
 import { FretboardInterface } from './Fretboard.jsx';
 import { FretboardToggles } from './Toggles.jsx';
@@ -10,33 +11,130 @@ import { Scale } from './Scale.jsx';
 import { Arpeggio } from './Arpeggio.jsx';
 import { NeckSetup } from './NeckSetup.jsx';
 import { Download } from './Download.jsx';
-import { IoIosMusicalNote } from "react-icons/io";
+import { IoIosMusicalNote, IoMdArrowDropdown } from "react-icons/io";
+import { useParams, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
+function Interface() {
+    //const { id } = useParams(); // for share links
+    // const navigate = useNavigate();
+    // useEffect(() => {
+    //     if (!id) return;
+    //     async function fetchFretboard() {
+    //         try {
+    //             const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+    //             const res = await fetch(`${backendUrl}/share/${id}`);
+    //             if (!res.ok) {
+    //                 navigate("/");
+    //                 return;
+    //             }    
+    //             const data = await res.json();
+    //             // console.log("DATA=",data);
+    //             // console.log("NOTETOCOLOR=",data.notetocolor);
+    //             const midiString = data.tuning;
+    //             const midiValues = midiString.split("_").map(Number);
+    //             const strings_ = midiValues.map((midi, idx) => ({
+    //                 id: idx,
+    //                 midi: midi
+    //             }))
 
-function Interface({
-    strings,
-    setStrings,
-    noteToColor,
-    setNoteToColor,
-    color,
-    setColor,
-    curFretboardId,
-    setCurFretboardId,
-    setPrevFretboardId,
-    noteLabel,
-    setNoteLabel,
-    noteLabelArr,
-    keyForInterval,
-    setKeyForInterval,
-    firstVisibleFretIndex,
-    setFirstVisibleFretIndex,
-    lastVisibleFretIndex,
-    setLastVisibleFretIndex
-}) {
-    // toggles
-    const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
+    //             setStrings(strings_);
+    //             setNoteToColor(data.notetocolor);
+    //             setColor('#ff5c5c');
+    //             setNoteLabel(data.noteLabel);
+    //             setKeyForInterval(data.keyForInterval);
+
+    //             setInterfaces(prev =>
+    //                 prev.map(f =>
+    //                     f.id === 0
+    //                         ? { ...f, strings: strings_, noteToColor: data.notetocolor, color: '#ff5c5c' }
+    //                         : f
+    //                 )
+    //             );
+    //             setCurFretboardId(1);
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     }
+    //     fetchFretboard();
+    // }, [id]);
+
+    const standardTuning = [
+        {id: 0, midi: 64}, // E4
+        {id: 1, midi: 59}, // B3
+        {id: 2, midi: 55}, // G3
+        {id: 3, midi: 50}, // D3
+        {id: 4, midi: 45}, // A2
+        {id: 5, midi: 40}, // E2
+    ];
+
+    const [color, setColor] = useState('#5c67ff');
+    const [keyForInterval, setKeyForInterval] = useState('C');
+    const noteLabelArr = ['octave', 'no octave', 'degree', 'blank'];
+    
+    const [curFretboardId, setCurFretboardId] = useState(uuidv4());
+    const defaultFretboard = {
+        id: curFretboardId,
+        strings: [...standardTuning],
+        color: '#5c67ff',
+        noteToColor: {},
+        firstVisibleFretIndex: 0,
+        lastVisibleFretIndex: 12,
+        hideNotes: false,
+        showSharps: true,
+        noteLabel: 0,
+    };
+
+    const [fretboards, setFretboards] = useState([defaultFretboard]);
+
+    const getFretboard = (id) => {
+        // const fb = fretboards.find(fretboard => fretboard.id === id);
+        // for (const str of fb.strings) {
+        //     console.log(str.id + ", midi=" + str.midi);
+        // }
+        // return fb;
+        return fretboards.find(fretboard => fretboard.id === id);
+    }
+
+    const updateFretboard = (id, updates) => {
+        setFretboards(prev =>
+            prev.map(fretboard => fretboard.id === id ? { ...fretboard, ...updates } : fretboard)
+        );
+    }
+
+    const addFretboard = () => {
+        const newId = uuidv4();
+        // add new fretboard to fretboards array
+        setFretboards(prev => {
+            const idx = prev.findIndex(f => f.id === curFretboardId);
+            const newFretboard = {
+                ...defaultFretboard,
+                id: newId,
+            }
+            return [...prev.slice(0, idx + 1), newFretboard, ...prev.slice(idx + 1)]
+        });
+        setCurFretboardId(newId);
+        return newId;
+    };
+
+    const deleteFretboard = (id) => {
+        const confirm = window.confirm("Are you sure you want to delete this fretboard? This action cannot be undone. This will only affect the currently selected fretboard.");
+        if (!confirm) return;
+        setFretboards(prev => {
+            const idx = prev.findIndex(f => f.id === id);
+            const prevFretboard = idx > 0 ? prev[idx - 1] : prev[1];
+            setCurFretboardId(prevFretboard.id);
+            // setCurFretboardId(fretboards[0].id);
+            // setCurFretboardId(prevFretboard?.id ?? null);
+            return prev.filter(f => f.id !== id);
+        });
+    };
+
+    // global toggles
+    // const [hideNotes, setHideNotes] = useState(false); // hide notes that don't have a color set
     const [playAudio, setPlayAudio] = useState(true); // toggle notes playing audio on click
-    const [showSharps, setShowSharps] = useState(true); // sharps or flats
+    // const [showSharps, setShowSharps] = useState(true); // sharps or flats
     const [lefty, setLefty] = useState(() => {  // left hand or right hand
         const stored = localStorage.getItem('lefty');
         return stored ? JSON.parse(stored) : false;
@@ -62,7 +160,6 @@ function Interface({
 
     const [isColorPickerMode, setIsColorPickerMode] = useState(false);
 
-
     // dark mode check
     useEffect(() => {
         document.body.classList.toggle('dark', isDarkMode);
@@ -74,48 +171,47 @@ function Interface({
         localStorage.setItem('lefty', JSON.stringify(lefty));
     }, [lefty]);
 
+    // prevent overscroll
+    useEffect(() => {
+        document.documentElement.style.overscrollBehavior = 'none';
+        document.body.style.overscrollBehavior = 'none';
+        return () => {
+            document.documentElement.style.overscrollBehavior = '';
+            document.body.style.overscrollBehavior = '';
+        };
+    }, []);
+
+    // useEffect(() => {
+    //     console.log('all fretboards:', fretboards);
+    // }, [fretboards]);
+
     useEffect(() => {
         const handleKeydown = (event) => {
             const target = event.target;
-
-            if (
-                target &&
-                (
-                    target.tagName === "INPUT" ||
-                    target.tagName === "TEXTAREA" ||
-                    target.isContentEditable
-                )
-            ) {
+            if ((target) && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
                 return;
             }
 
-            const key = event.key.toLowerCase();
-
-            let board = null;
-
-            if (key >= "1" && key <= "9") {
-                board = Number(key);
-            } else if (key === "0") {
-                board = 10;
+            const key = event.key;
+            if ((parseInt(key) > fretboards.length) || (parseInt(key) === 0 && fretboards.length <= 9)) {
+                return;
             }
-
-            if (board !== null) {
-                setPrevFretboardId(curFretboardId);
-                setCurFretboardId(board);
+            if (/^[0-9]$/.test(key)) {
+                let index = parseInt(key) === 0 ? 9 : parseInt(key) - 1; // 1-9 map to 0-8, 0 maps to 9
+                setCurFretboardId(fretboards[index]?.id);
             }
         };
 
-        window.addEventListener("keydown", handleKeydown);
-
-        return () => {
-            window.removeEventListener("keydown", handleKeydown);
-        };
-    }, [curFretboardId]);
+        window.addEventListener('keydown', handleKeydown);
+        return () => window.removeEventListener('keydown', handleKeydown);
+    }, [fretboards]);
 
     // converts a midi note value to its corresponding note in scientific pitch notation (e.g. 64 --> E4, 59 --> B3)
     // in the soundfont-player library, middle C (C4) has midi note value 60
     // defaultSPN is used to ensure custom tuning note names remain in scientific pitch notation
-    const formatNote = (midiNoteValue, defaultSPN) => {
+    const formatNote = (midiNoteValue, id, defaultSPN) => {
+        const noteLabel = getFretboard(id).noteLabel;
+        const showSharps = getFretboard(id).showSharps;
         if (defaultSPN || noteLabel === 0 || noteLabel === 1) { // spn labels or no spn labels
             const notes = showSharps
                 ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -154,8 +250,8 @@ function Interface({
                 note += 12;
             }
             const intervals = showSharps
-                ? ['I', 'I#', 'II', 'II#', 'III', 'IV','IV#', 'V', 'V#', 'VI', 'VI#', 'VII']
-                : ['I', 'IIb', 'II', 'IIIb', 'III', 'IV','Vb', 'V', 'VIb', 'VI', 'VIIb', 'VII'];
+                ? ['1', '#1', '2', '#2', '3', '4', '#4', '5', '#5', '6', '#6', '7']
+                : ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'];
             // let note = intervals[midiNoteValue % 12];
             return <>{intervals[note - keyMidi]}</>
         } else { // no labels
@@ -192,16 +288,47 @@ function Interface({
     //     }
     // }
 
-
+    const svg = () => {
+        const color = isDarkMode ? "#5f5f5f" : "black";
+        return (
+            <svg
+                viewBox="0 0 64 42" 
+                width="64px" 
+                height="42px" 
+                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                <rect x="7" y="3" width="4" height="36" rx="1.5" ry="1.5" fill={color} />
+                <rect x="7" y="3" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="10" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="17" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="24" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="30.5" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+                <rect x="7" y="37" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+            </svg>
+        );
+    }
 
     return (
         <>
             <div className="header">
                 <div className="fretboard-title">
-                    <IoIosMusicalNote style={{ transform: 'translateY(5px)' }} 
-                />
-                    {/* FRETBOARD DIAGRAM MAKER */}
-                    Fretboard Diagram Builder
+                    <IoIosMusicalNote
+                        size={40}
+                        style={{ transform: 'translateY(5px)' , marginRight: '-7px'}}
+                    />
+                    <IoIosMusicalNote
+                        size={40}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            transform: 'translateY(17px)',
+                            clipPath: 'inset(0 0 50% 0)',
+                            
+                        }}
+                    />
+                    retboard Diagram Builder
                 </div>
                 <div className="header-toggles">
                     <HeaderToggles
@@ -216,78 +343,72 @@ function Interface({
             </div>
 
             <div className="interface-and-tuning-container">
-                <div className="tuning-block-container">
-                    <Tuning
-                        strings={strings}
-                        setStrings={setStrings}
-                        showSharps={showSharps}
-                        formatNote={formatNote}
-                        noteToColor={noteToColor}
-                        setNoteToColor={setNoteToColor}
-                        root={root}
-                        setRoot={setRoot}
-                    />
-                </div>
-
+                <Tuning
+                    fretboard={getFretboard(curFretboardId)}
+                    fretboards={fretboards}
+                    updateFretboard={updateFretboard}
+                    formatNote={formatNote}
+                    root={root}
+                    setRoot={setRoot}
+                />
                 <div className="interface-container">
                     <div className="settings-block-container">
                         <div className="settings-block">
+                            {/* <IoMdArrowDropdown
+                                className="corner-dropdown-btn"
+                                // onClick={handleDropdownToggle()}
+                                size={30}
+                            /> */}
                             <NeckSetup
-                                strings={strings}
-                                setStrings={setStrings}
-                                firstVisibleFretIndex={firstVisibleFretIndex}
-                                setFirstVisibleFretIndex={setFirstVisibleFretIndex}
-                                lastVisibleFretIndex={lastVisibleFretIndex}
-                                setLastVisibleFretIndex={setLastVisibleFretIndex}
+                                fretboard={getFretboard(curFretboardId)}
+                                updateFretboard={updateFretboard}
+                                isDarkMode={isDarkMode}
                             />
                         </div>
 
                         <div className="settings-block">
                             <Scale
-                                showSharps={showSharps}
+                                fretboard={getFretboard(curFretboardId)}
+                                updateFretboard={updateFretboard}
+                                // showSharps={showSharps}
                                 root={root}
                                 setRoot={setRoot}
-                                setNoteToColor={setNoteToColor}
                                 color={color}
-                                strings={strings}
                             />
                         </div>
 
                         <div className="settings-block">
                             <Arpeggio
-                                showSharps={showSharps}
+                                fretboard={getFretboard(curFretboardId)}
+                                updateFretboard={updateFretboard}
+                                // showSharps={showSharps}
                                 root={root}
                                 setRoot={setRoot}
-                                setNoteToColor={setNoteToColor}
                                 color={color}
-                                strings={strings}
                             />
                         </div>
 
                         <div className="settings-block">
                             <div className="settings-block-toggles">
-                                    <ColorSelector
-                                        colorBank={colorBank}
-                                        colorBankLight={colorBankLight}
-                                        isColorPickerMode={isColorPickerMode}
-                                        setIsColorPickerMode={setIsColorPickerMode}
-                                        color={color}
-                                        setColor={setColor}
-                                    />
+                                <ColorSelector
+                                    colorBank={colorBank}
+                                    colorBankLight={colorBankLight}
+                                    isColorPickerMode={isColorPickerMode}
+                                    setIsColorPickerMode={setIsColorPickerMode}
+                                    color={color}
+                                    setColor={setColor}
+                                />
                             </div>
                         </div>
 
                         <div className="settings-block">
                             <div className="settings-block-toggles">
                                 <FretboardToggles
-                                    hideNotes={hideNotes}
-                                    setHideNotes={setHideNotes}
-                                    showSharps={showSharps}
-                                    setShowSharps={setShowSharps}
+                                    curFretboardId={curFretboardId}
+                                    setCurFretboardId={setCurFretboardId}
+                                    fretboard={getFretboard(curFretboardId)}
+                                    updateFretboard={updateFretboard}
                                     setRoot={setRoot}
-                                    setNoteToColor={setNoteToColor}
-                                    noteLabel={noteLabel}
-                                    setNoteLabel={setNoteLabel}
                                     noteLabelArr={noteLabelArr}
                                     keyForInterval={keyForInterval}
                                     setKeyForInterval={setKeyForInterval}
@@ -299,142 +420,50 @@ function Interface({
 
                         <div className="settings-block">
                             <Download
-                                noteToColor={noteToColor}
-                                setNoteToColor={setNoteToColor}
-                                strings={strings}
-                                setStrings={setStrings}
-                                noteLabel={noteLabel}
-                                setNoteLabel={setNoteLabel}
-                                keyForInterval={keyForInterval}
-                                setKeyForInterval={setKeyForInterval}
-                                firstVisibleFretIndex={firstVisibleFretIndex}
-                                setFirstVisibleFretIndex={setFirstVisibleFretIndex}
-                                lastVisibleFretIndex={lastVisibleFretIndex}
-                                setLastVisibleFretIndex={setLastVisibleFretIndex}
+                                fretboard={getFretboard(curFretboardId)}
+                                updateFretboard={updateFretboard}
+                                defaultFretboard={defaultFretboard}
+                                addFretboard={addFretboard}
                                 isDarkMode={isDarkMode}
                             />
                         </div>
 
-                        <div className="settings-block">
-                            <div className="switch-fretboards">
-                                <p>switch fretboard</p>
-                                <div className="toggle-btns">
-                                    {[1,2,3,4,5].map((idx) =>
-                                        idx != curFretboardId ? (
-                                            <button
-                                                key={`fretboard-${idx}`}
-                                                className="fretboard-btn"
-                                                style={{
-                                                    fontSize: "30px",
-                                                    fontWeight: "bold"
-                                                }}
-                                                onClick={() => {
-                                                    setPrevFretboardId(curFretboardId);
-                                                    setCurFretboardId(idx);
-                                                }}
-                                                
-                                            >
-                                                {idx}
-                                            </button>
-                                        ) : (
-                                            <button
-                                                key={`fretboard-${idx}`}
-                                                className="current-fretboard-btn"
-                                                style={{
-                                                    fontSize: "30px",
-                                                    fontWeight: "bold",
-                                                    color: "#4492ff",
-                                                    backgroundColor: "#4492ff36",
-                                                    border: "none", 
-                                                    boxShadow: "inset 0 0 0 2px #4492ff"
-                                                }}
-                                            >
-                                                {idx}
-                                            </button>
-                                        )
-                                    )}
-                                </div>
-                                <div className="toggle-btns">
-                                    {[6,7,8,9,10].map((idx) =>
-                                        idx != curFretboardId ? (
-                                            <button
-                                                key={`fretboard-${idx}`}
-                                                className="fretboard-btn"
-                                                style={{
-                                                    fontSize: "30px",
-                                                    fontWeight: "bold"
-                                                }}
-                                                onClick={() => {
-                                                    setPrevFretboardId(curFretboardId);
-                                                    setCurFretboardId(idx);
-                                                }}
-                                                
-                                            >
-                                                {idx}
-                                            </button>
-                                        ) : (
-                                            <button
-                                                key={`fretboard-${idx}`}
-                                                className="current-fretboard-btn"
-                                                style={{
-                                                    fontSize: "30px",
-                                                    fontWeight: "bold",
-                                                    color: "#4492ff",
-                                                    backgroundColor: "#d1e2f9",
-                                                    border: "none", 
-                                                    boxShadow: "inset 0 0 0 2px #4492ff"
-                                                }}
-                                            >
-                                                {idx}
-                                            </button>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
+                        
 
                     </div>
                     <div className="fretboard-interface-container">
-                        {/* <StringControls
-                            side="highest"
-                            strings={strings}
-                            setStrings={setStrings}
-                        /> */}
-
-                        <FretboardInterface
-                            strings={strings}
-                            toggles={{ hideNotes, isDarkMode, lefty, playAudio }}
-                            noteColor={{ color, setColor, colorBank, colorBankLight }}
-                            isColorPickerMode={isColorPickerMode}
-                            setIsColorPickerMode={setIsColorPickerMode}
-                            formatNote={formatNote}
-                            noteToColor={noteToColor}
-                            setNoteToColor={setNoteToColor}
-                            curFretboardId={curFretboardId}
-                            setCurFretboardId={setCurFretboardId}
-                            setPrevFretboardId={setPrevFretboardId}
-                            firstVisibleFretIndex={firstVisibleFretIndex}
-                            lastVisibleFretIndex={lastVisibleFretIndex}
-                        />
-                        
-                        {/* <StringControls
-                            side="lowest"
-                            strings={strings}
-                            setStrings={setStrings}
-                        /> */}
-
+                        {fretboards.map((fretboard) => 
+                            <>
+                                <FretboardInterface
+                                    fretboard={fretboard}
+                                    fretboards={fretboards}
+                                    setCurFretboardId={setCurFretboardId}
+                                    curFretboardId={curFretboardId}
+                                    updateFretboard={updateFretboard}
+                                    color={color}
+                                    setColor={setColor}
+                                    toggles={{ /*hideNotes,*/ isDarkMode, lefty, playAudio }}
+                                    isColorPickerMode={isColorPickerMode}
+                                    setIsColorPickerMode={setIsColorPickerMode}
+                                    formatNote={formatNote}
+                                />
+                                {fretboard.id === curFretboardId &&
+                                    <div className="add-remove-fretboard-btns">
+                                        <button onClick={() => addFretboard()}><FaPlus/></button>
+                                        {fretboards.length > 1 &&
+                                            <button 
+                                                onClick={() => deleteFretboard(curFretboardId)}>
+                                                <FaMinus/>
+                                            </button>
+                                        }
+                                    </div>
+                                }
+                            </>
+                        )}
                     </div>
 
-
-
-
-
-
-                    
                 </div>
             </div>
-
         </>
     )
 }

@@ -42,18 +42,18 @@
 
 .unset-color-btn.selected,
 .color-picker.selected {
-    outline: 2px solid rgb(68, 146, 255);
-    color: rgb(68, 146, 255);
+    outline: 2px solid rgb(231, 172, 62);
+    color: rgb(231, 172, 62);
     outline-offset: -2px;
-    background-color: rgba(68, 146, 255, 0.211);
+    background-color: #fff3cc;
 }
 
 body.dark .unset-color-btn.selected,
 body.dark .color-picker.selected {
-    outline: 2px solid rgb(68, 146, 255);
-    color: rgb(68, 146, 255);
-    outline-offset: -2px;
-    background-color: rgba(68, 146, 255, 0.211);
+    /* outline: 2px solid rgb(231, 172, 62);; */
+    outline-color: rgb(32, 32, 32);
+    color: #b3b3b3;
+    background-color: #303031;
 }
 
 .color {
@@ -75,7 +75,10 @@ body.dark .color-picker.selected {
 }
 
 .color:active {
-    transform: scale(0.96);
+
+    transform: scale(0.95);
+    background-color: rgba(0, 0, 0, 0.161);
+    /* box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.15); */
 }
 
 
@@ -93,8 +96,30 @@ body.dark .color-picker.selected {
     border-radius: 6px;
 }
 
+.color:hover {
+    border: 1px solid rgba(107, 107, 107, 0.097);
+    filter: brightness(0.95);
+}
+
+
+.color-options {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 38px;
+    height: 38px;
+    background-color: #f4f4f4;
+    padding: 5px;
+    border: 2px black;
+    color: #444;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+    gap: 0;
+    cursor: pointer;
+}
+
 .color-picker:active {
-    transform: scale(0.96);
+    transform: scale(0.95);
 }
 
 .color-picker::-webkit-color-swatch-wrapper {
@@ -128,8 +153,22 @@ body.dark .color-picker.selected {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 10px;
-    width: 60px;
+    font-size: 12px;
+
+    font-variant: small-caps;
+    width: 75px;
+    height: 75px;
+}
+
+.color-and-label input {
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.097);
+    
+}
+
+body.dark .color-and-label input {
+    border-color: black;
 
 }
 

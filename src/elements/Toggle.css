@@ -4,7 +4,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     user-select: none;
 }
 
@@ -13,16 +13,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     font-size: 40px;
     color: black;
-    border-radius: 20%;
+    border-radius: 8px;
 }
 
 body.dark .toggle-btns button {
-    color: #3b3b3b;
+    color: #fffff8;
+    
 }
 
 .toggle-container {
@@ -41,22 +42,31 @@ body.dark .toggle-btns button {
     user-select: none;
 }
 
+.label-text {
+    font-size: 12px;
+    font-variant: small-caps;
+    white-space: nowrap;
+}
+
 .toggle-btns button:hover {
-    color: rgb(68, 146, 255);
-    background-color: rgba(68, 146, 255, 0.211);
+    color: rgb(231, 172, 62);
+    background-color: rgba(255, 193, 68, 0.211);
+    
 }
 
 body.dark .toggle-btns button:hover {
-    color: rgb(68, 146, 255);
+    color: rgb(179, 179, 179);
+    background-color: rgba(133, 133, 133, 0.211);
 }
+
+/* body.dark .toggle-btns button:hover {
+    color: rgb(68, 146, 255);
+} */
 
 .toggle-btns button:active {
     transform: scale(0.95);
 }
 
-.toggle-btns  {
-    transform: scale(0.95);
-}
 
 .toggle-and-label {
     display: flex;
@@ -64,6 +74,7 @@ body.dark .toggle-btns button:hover {
     justify-content: center;
     align-items: center;
     font-size: 10px;
+    width: 50px;
 }
 
 .icons {
@@ -71,13 +82,16 @@ body.dark .toggle-btns button:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding-right: 6px;
+    margin-right: 6px;
+    pointer-events: none;
 }
 
 .icon {
     margin: 0;
     padding: 0;
     line-height: 0;
+    pointer-events: none;
+
 }
 .icon + .icon {
     margin-left: -35px;
@@ -90,12 +104,12 @@ body.dark .toggle-btns button:hover {
 .key-select {
     display: flex;
     flex-direction: column;
-
+    margin-left: -15px;
+    margin-top: -11.9px;
 }
 
 .key-text {
     margin: 0;
-    font-size: 14px;
     font-weight: bold;
     font-variant: small-caps;
     margin-bottom: 3px;
