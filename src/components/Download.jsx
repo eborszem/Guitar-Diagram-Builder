@@ -69,10 +69,11 @@ export const Download = ({
                     hideNotes: data.hideNotes,
                     showSharps: data.showSharps
                 });
-                console.log("Successfully imported fretboard diagram from JSON");
-                console.log("data=", data);
+                // console.log("Successfully imported fretboard diagram from JSON");
+                // console.log("data=", data);
             } catch (err) {
-                console.error('Invalid JSON file', err);
+                addFretboard();
+                // console.error('Invalid JSON file', err);
             }
         };
         reader.readAsText(file);
@@ -82,12 +83,8 @@ export const Download = ({
         <>
             <p className="download-text">import & export</p>
             <div className="diagram-actions">
-                <div className="saving">
-                    <button onClick={downloadSVG}>download svg</button>
-                </div>
-                <div className="json-download">
-                    <button onClick={downloadJSON} title="Save your diagram as a JSON file so you can import and reuse it later">download json</button>
-                </div>
+                <button className="saving" onClick={downloadSVG}>download svg</button>
+                <button className="json-download" onClick={downloadJSON} title="Save your diagram as a JSON file so you can import and reuse it later">download json</button>
                 <label className="json-import" title="Import diagram from JSON">
                     import json
                     <input 

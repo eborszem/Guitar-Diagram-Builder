@@ -121,6 +121,7 @@
 .arrows-and-svg button svg {
     width: 32px;
     height: 32px;
+    color: black;
 }
 
 .arrows-and-svg button:hover {

@@ -9,32 +9,31 @@
 .diagram-actions {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
     gap: 10px;
-    user-select: none;
 }
 
-.saving button,
-.json-download button,
+.saving,
+.json-download,
 .json-import {
     background-color: rgba(0, 0, 0, .097);
     border: 1px solid rgba(0, 0, 0, 0.097);
     font-weight: bold;
     font-variant: small-caps;
-    width: 100px;
+    width: 80px;
     height: 40px;
+    border-radius: 4px;
 }
 
-.saving button:hover,
-.json-download button:hover,
+.saving:hover,
+.json-download:hover,
 .json-import:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.161);
 }
 
-.saving button:active,
-.json-download button:active,
+.saving:active,
+.json-download:active,
 .json-import:active {
     transform: scale(0.95);
 }

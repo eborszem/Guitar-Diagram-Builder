@@ -310,7 +310,7 @@ function Interface() {
     }
 
     return (
-        <>
+        <div className="page">
             <div className="header">
                 <div className="fretboard-title">
                     <IoIosMusicalNote
@@ -341,7 +341,6 @@ function Interface() {
                     />
                 </div>
             </div>
-
             <div className="interface-and-tuning-container">
                 <Tuning
                     fretboard={getFretboard(curFretboardId)}
@@ -464,7 +463,7 @@ function Interface() {
 
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

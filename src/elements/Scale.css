@@ -93,6 +93,7 @@ body.dark .scale-dropdown:hover {
     min-height: 30px; 
     height: auto;
     cursor: pointer;
+    color: black;
     background-color: rgba(0, 0, 0, .097);
     /* background-color: #f0f0f0; */
     /* color: black; */

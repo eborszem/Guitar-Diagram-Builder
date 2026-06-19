@@ -1,10 +1,19 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;
+    width: max-content
+}
+
 .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    display: flex;
-    align-items: center;
-    width: 100%;
+    min-width: 100%;
+    width: max-content;
     background-color: #fffff8;
     border-bottom: 1px solid #ddd;
     padding: 2.5px 0px;
@@ -27,7 +36,7 @@ body.dark .header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+
     gap: 5px;
 }
 
@@ -53,16 +62,13 @@ body.dark .header {
 } */
 
 .fretboard-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    transform: none;
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
     font-family: "Space Mono", sans-serif;
     user-select: none;
-    font-optical-sizing: auto;
-    font-style: normal;
     white-space: nowrap;
 }
 
