@@ -30,6 +30,7 @@ body.dark .header {
     display: flex;
     align-items: center;
     z-index: 2;
+    
 }
 
 .interface-and-tuning-container {

@@ -141,6 +141,7 @@ body.dark .tuning-editor .retune-note-btn:hover {
     min-height: 30px; 
     height: auto;
     text-align: center;
+    font-variant: small-caps;
 
 }
 

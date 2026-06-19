@@ -55,8 +55,8 @@ body.dark .toggle-btns button {
 }
 
 body.dark .toggle-btns button:hover {
-    color: rgb(179, 179, 179);
-    background-color: rgba(133, 133, 133, 0.211);
+    color: #dbdbd2;
+    background-color: #2f3232;
 }
 
 /* body.dark .toggle-btns button:hover {

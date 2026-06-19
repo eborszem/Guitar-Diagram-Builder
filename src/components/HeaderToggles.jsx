@@ -16,7 +16,7 @@ export const HeaderToggles = ({
     isDarkMode, setIsDarkMode,
 }) => {
     return (
-        <div className="toggle-btns">
+        <div className="toggle-btns" id="header">
             <div className="toggle-and-label">
                 <button className="toggle-audio" aria-label={playAudio ? "Mute audio" : "Unmute audio"} onClick={() => setPlayAudio(prev => !prev)}>
                     {playAudio ? <HiVolumeUp size={30} /> : <HiVolumeOff size={30} />}

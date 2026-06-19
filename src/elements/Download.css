@@ -37,3 +37,17 @@
 .json-import:active {
     transform: scale(0.95);
 }
+
+
+body.dark .saving,
+body.dark .json-download,
+body.dark .json-import {
+    background-color: #141414;
+    color: #fffff8;
+}
+
+body.dark .saving:hover,
+body.dark .json-download:hover,
+body.dark .json-import:hover {
+    background-color: rgba(0, 0, 0, 0.468);
+}
