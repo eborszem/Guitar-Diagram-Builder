@@ -68,12 +68,15 @@ export const NeckSetup = ({
         } else if (Number(val) < 0) {
             updateFretboard(fretboard.id, { lastVisibleFretIndex: 0 })
             return;
+        } else if (Number(val) > 48) {
+            updateFretboard(fretboard.id, { lastVisibleFretIndex: 48 })
+            return;
         }
         updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(val)})
     };
 
     const svg = () => {
-        const color = isDarkMode ? "#fffff8" : "black";
+        const color = isDarkMode ? "#fffff1" : "black";
         return (
             <svg 
                 viewBox="0 0 64 42" 
@@ -95,7 +98,7 @@ export const NeckSetup = ({
     }
 
     const svg2 = () => {
-        const color = isDarkMode ? "#fffff8" : "black";
+        const color = isDarkMode ? "#fffff1" : "black";
         return (
             <svg 
                 viewBox="0 0 64 42" 
@@ -117,10 +120,10 @@ export const NeckSetup = ({
 
     return (
         <div className="neck-setup-interface">
-            <p className="neck-setup-text">neck setup</p>
+            <p className="settings-block-header">neck setup</p>
 
             <div className="neck-setup-input">
-                <label htmlFor="first-fret">frets</label>
+                <label htmlFor="first-fret" className="settings-block-label">frets</label>
                 <input
                     id="first-fret"
                     type="number"
@@ -134,9 +137,7 @@ export const NeckSetup = ({
                     }}
                     style={{ width: "40px", margin: "0 8px" }}
                 />
-
-                <label htmlFor="last-fret">to</label>
-
+                <label className="settings-block-label" htmlFor="last-fret">to</label>
                 <input
                     id="last-fret"
                     type="number"

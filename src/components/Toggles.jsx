@@ -29,7 +29,7 @@ export const FretboardToggles = ({
     );
     return (
         <div className="toggle-container">
-            <p className="toggle-text">toggles</p>
+            <p className="settings-block-header" id="no-margin">toggles</p>
             <div className="toggle-btns">
                 <div className="toggle-and-label">
                     <button className="toggle-notes"  aria-label={fretboard.hideNotes ? "Show all notes" : "Show marked notes"} onClick={() => updateFretboard(fretboard.id, { hideNotes: !fretboard.hideNotes })}>

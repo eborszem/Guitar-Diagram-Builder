@@ -7,14 +7,6 @@
     margin-bottom: 5px;
 }
 
-.scale-text {
-    font-size: 16px;
-    font-weight: bold;
-    font-variant: small-caps;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
 .scale-dropdown-wrapper {
     display: flex;
     flex-direction: row;
@@ -23,8 +15,6 @@
     font-size: 16px;
     gap: 5px;
 }
-
-
 
 .scale-dropdown-wrapper p {
     margin: 0;
@@ -60,6 +50,7 @@
     height: auto;
     cursor: pointer;
     background-color: rgba(0, 0, 0, .097);
+    transition: 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
 }
 
 .scale-dropdown#scale {
@@ -74,13 +65,13 @@
 }
 
 body.dark .scale-dropdown {
-    background-color: #141414;
-    color: #fffff8;
+    background-color: #212223;
+    border-color: rgb(22, 22, 22);
+    color: #fffff1;
 }
 
 body.dark .scale-dropdown:hover {
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.468);
+    background-color: #1a1a1a;
 }
 
 .generate-scale button {
@@ -95,12 +86,12 @@ body.dark .scale-dropdown:hover {
     cursor: pointer;
     color: black;
     background-color: rgba(0, 0, 0, .097);
-    /* background-color: #f0f0f0; */
-    /* color: black; */
+    transition: 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
 }
 
 .generate-scale button:hover {
     background-color: rgba(0, 0, 0, 0.161);
+    
 }
 
 .generate-scale button:active {
@@ -108,11 +99,12 @@ body.dark .scale-dropdown:hover {
 }
 
 body.dark .generate-scale button {
-    background-color: #141414;
-    color: #fffff8;
+    background-color: #212223;
+    border-color: #161616;
+    color: #fffff1;
 }
 
 
 body.dark .generate-scale button:hover {
-    background-color: rgba(0, 0, 0, 0.468);
+    background-color: #1a1a1a;
 }

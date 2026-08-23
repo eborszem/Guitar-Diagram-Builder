@@ -14,7 +14,7 @@ import { Download } from './Download.jsx';
 import { IoIosMusicalNote, IoMdArrowDropdown } from "react-icons/io";
 import { useParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { FaPlus, FaMinus } from "react-icons/fa";
+import { FaPlus, FaMinus } from "react-icons/fa6";
 
 function Interface() {
     //const { id } = useParams(); // for share links
@@ -325,7 +325,6 @@ function Interface() {
                             left: 0,
                             transform: 'translateY(17px)',
                             clipPath: 'inset(0 0 50% 0)',
-                            
                         }}
                     />
                     retboard Diagram Builder
@@ -342,29 +341,15 @@ function Interface() {
                 </div>
             </div>
             <div className="interface-and-tuning-container">
-                <Tuning
-                    fretboard={getFretboard(curFretboardId)}
-                    fretboards={fretboards}
-                    updateFretboard={updateFretboard}
-                    formatNote={formatNote}
-                    root={root}
-                    setRoot={setRoot}
-                />
                 <div className="interface-container">
                     <div className="settings-block-container">
                         <div className="settings-block">
-                            {/* <IoMdArrowDropdown
-                                className="corner-dropdown-btn"
-                                // onClick={handleDropdownToggle()}
-                                size={30}
-                            /> */}
                             <NeckSetup
                                 fretboard={getFretboard(curFretboardId)}
                                 updateFretboard={updateFretboard}
                                 isDarkMode={isDarkMode}
                             />
                         </div>
-
                         <div className="settings-block">
                             <Scale
                                 fretboard={getFretboard(curFretboardId)}
@@ -375,7 +360,6 @@ function Interface() {
                                 color={color}
                             />
                         </div>
-
                         <div className="settings-block">
                             <Arpeggio
                                 fretboard={getFretboard(curFretboardId)}
@@ -386,7 +370,6 @@ function Interface() {
                                 color={color}
                             />
                         </div>
-
                         <div className="settings-block">
                             <div className="settings-block-toggles">
                                 <ColorSelector
@@ -399,7 +382,6 @@ function Interface() {
                                 />
                             </div>
                         </div>
-
                         <div className="settings-block">
                             <div className="settings-block-toggles">
                                 <FretboardToggles
@@ -413,10 +395,7 @@ function Interface() {
                                     setKeyForInterval={setKeyForInterval}
                                 />
                             </div>
-                            
-                            
                         </div>
-
                         <div className="settings-block">
                             <Download
                                 fretboard={getFretboard(curFretboardId)}
@@ -424,13 +403,20 @@ function Interface() {
                                 defaultFretboard={defaultFretboard}
                                 addFretboard={addFretboard}
                                 isDarkMode={isDarkMode}
+                                keyForInterval={keyForInterval}
+                                setKeyForInterval={setKeyForInterval}
                             />
                         </div>
-
-                        
-
                     </div>
                     <div className="fretboard-interface-container">
+                        <Tuning
+                            fretboard={getFretboard(curFretboardId)}
+                            fretboards={fretboards}
+                            updateFretboard={updateFretboard}
+                            formatNote={formatNote}
+                            root={root}
+                            setRoot={setRoot}
+                        />
                         {fretboards.map((fretboard) => 
                             <>
                                 <FretboardInterface
@@ -450,7 +436,7 @@ function Interface() {
                                     <div className="add-remove-fretboard-btns">
                                         <button onClick={() => addFretboard()}><FaPlus/></button>
                                         {fretboards.length > 1 &&
-                                            <button 
+                                            <button
                                                 onClick={() => deleteFretboard(curFretboardId)}>
                                                 <FaMinus/>
                                             </button>
@@ -460,7 +446,6 @@ function Interface() {
                             </>
                         )}
                     </div>
-
                 </div>
             </div>
         </div>

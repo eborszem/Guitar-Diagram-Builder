@@ -94,10 +94,10 @@ export const Arpeggio = ({
 
     return (
         <div className="scale-interface">
-            <p className="scale-text">arpeggio generator</p>
+            <p className="settings-block-header">arpeggio generator</p>
             <div className="scale-dropdown-wrapper">
                 <div className="label-and-dropdown">
-                    <label htmlFor="root" className="scale-text">root</label>
+                    <label htmlFor="root" className="settings-block-label">root</label>
                     <select
                         id="root"
                         className="scale-dropdown"
@@ -113,34 +113,55 @@ export const Arpeggio = ({
                 </div>
 
                 <div className="label-and-dropdown">
-                    <label htmlFor="notes" className="scale-text">notes in arpeggio</label>
+                    <label htmlFor="notes" className="settings-block-label">notes</label>
                     <div className="notes-in-arpeggio">
                         {notes.map((note) => (
-                            <label key={note} htmlFor={note}>
-                                <span>{note}</span>
-                                <input
-                                    id={note}
-                                    key={note}
-                                    value={note}
-                                    type="checkbox"
-                                    checked={note === root || isNoteInArpeggio(note)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setArpeggio(prev => [...prev, noteToValueMap[note]]);
-                                        } else {
-                                            setArpeggio(prev => prev.filter(n => n !== noteToValueMap[note]));
-                                        }
-                                    }}
-                                    disabled={note === root}
-                                />
-                            </label>
-                            
+                            (root !== note) ? (
+                                <label key={note} htmlFor={note}>
+                                    <span>{note}</span>
+                                    <input
+                                        id={note}
+                                        key={note}
+                                        value={note}
+                                        type="checkbox"
+                                        checked={note === root || isNoteInArpeggio(note)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setArpeggio(prev => [...prev, noteToValueMap[note]]);
+                                            } else {
+                                                setArpeggio(prev => prev.filter(n => n !== noteToValueMap[note]));
+                                            }
+                                        }}
+                                        disabled={note === root}
+                                    />
+                                </label>
+                            ) : (
+                                <label key={note} htmlFor={note}>
+                                    <span style={{ fontWeight: "bold" }}>{note}</span>
+                                    <input
+                                        id={note}
+                                        key={note}
+                                        value={note}
+                                        type="checkbox"
+                                        checked={note === root || isNoteInArpeggio(note)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setArpeggio(prev => [...prev, noteToValueMap[note]]);
+                                            } else {
+                                                setArpeggio(prev => prev.filter(n => n !== noteToValueMap[note]));
+                                            }
+                                        }}
+                                        disabled={note === root}
+                                        style={{ visibility: "hidden" }}
+                                    />
+                                </label>
+                            )
                         ))}
                     </div>
                 </div>
                 
                 <div className="label-and-dropdown">
-                    <p style={{ visibility: "hidden" }}>.</p>
+                    <label className="scale-text" style={{ visibility: "hidden" }}>.</label>
                     <div className="generate-scale">
                         <button onClick={() => generateArpeggio(arpeggio)}>
                             generate

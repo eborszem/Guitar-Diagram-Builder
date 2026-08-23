@@ -7,14 +7,6 @@
     margin-bottom: 5px;
 }
 
-.neck-setup-text {
-    font-size: 16px;
-    font-weight: bold;
-    font-variant: small-caps;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
 .neck-setup-dropdown-wrapper {
     display: flex;
     flex-direction: row;
@@ -49,12 +41,6 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 5px;
-}
-
-.neck-setup-input label {
-    
-    font-weight: bold;
-    font-variant: small-caps;
 }
 
 .neck-setup-interface {
@@ -112,15 +98,17 @@
     border-radius: 4px;
     box-sizing: border-box;
     cursor: pointer;
-    width: 53px;
+    width: 54px;
     height: 20px;
     margin-left: 5px;
     font-size: 50px;
+    overflow: hidden;
+    transition: 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
+
 }
 
 .arrows-and-svg button svg {
-    width: 32px;
-    height: 32px;
+    height: 34px;
     color: black;
 }
 
@@ -129,7 +117,9 @@
 }
 
 body.dark .arrows-and-svg button:hover {
-    background-color: rgba(0, 0, 0, 0.468);
+
+    background-color: #1a1a1a;
+
 }
 
 .arrows-and-svg button:active {
@@ -141,5 +131,6 @@ body.dark .arrows-and-svg button svg {
 }
 
 body.dark .arrows-and-svg button {
-    background-color: #141414;
+    background-color: #212223;
+    border-color: #161616
 }

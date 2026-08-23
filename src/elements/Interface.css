@@ -53,7 +53,7 @@ body.dark .header {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0px 40px;
+    padding: 0px 20px;
     
 }
 
@@ -148,15 +148,15 @@ body.dark .info kbd {
     height: fit-content;
     border-radius: 10px;
     background-color: rgba(246, 255, 82, 0.039);
-    border: 2px solid rgba(0, 0, 0, 0.149);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     position: relative;
     gap: 5px;
     margin: 5px;
-    margin-top: -85px; /* TODO: find better way to do this */
 }
 
 body.dark .settings-block-container {
     background-color: #212223;
+    box-shadow: 0 0 0 1.5px black;
 }
 
 .settings-block {
@@ -169,7 +169,7 @@ body.dark .settings-block-container {
     padding: 10px;
     width: 300px;
     gap: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.097);
+    border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .settings-block > * {
@@ -185,9 +185,24 @@ body.dark .settings-block-container {
 
 }
 
+.settings-block-header {
+    font-size: 18px;
+    font-weight: bold;
+    font-variant: small-caps;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.settings-block-label {
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 14px;
+}
+
 body.dark .settings-block {
     background-color: #191a1b;
-    border: 1.5px solid #000000;
+    border: 1px solid rgba(0, 0, 0, 0.471);
+
 }
 
 .corner-dropdown-btn {
@@ -206,41 +221,53 @@ body.dark .settings-block {
 
 .add-remove-fretboard-btns {
     display: flex;
-    gap: 5px;
+    z-index: 100;
+    gap: 10px;
 }
 
 .add-remove-fretboard-btns button {
     all: unset;
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    justify-content: center;
     cursor: pointer;
-    font-size: 40px;
-    color: black;
-    border-radius: 8px;
+    background-color: #fffff8;
+    height: auto;
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 50px;
+    transition: background-color 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
 }
 
-body.dark .add-remove-fretboard-btns button {
-    color: #fffff8;
-    
+.add-remove-fretboard-btns button svg {
+    height: 20px;
+    color: black;
 }
 
 .add-remove-fretboard-btns button:hover {
-    color: rgb(231, 172, 62);
-    background-color: rgba(255, 193, 68, 0.211);
+    background-color: #f1f1e4;
+}
+
+body.dark .add-remove-fretboard-btns button {
+    background-color: #212223;
+    box-shadow: 0 0 0 1px black;
+}
+
+body.dark .add-remove-fretboard-btns button svg {
+    color: #fffff8;
 }
 
 body.dark .add-remove-fretboard-btns button:hover {
-    color: rgb(179, 179, 179);
-    background-color: rgba(133, 133, 133, 0.211);
+    background-color: rgba(0, 0, 0, 0.161);
 }
 
 .add-remove-fretboard-btns button:active {
     transform: scale(0.95);
 }
 
-.add-remove-fretboard-btns button svg {
-    font-size: 30px;
+#no-margin {
+    margin: 0px;
 }

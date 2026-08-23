@@ -59,19 +59,18 @@ body.dark .color-picker.selected {
 .color {
     appearance: none;
     -webkit-appearance: none;
-
-    width: 38px;
     height: 38px;
-
+    min-width: 60px;
     background-color: #f4f4f4;
     padding: 5px;
     border: 2px black;
     color: #444;
     border-radius: 8px;
     padding: 0;
-    margin: 0;
-    gap: 0;
+
+
     cursor: pointer;
+    transition: 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
 }
 
 .color:active {
@@ -107,15 +106,32 @@ body.dark .color-picker.selected {
     -webkit-appearance: none;
     width: 38px;
     height: 38px;
-    background-color: #f4f4f4;
+    /* background-color: #f4f4f4; */
     padding: 5px;
-    border: 2px black;
+    border: 1px solid #d9d9cd;
     color: #444;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 0;
     margin: 0;
     gap: 0;
     cursor: pointer;
+    transition: 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
+
+}
+
+.color-options:hover {
+    border: 1px solid rgb(0, 0, 0, 0.3);
+    filter: brightness(0.90);
+}
+
+.color-options:active {
+    transform: scale(0.95);
+    background-color: rgba(0, 0, 0, 0.5);
+    /* box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.15); */
+}
+
+body.dark .color-options {
+    border: 1px solid black;
 }
 
 .color-picker:active {
@@ -140,14 +156,6 @@ body.dark .color-picker.selected {
     gap: 5px;
 }
 
-.color-text {
-    font-size: 16px;
-    font-weight: bold;
-    font-variant: small-caps;
-    margin: 0;
-    user-select: none;
-}
-
 .color-and-label {
     display: flex;
     flex-direction: column;
@@ -157,7 +165,7 @@ body.dark .color-picker.selected {
 
     font-variant: small-caps;
     width: 75px;
-    height: 75px;
+    height: 60px;
 }
 
 .color-and-label input {
@@ -174,6 +182,16 @@ body.dark .color-and-label input {
 
 .preset-colors {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
+    gap: 5px;
+}
+
+.color-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    /* margin-bottom: 5px; */
 }

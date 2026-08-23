@@ -156,7 +156,7 @@ export const Tuning = ({
             <div className="tuning-block">
                 <div className="tuning-editor">
                     <div className="tune-dropdown-wrapper">
-                        <label className="tuning-text">current tuning</label>
+                        <label className="settings-block-header">current tuning</label>
                             <select
                                 id="tuning-dropdown"
                                 className="tuning-dropdown"
@@ -175,7 +175,7 @@ export const Tuning = ({
                     </div>
                     
                     <div className="tune-dropdown-wrapper">
-                        <p className="tuning-text">adjust tuning per string
+                        <p className="settings-block-header">adjust tuning per string
                             <span style={{marginLeft: "5px"}}>(</span>
                             <span 
                                 style={{
@@ -184,7 +184,9 @@ export const Tuning = ({
                                     display: "inline-block",
 
                                 }}
-                                title="Click on a note to edit the tuning for that string. Use scientific pitch notation (e.g. E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.). SPN is a standard way to denote musical notes with their corresponding octaves, making it easier to specify tunings accurately."
+                                title="Scientific Pitch Notation. The number after the note indicates the pitch/octave. Ex: E2 is the low E string while E4 is the high E string.
+                                More examples: A#4, Bb6, C#2, etc.
+                                "
                             >
                                 spn
                             </span>

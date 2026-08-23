@@ -3,7 +3,7 @@ body {
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: white;
+    background-color: rgb(249, 249, 247);
     color: black;
     width: 100%;
 }

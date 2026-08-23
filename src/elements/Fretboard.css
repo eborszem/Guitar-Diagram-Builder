@@ -7,14 +7,23 @@
     cursor: pointer;
     border: 2px solid transparent;
     box-sizing: border-box;
+    transition: background-color 180ms ease, box-shadow 180ms ease, border-radius 180ms ease;
 }
 
 .fretboard-interface.active {
     background-color: rgba(246, 255, 82, 0.039);
-    border: 2px solid rgba(0, 0, 0, 0.237);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     border-radius: 10px;
     cursor: auto;
     z-index: 10;
+}
+
+.fretboard-interface.inactive:hover {
+    /* background-color: #fffff887; */
+    background-color: rgba(246, 255, 82, 0.030);
+
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
 }
 
 .fretboard-interface.inactive {
@@ -23,8 +32,15 @@
 
 body.dark .fretboard-interface.active {
     background-color: rgba(94, 95, 104, 0.185);
-    border: 2px solid rgba(0, 0, 0, 0.237);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.237);
 }
+
+body.dark .fretboard-interface.inactive:hover {
+    /* background-color: #fffff887; */
+    background-color: rgba(94, 95, 104, 0.1);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.2);
+}
+
 
 .fretboard {
     position: relative;
@@ -94,21 +110,23 @@ body.dark .string {
     width: 35px;
     height: 35px;
     color: black;
+    cursor: pointer;
 }
 
 body.dark .note {
     border: 1px solid #1b1b1b;
     background-color: #fffff1;
-    
     color: #1b1b1b;
 }
 
 .note:hover {
-    /* color: #498ad9;
-    background-color: #e7f2ff;
-    border-color: #498ad9; */
-    box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
-    cursor: pointer;
+    background-color: rgb(200, 200, 200);
+
+}
+
+body.dark .note:hover {
+    background-color: #b4b4a9;
+    background-clip: padding-box;
 }
 
 .note:active {

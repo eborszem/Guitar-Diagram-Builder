@@ -14,12 +14,9 @@ export const ColorSelector = ({
     isColorPickerMode 
 }) => {
 
-    const [allColors] = useState(() => 
-        colorBank.flatMap((color, index) => [color, colorBankLight[index]])
-    );
     return (
         <div className="color-container">
-            <p className="color-text">colors</p>
+            <p className="settings-block-header" id="no-margin">colors</p>
             <div className="toggle-btns">
                 <div className="color-and-label">
                     <button
@@ -46,7 +43,7 @@ export const ColorSelector = ({
                         }}
                         className={`color ${color !== 'none' ? 'selected' : ''}`}
                     />
-                    <label htmlFor="label" style={{ whiteSpace: 'nowrap' }}>select color</label>
+                    <label htmlFor="label" style={{ whiteSpace: 'nowrap' }}>color wheel</label>
                 </div>
 
                 <div className="color-and-label">
@@ -66,7 +63,9 @@ export const ColorSelector = ({
             </div>
 
             <div className="preset-colors">
-                {allColors.map((c, index) => (
+                <div className="color-row">
+
+                    {colorBank.map((c, index) => (
                         <div
                             key={index}
                             type="color-options"
@@ -79,6 +78,22 @@ export const ColorSelector = ({
                             className={`color-options ${color === c ? 'selected' : ''}`}
                         />
                     ))}
+                </div>
+                <div className="color-row">
+                    {colorBankLight.map((c, index) => (
+                        <div
+                            key={index}
+                            type="color-options"
+                            value={c}
+                            onClick={() => {
+                                setColor(c);
+                                setIsColorPickerMode(false);
+                            }}
+                            style={{ backgroundColor: c }}
+                            className={`color-options ${color === c ? 'selected' : ''}`}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );
