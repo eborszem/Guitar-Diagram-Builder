@@ -24,8 +24,6 @@
 
 body.dark .toggle-btns button {
     color: #fffff1;
-    
-    
 }
 
 .toggle-container {
@@ -52,14 +50,9 @@ body.dark .toggle-btns button:hover {
     background-color: #2f3232;
 }
 
-/* body.dark .toggle-btns button:hover {
-    color: rgb(68, 146, 255);
-} */
-
 .toggle-btns button:active {
     transform: scale(0.95);
 }
-
 
 .toggle-and-label {
     display: flex;
@@ -86,6 +79,7 @@ body.dark .toggle-btns button:hover {
     pointer-events: none;
 
 }
+
 .icon + .icon {
     margin-left: -35px;
 }

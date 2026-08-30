@@ -22,11 +22,8 @@ const presetTunings = {
 
 export const Tuning = ({
     fretboard,
-    fretboards,
     updateFretboard,
     formatNote,
-    root,
-    setRoot
 }) => {
     const [tuning, setTuning] = useState('standard');
     const [retuningStringId, setRetuningStringId] = useState(null);
@@ -213,6 +210,7 @@ export const Tuning = ({
                                             className='retune-note-btn'
                                             onClick={() => setRetuningStringId(stringObj.id)}
                                         >
+                                            {/* // true boolean forces SPN formatting for the tuning input boxes */}
                                             {formatNote(stringObj.midi, fretboard.id, true)}
                                         </button>
                                     )}

@@ -1,36 +1,42 @@
 
 import '../elements/Toggle.css';
-
-import { React, useEffect, useState } from 'react'
-import { IoVolumeMedium, IoVolumeOff, IoMoon, IoSunny } from "react-icons/io5";
-import { MdVisibility, MdVisibilityOff, MdLightMode, MdOutlineLightMode } from "react-icons/md";
-import { FaVolumeUp, FaVolumeMute, FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
+import { MdLightMode, MdOutlineLightMode } from "react-icons/md";
+import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
-import { FaShare, FaTrashCan } from "react-icons/fa6";
-import Icon from '@mdi/react';
-import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiRomanNumeral1 } from '@mdi/js';
 
 export const HeaderToggles = ({
-    playAudio, setPlayAudio,
-    lefty, setLefty,
-    isDarkMode, setIsDarkMode,
+    playAudio,
+    setPlayAudio,
+    lefty,
+    setLefty,
+    isDarkMode,
+    setIsDarkMode,
 }) => {
     return (
-        <div className="toggle-btns" id="header">
+        <div className="toggle-btns">
             <div className="toggle-and-label">
-                <button className="toggle-audio" aria-label={playAudio ? "Mute audio" : "Unmute audio"} onClick={() => setPlayAudio(prev => !prev)}>
+                <button
+                    className="toggle-audio"
+                    aria-label={playAudio ? "Mute audio" : "Unmute audio"}
+                    onClick={() => setPlayAudio(prev => !prev)}>
                     {playAudio ? <HiVolumeUp size={30} /> : <HiVolumeOff size={30} />}
                 </button>
             </div>
 
             <div className="toggle-and-label">
-                <button className="toggle-hand" aria-label={lefty ? "Switch to right-handed" : "Switch to left-handed"} onClick={() => setLefty(prev => !prev)}>
+                <button
+                    className="toggle-hand"
+                    aria-label={lefty ? "Switch to right-handed" : "Switch to left-handed"} 
+                    onClick={() => setLefty(prev => !prev)}>
                     {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
                 </button>
             </div>
 
             <div className="toggle-and-label">
-                <button className="toggle-dark-mode" aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setIsDarkMode(prev => !prev)}>
+                <button 
+                    className="toggle-dark-mode"
+                    aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+                    onClick={() => setIsDarkMode(prev => !prev)}>
                     {isDarkMode ? < MdOutlineLightMode size={30} /> : <MdLightMode size={30} />}
                 </button>
             </div>            

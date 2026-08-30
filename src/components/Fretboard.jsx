@@ -224,7 +224,7 @@ export const FretboardInterface = ({
                                     >
                                         {/* {note}.{stringObj.id} */}
                                         {/* {note} */}
-                                        {formatNote(note, fretboard.id, false)}
+                                        {formatNote(note, fretboard.id)}
                                     </button>
                                 )
                             )}

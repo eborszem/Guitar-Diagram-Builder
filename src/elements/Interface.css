@@ -1,4 +1,4 @@
-.page {
+.app {
     display: flex;
     flex-direction: column;
     min-width: 100%;
@@ -25,7 +25,7 @@ body.dark .header {
     border-color: #000000;
 }
 
-.header-toggles {
+.header .toggles {
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -33,22 +33,14 @@ body.dark .header {
     
 }
 
-.interface-and-tuning-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    gap: 5px;
-}
-
-.interface-container {
+.interface {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     width: 100%;
 }
 
-.fretboard-interface-container {
+.fretboard-display {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -57,12 +49,12 @@ body.dark .header {
     
 }
 
-/* .fretboard-interface-container > :last-child {
+/* .fretboard-display > :last-child {
     margin-right: 43px;
     align-self: flex-end;
 } */
 
-.fretboard-title {
+.header .title {
     position: static;
     transform: none;
     text-align: center;
@@ -139,7 +131,7 @@ body.dark .info kbd {
     justify-content: center;
 }
 
-.settings-block-container {
+.settings {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -154,7 +146,7 @@ body.dark .info kbd {
     margin: 5px;
 }
 
-body.dark .settings-block-container {
+body.dark .settings {
     background-color: #212223;
     box-shadow: 0 0 0 1.5px black;
 }

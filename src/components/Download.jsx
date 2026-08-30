@@ -1,13 +1,10 @@
 import '../elements/Download.css';
 import { toSvg } from 'html-to-image';
-import { PiFileSvgDuotone } from "react-icons/pi";
 
 export const Download = ({
-    curFretboardId,
-    setCurFretboardId,
+    NOTE_LABELS,
     fretboard,
     updateFretboard,
-    defaultFretboard,
     addFretboard,
     isDarkMode,
     keyForInterval,
@@ -15,23 +12,23 @@ export const Download = ({
 }) => {
     const downloadSVG = () => {
         const fretboardNode = document.querySelector('.fretboard-interface.active');
-        fretboardNode.classList.add('is-exporting');
         toSvg(fretboardNode, {
-            style: { 
+            style: {
                 backgroundColor: isDarkMode ? '#141414' : 'transparent',
+                boxShadow: 'none',
+                border: '2px solid transparent',
+                borderRadius: '0',
+                transition: 'none',
             }
         })
         .then(dataUrl => {
             const link = document.createElement('a');
-            link.download = 'fretboard.svg';
+            link.download = 'fretboard-diagram.svg';
             link.href = dataUrl;
             link.click();
         })
         .catch(err => {
             console.error('Failed to save fretboard as SVG:', err);
-        })
-        .finally(() => {
-            fretboardNode.classList.remove('is-exporting');
         });
     };
 
@@ -74,10 +71,22 @@ export const Download = ({
             let payload;
             try {
                 const data = JSON.parse(event.target.result);
+                // this code makes it so the jsons created before I
+                // changed the notelabel from int to string still work
+                let x = data.noteLabel;
+                if (x === 0) {
+                    x = NOTE_LABELS.SPN;
+                } else if (x === 1) {
+                    x = NOTE_LABELS.NO_SPN;
+                } else if (x === 2) {
+                    x = NOTE_LABELS.INTERVAL;
+                } else if (x === 3) {
+                    x = NOTE_LABELS.BLANK;
+                }
                 payload = {
                     strings: data.strings ?? standardTuning,
                     noteToColor: data.noteToColor ?? {},
-                    noteLabel: data.noteLabel ?? 0,
+                    noteLabel: x ?? 0,
                     firstVisibleFretIndex: data.firstVisibleFretIndex ?? 0,
                     lastVisibleFretIndex: data.lastVisibleFretIndex ?? 12,
                     hideNotes: data.hideNotes === false || data.hideNotes === 'false',
@@ -88,7 +97,7 @@ export const Download = ({
                 payload = {
                     strings: standardTuning,
                     noteToColor: {},
-                    noteLabel: 0,
+                    noteLabel: NOTE_LABELS.SPN,
                     firstVisibleFretIndex: 0,
                     lastVisibleFretIndex: 12,
                     hideNotes: false,
@@ -113,7 +122,7 @@ export const Download = ({
                     <input 
                         className="json-import-input"
                         type="file"
-                        accept=".json"
+                        accept=".json" 
                         onChange={importJSON}
                         style={{ display: "none" }}
                     />

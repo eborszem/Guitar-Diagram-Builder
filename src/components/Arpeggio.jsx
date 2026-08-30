@@ -4,12 +4,12 @@ import "./../elements/Arpeggio.css";
 export const Arpeggio = ({
     fretboard,
     updateFretboard,
-    setNoteToColor,
     color,
-    root, setRoot,
-    strings
+    root,
+    setRoot
 }) => {
     const [arpeggio, setArpeggio] = useState(["C"]);
+    
     const noteToValueMap = {
         "C": 0,
         "C#": 1, "Db": 1,

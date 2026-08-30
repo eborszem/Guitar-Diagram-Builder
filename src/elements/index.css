@@ -1,3 +1,11 @@
+html {
+    background-color: rgb(249, 249, 247);
+}
+
+html.dark {
+    background-color: #141414;
+}
+
 body {
     margin: 0;
     font-family: "Inter", sans-serif;

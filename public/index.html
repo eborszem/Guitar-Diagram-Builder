@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color: #141414">
   <head>
+    <script>
+      if (localStorage.getItem('isDarkMode') === 'true') {
+        document.documentElement.style.backgroundColor = '#141414';
+      }
+    </script>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="%PUBLIC_URL%/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Easily build fretboard diagrams for any tuning, scale, or chord. Save and share your creations."
+      content="Easily build guitar fretboard diagrams for any tuning, scale, or chord. Save and share your creations."
     />
     <link rel="apple-touch-icon" type="image/png" href="%PUBLIC_URL%/logo.png" />
 

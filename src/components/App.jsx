@@ -13,7 +13,6 @@ function App() {
                         <Route path="/" element={<Interface />} />
                     </Routes>
                 </main>
-                
                 <Analytics />
                 <SpeedInsights />
             </div>

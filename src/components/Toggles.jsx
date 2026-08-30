@@ -1,32 +1,29 @@
 
 import '../elements/Toggle.css';
-
-import { React, useEffect, useState } from 'react'
-import { IoMoon, IoSunny } from "react-icons/io5";
-import { FaHashtag, FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
-import { FaEye, FaEyeSlash, FaShare, FaTrashCan } from "react-icons/fa6";
+import { FaHashtag } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { BsFillTrashFill } from "react-icons/bs";
 import Icon from '@mdi/react';
-import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiNumeric1, mdiRomanNumeral1 } from '@mdi/js';
-import { IoIosTrash } from "react-icons/io";
+import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiNumeric1 } from '@mdi/js';
 
-export const FretboardToggles = ({
+export const Toggles = ({
     fretboard,
     updateFretboard,
-    onShare,
+    NOTE_LABELS,
     setRoot,
-    setNoteToColor,
-    noteLabelArr, keyForInterval, setKeyForInterval
+    keyForInterval,
+    setKeyForInterval
 }) => {
-    const notesArr = fretboard.noteLabel !== 3 ? (
-        fretboard.showSharps
-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
-    ) : (
-        fretboard.showSharps
-            ? ['I', 'I#', 'II', 'II#', 'III', 'IV','IV#', 'V', 'V#', 'VI', 'VI#', 'VII']
-            : ['I', 'IIb', 'II', 'IIIb', 'III', 'IV','Vb', 'V', 'VIb', 'VI', 'VIIb', 'VII']
-    );
+    const notes = fretboard.showSharps
+        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+
+        const nextNoteLabel = (label) => {
+            const labels = Object.values(NOTE_LABELS);
+            const currentIndex = labels.indexOf(label);
+            return labels[(currentIndex + 1) % labels.length];
+        }
+
     return (
         <div className="toggle-container">
             <p className="settings-block-header" id="no-margin">toggles</p>
@@ -55,7 +52,6 @@ export const FretboardToggles = ({
                                     "C", "Db", "D", "Eb", "E", "F",
                                     "Gb", "G", "Ab", "A", "Bb", "B"
                                 ];
-                                // convert sharp → flat or flat → sharp
                                 if (fretboard.showSharps) {
                                     const idx = sharps.indexOf(prev);
                                     return idx !== -1 ? flats[idx] : prev;
@@ -76,31 +72,31 @@ export const FretboardToggles = ({
                 <div className="toggle-and-label">
                     <button
                         className={"toggle-note-label"}
-                        aria-label={`Switch note labels to ${noteLabelArr[(fretboard.noteLabel + 1) % noteLabelArr.length]}`}
+                        aria-label={`Switch note labels to ${nextNoteLabel(fretboard.noteLabel)}`}
                         onClick={() =>
-                            updateFretboard(fretboard.id, { noteLabel: (fretboard.noteLabel + 1) % noteLabelArr.length })
+                            updateFretboard(fretboard.id, { noteLabel: nextNoteLabel(fretboard.noteLabel) })
                         }
                     >
-                        {fretboard.noteLabel === 0 && (
+                        {fretboard.noteLabel === NOTE_LABELS.SPN && (
                             <div className="icons">
                                 <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>
                                 <div className="icon"><Icon path={mdiNumeric3} size={1.75} /></div>
                             </div>
                         )}
-                        {fretboard.noteLabel === 1 && <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>}
-                        {fretboard.noteLabel === 2 && <div className="icon"><Icon path={mdiNumeric1} size={2.5} /></div>}
-                        {fretboard.noteLabel === 3 && <div className="icon"><Icon path={mdiAlphaX} size={2.5} /></div>}
+                        {fretboard.noteLabel === NOTE_LABELS.NO_SPN && <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>}
+                        {fretboard.noteLabel === NOTE_LABELS.INTERVAL && <div className="icon"><Icon path={mdiNumeric1} size={2.5} /></div>}
+                        {fretboard.noteLabel === NOTE_LABELS.BLANK && <div className="icon"><Icon path={mdiAlphaX} size={2.5} /></div>}
                     </button>
                     <span className="label-text">
-                        {noteLabelArr[fretboard.noteLabel]}
+                        {fretboard.noteLabel}
                     </span>
                 </div>
 
-                {fretboard.noteLabel === 2 && (
+                {fretboard.noteLabel === NOTE_LABELS.INTERVAL && (
                     <div className="key-select">
                         <p className="key-text">root</p>
                         <select className="scale-dropdown" value={keyForInterval} onChange={((e) => {setKeyForInterval(e.target.value)})}>
-                            {notesArr.map((key) => (
+                            {notes.map((key) => (
                                 <option key={key} value={key}>
                                     {key}
                                 </option>
@@ -109,13 +105,6 @@ export const FretboardToggles = ({
                     </div>
                     
                 )}
-
-                {/* <div className="toggle-and-label">
-                    <button className="share" onClick={onShare}>
-                        <FaShare size={30} />
-                    </button>
-                    Share link
-                </div> */}
 
                 <div className="toggle-and-label">
                     <button className="delete" aria-label="Clear current fretboard" onClick={() => {

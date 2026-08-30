@@ -158,10 +158,3 @@ body.dark .note:hover {
 body.dark .fret-label {
     color: rgb(90, 90, 90);
 }
-
-.fretboard-interface.is-exporting {
-    border: none !important;
-    box-shadow: none !important;
-    cursor: default;
-}
-
