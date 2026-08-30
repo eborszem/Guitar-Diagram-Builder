@@ -38,7 +38,8 @@ export const Download = ({
             strings: fretboard.strings,
             noteToColor: fretboard.noteToColor,
             noteLabel: fretboard.noteLabel,
-            keyForInterval: fretboard.noteLabel === 2 ? keyForInterval : undefined,
+            //note: for old jsons, NOTE_LABELS.INTERVAL = 2
+            keyForInterval: (fretboard.noteLabel === NOTE_LABELS.INTERVAL || fretboard.noteLabel === 2) ? keyForInterval : undefined,
             firstVisibleFretIndex: fretboard.firstVisibleFretIndex,
             lastVisibleFretIndex: fretboard.lastVisibleFretIndex,
             hideNotes: fretboard.hideNotes,
