@@ -2,7 +2,6 @@
 
 ### Prerequisites
 * Node.js
-
 * npm
 
 ### Setup
