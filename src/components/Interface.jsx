@@ -69,8 +69,6 @@ function Interface() {
 
   const [isDarkMode, setIsDarkMode] = useToggleState("isDarkMode", false);
 
-  const [showSharps, setShowSharps] = useToggleState("showShaps", false);
-
   useEffect(() => {
     document.body.classList.toggle("dark", isDarkMode);
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
@@ -252,7 +250,6 @@ function Interface() {
               updateFretboard={updateFretboard}
               root={root}
               setRoot={setRoot}
-              showSharps={showSharps}
               color={color}
             />
           </div>
@@ -263,7 +260,6 @@ function Interface() {
               updateFretboard={updateFretboard}
               root={root}
               setRoot={setRoot}
-              showSharps={showSharps}
               color={color}
             />
           </div>

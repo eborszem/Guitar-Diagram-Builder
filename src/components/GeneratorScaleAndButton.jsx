@@ -23,10 +23,9 @@ export const GeneratorScaleAndButton = ({
   setRoot,
   generate,
   option,
-  showSharps,
   color,
 }) => {
-  const notes = showSharps
+  const notes = fretboard.showSharps
     ? ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
     : ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
