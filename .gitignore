@@ -22,7 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-ideas.txt
 /public/notes
 /public/.DS_Store
 .vercel

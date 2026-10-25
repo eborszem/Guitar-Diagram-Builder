@@ -1,0 +1,3768 @@
+diff --git a/.gitignore b/.gitignore
+index 650087b..4102b93 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -22,7 +22,6 @@ npm-debug.log*
+ yarn-debug.log*
+ yarn-error.log*
+ 
+-ideas.txt
+ /public/notes
+ /public/.DS_Store
+ .vercel
+diff --git a/src/components/App.jsx b/src/components/App.jsx
+index 66ad926..8f20b21 100644
+--- a/src/components/App.jsx
++++ b/src/components/App.jsx
+@@ -1,23 +1,23 @@
+-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+-import { Analytics } from "@vercel/analytics/react"
+-import { SpeedInsights } from "@vercel/speed-insights/react"
+-import Interface from './Interface';
+-import '../elements/App.css';
++import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
++import { Analytics } from "@vercel/analytics/react";
++import { SpeedInsights } from "@vercel/speed-insights/react";
++import Interface from "./Interface";
++import "../elements/App.css";
+ 
+ function App() {
+-    return (
+-        <Router>
+-            <div className="App">
+-                <main>    
+-                    <Routes>
+-                        <Route path="/" element={<Interface />} />
+-                    </Routes>
+-                </main>
+-                <Analytics />
+-                <SpeedInsights />
+-            </div>
+-        </Router>
+-    );
++  return (
++    <Router>
++      <div className="App">
++        <main>
++          <Routes>
++            <Route path="/" element={<Interface />} />
++          </Routes>
++        </main>
++        <Analytics />
++        <SpeedInsights />
++      </div>
++    </Router>
++  );
+ }
+ 
+-export default App;
+\ No newline at end of file
++export default App;
+diff --git a/src/components/Arpeggio.jsx b/src/components/Arpeggio.jsx
+index 9927da9..17a07a3 100644
+--- a/src/components/Arpeggio.jsx
++++ b/src/components/Arpeggio.jsx
+@@ -1,176 +1,117 @@
+-import { useState } from "react";
+ import "./../elements/Arpeggio.css";
+ 
+ export const Arpeggio = ({
+-    fretboard,
+-    updateFretboard,
+-    color,
+-    root,
+-    setRoot
++  root,
++  setRoot,
++  arpeggio,
++  setArpeggio,
++  notes,
+ }) => {
+-    const [arpeggio, setArpeggio] = useState(["C"]);
+-    
+-    const noteToValueMap = {
+-        "C": 0,
+-        "C#": 1, "Db": 1,
+-        "D": 2,
+-        "D#": 3, "Eb": 3,
+-        "E": 4,
+-        "F": 5,
+-        "F#": 6, "Gb": 6,
+-        "G": 7,
+-        "G#": 8, "Ab": 8,
+-        "A": 9,
+-        "A#": 10, "Bb": 10,
+-        "B": 11
+-    };
++  const noteToValueMap = {
++    C: 0,
++    "C#": 1,
++    Db: 1,
++    D: 2,
++    "D#": 3,
++    Eb: 3,
++    E: 4,
++    F: 5,
++    "F#": 6,
++    Gb: 6,
++    G: 7,
++    "G#": 8,
++    Ab: 8,
++    A: 9,
++    "A#": 10,
++    Bb: 10,
++    B: 11,
++  };
+ 
+-    const notes = fretboard.showSharps ? [
+-        "C", "C#", "D", "D#", "E", "F",
+-        "F#", "G", "G#", "A", "A#", "B"
+-    ] : [
+-        "C", "Db", "D", "Eb", "E", "F",
+-        "Gb", "G", "Ab", "A", "Bb", "B"
+-    ];
+-
+-    const lightenHex = (hex, amount = 0.5) => {
+-        let clean = hex.replace("#", "");
+-
+-        if (clean.length === 3) {
+-            clean = clean.split("").map(c => c + c).join("");
+-        }
+-
+-        let num = parseInt(clean, 16);
+-
+-        let r = (num >> 16) & 255;
+-        let g = (num >> 8) & 255;
+-        let b = num & 255;
+-
+-        r = Math.min(255, r + (255 - r) * amount);
+-        g = Math.min(255, g + (255 - g) * amount);
+-        b = Math.min(255, b + (255 - b) * amount);
+-
+-        return `rgb(${r}, ${g}, ${b})`;
+-    };
+-
+-    const noteToMidi = (note) => {
+-        const noteMap = fretboard.showSharps
+-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+-        for (let i = 0; i < noteMap.length; i++) {
+-            if (noteMap[i] === note) {
+-                return i;
+-            }
+-        }
+-        return -1;
++  const isNoteInArpeggio = (note) => {
++    for (const a of arpeggio) {
++      if (noteToValueMap[note] === a) {
++        return true;
++      }
+     }
++    return false;
++  };
+ 
+-    const generateArpeggio = () => {
+-        if (color === "none") return;
+-        updateFretboard(fretboard.id, { noteToColor: {} });
+-        let tmp = {}; // temporary noteToColor mapping
+-        const strings = fretboard.strings;
+-        for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
+-            for (let midi = 0; midi <= 108; midi++) {
+-                if (midi % 12 === noteToMidi(root)) {
+-                    tmp[midi + "-"  + strings[stringIdx].id] = color;
+-                } else if (arpeggio.includes(midi % 12)) {
+-                    tmp[midi + "-"  + strings[stringIdx].id] = lightenHex(color, 0.6);
+-                }
+-            }
+-        }
+-        updateFretboard(fretboard.id, { noteToColor: tmp });
+-    };
+-
+-    const isNoteInArpeggio = (note) => {
+-        for (const a of arpeggio) {
+-            if (noteToValueMap[note] === a) {
+-                return true;
+-            }
+-        }
+-        return false;
+-
+-    }
+-
+-    return (
+-        <div className="scale-interface">
+-            <p className="settings-block-header">arpeggio generator</p>
+-            <div className="scale-dropdown-wrapper">
+-                <div className="label-and-dropdown">
+-                    <label htmlFor="root" className="settings-block-label">root</label>
+-                    <select
+-                        id="root"
+-                        className="scale-dropdown"
+-                        value={root}
+-                        onChange={(e) => {setRoot(e.target.value); 
+-                            setArpeggio([e.target.value]);
+-                        }}
+-                    >
+-                        {notes.map((note) => 
+-                            <option key={note} value={note}>{note}</option>
+-                        )}
+-                    </select>
+-                </div>
+-
+-                <div className="label-and-dropdown">
+-                    <label htmlFor="notes" className="settings-block-label">notes</label>
+-                    <div className="notes-in-arpeggio">
+-                        {notes.map((note) => (
+-                            (root !== note) ? (
+-                                <label key={note} htmlFor={note}>
+-                                    <span>{note}</span>
+-                                    <input
+-                                        id={note}
+-                                        key={note}
+-                                        value={note}
+-                                        type="checkbox"
+-                                        checked={note === root || isNoteInArpeggio(note)}
+-                                        onChange={(e) => {
+-                                            if (e.target.checked) {
+-                                                setArpeggio(prev => [...prev, noteToValueMap[note]]);
+-                                            } else {
+-                                                setArpeggio(prev => prev.filter(n => n !== noteToValueMap[note]));
+-                                            }
+-                                        }}
+-                                        disabled={note === root}
+-                                    />
+-                                </label>
+-                            ) : (
+-                                <label key={note} htmlFor={note}>
+-                                    <span style={{ fontWeight: "bold" }}>{note}</span>
+-                                    <input
+-                                        id={note}
+-                                        key={note}
+-                                        value={note}
+-                                        type="checkbox"
+-                                        checked={note === root || isNoteInArpeggio(note)}
+-                                        onChange={(e) => {
+-                                            if (e.target.checked) {
+-                                                setArpeggio(prev => [...prev, noteToValueMap[note]]);
+-                                            } else {
+-                                                setArpeggio(prev => prev.filter(n => n !== noteToValueMap[note]));
+-                                            }
+-                                        }}
+-                                        disabled={note === root}
+-                                        style={{ visibility: "hidden" }}
+-                                    />
+-                                </label>
+-                            )
+-                        ))}
+-                    </div>
+-                </div>
+-                
+-                <div className="label-and-dropdown">
+-                    <label className="scale-text" style={{ visibility: "hidden" }}>.</label>
+-                    <div className="generate-scale">
+-                        <button onClick={() => generateArpeggio(arpeggio)}>
+-                            generate
+-                        </button>
+-                    </div>
+-                </div>
+-            </div>
++  return (
++      <div className="scale-dropdown-wrapper">
++        <div className="label-and-dropdown">
++          <label htmlFor="root" className="settings-block-label">
++            root
++          </label>
++          <select
++            id="root"
++            className="scale-dropdown"
++            value={root}
++            onChange={(e) => {
++              setRoot(e.target.value);
++              setArpeggio([e.target.value]);
++            }}
++          >
++            {notes.map((note) => (
++              <option key={note} value={note}>
++                {note}
++              </option>
++            ))}
++          </select>
++        </div>
+ 
++        <div className="label-and-dropdown">
++          <label htmlFor="notes" className="settings-block-label">
++            notes
++          </label>
++          <div className="notes-in-arpeggio">
++            {notes.map((note) =>
++              root !== note ? (
++                <label key={note} htmlFor={note}>
++                  <span>{note}</span>
++                  <input
++                    id={note}
++                    key={note}
++                    value={note}
++                    type="checkbox"
++                    checked={note === root || isNoteInArpeggio(note)}
++                    onChange={(e) => {
++                      if (e.target.checked) {
++                        setArpeggio((prev) => [...prev, noteToValueMap[note]]);
++                      } else {
++                        setArpeggio((prev) =>
++                          prev.filter((n) => n !== noteToValueMap[note]),
++                        );
++                      }
++                    }}
++                    disabled={note === root}
++                  />
++                </label>
++              ) : (
++                <label key={note} htmlFor={note}>
++                  <span style={{ fontWeight: "bold" }}>{note}</span>
++                  <input
++                    id={note}
++                    key={note}
++                    value={note}
++                    type="checkbox"
++                    checked={note === root || isNoteInArpeggio(note)}
++                    onChange={(e) => {
++                      if (e.target.checked) {
++                        setArpeggio((prev) => [...prev, noteToValueMap[note]]);
++                      } else {
++                        setArpeggio((prev) =>
++                          prev.filter((n) => n !== noteToValueMap[note]),
++                        );
++                      }
++                    }}
++                    disabled={note === root}
++                    style={{ visibility: "hidden" }}
++                  />
++                </label>
++              ),
++            )}
++          </div>
+         </div>
+-        
+-    );
+-}
+\ No newline at end of file
++      </div>
++  );
++};
+diff --git a/src/components/ColorSelector.jsx b/src/components/ColorSelector.jsx
+index cb50eb6..961be15 100644
+--- a/src/components/ColorSelector.jsx
++++ b/src/components/ColorSelector.jsx
+@@ -1,100 +1,102 @@
+-import { useState } from 'react'
++import { useState } from "react";
+ 
+-import '../elements/Color.css';
++import "../elements/Color.css";
+ 
+ import { MdFormatColorReset } from "react-icons/md";
+ import { CgColorPicker } from "react-icons/cg";
+ 
+ export const ColorSelector = ({
+-    colorBank,
+-    colorBankLight,
+-    color,
+-    setColor,
+-    setIsColorPickerMode,
+-    isColorPickerMode 
++  colorBank,
++  colorBankLight,
++  color,
++  setColor,
++  setIsColorPickerMode,
++  isColorPickerMode,
+ }) => {
++  return (
++    <div className="color-container">
++      <p className="settings-block-header" id="no-margin">
++        colors
++      </p>
++      <div className="toggle-btns">
++        <div className="color-and-label">
++          <button
++            className={`unset-color-btn ${color === "none" ? "selected" : ""}`}
++            onClick={() => {
++              setColor("none");
++              setIsColorPickerMode(false);
++            }}
++            title="No Color"
++          >
++            <MdFormatColorReset />
++          </button>
++          {"no color"}
++        </div>
+ 
+-    return (
+-        <div className="color-container">
+-            <p className="settings-block-header" id="no-margin">colors</p>
+-            <div className="toggle-btns">
+-                <div className="color-and-label">
+-                    <button
+-                        className={`unset-color-btn ${color === 'none' ? 'selected' : ''}`}
+-                        onClick={() => {
+-                            setColor('none');
+-                            setIsColorPickerMode(false);
+-                        }}
+-                        title="No Color"
+-                    >
+-                        <MdFormatColorReset />
+-                    </button>
+-                    {"no color"}
+-                </div>
+-
+-                <div className="color-and-label">
+-                    <input
+-                        id="label"
+-                        type="color"
+-                        value={color === 'none' ? '#000000' : color}
+-                        onChange={(e) => {
+-                            setColor(e.target.value);
+-                            setIsColorPickerMode(false);
+-                        }}
+-                        className={`color ${color !== 'none' ? 'selected' : ''}`}
+-                    />
+-                    <label htmlFor="label" style={{ whiteSpace: 'nowrap' }}>color wheel</label>
+-                </div>
+-
+-                <div className="color-and-label">
+-                    <button
+-                        value={color === 'none' ? '#000000' : color}
+-                        onClick={(e) => {
+-                            setIsColorPickerMode(prev => !prev);
+-                        }}
+-                        className={`color-picker ${isColorPickerMode ? 'selected' : ''}`}
+-                        aria-label="Toggle color picker"
+-                    >
+-                        <CgColorPicker size={30}/>
+-                    </button>
+-                        {isColorPickerMode}
+-                    {"color picker"}
+-                </div> 
+-            </div>
++        <div className="color-and-label">
++          <input
++            id="label"
++            type="color"
++            value={color === "none" ? "#000000" : color}
++            onChange={(e) => {
++              setColor(e.target.value);
++              setIsColorPickerMode(false);
++            }}
++            className={`color ${color !== "none" ? "selected" : ""}`}
++          />
++          <label htmlFor="label" style={{ whiteSpace: "nowrap" }}>
++            color wheel
++          </label>
++        </div>
+ 
+-            <div className="preset-colors">
+-                <div className="color-row">
++        <div className="color-and-label">
++          <button
++            value={color === "none" ? "#000000" : color}
++            onClick={(e) => {
++              setIsColorPickerMode((prev) => !prev);
++            }}
++            className={`color-picker ${isColorPickerMode ? "selected" : ""}`}
++            aria-label="Toggle color picker"
++          >
++            <CgColorPicker size={30} />
++          </button>
++          {isColorPickerMode}
++          {"color picker"}
++        </div>
++      </div>
+ 
+-                    {colorBank.map((c, index) => (
+-                        <div
+-                            key={index}
+-                            type="color-options"
+-                            value={c}
+-                            onClick={() => {
+-                                setColor(c);
+-                                setIsColorPickerMode(false);
+-                            }}
+-                            style={{ backgroundColor: c }}
+-                            className={`color-options ${color === c ? 'selected' : ''}`}
+-                        />
+-                    ))}
+-                </div>
+-                <div className="color-row">
+-                    {colorBankLight.map((c, index) => (
+-                        <div
+-                            key={index}
+-                            type="color-options"
+-                            value={c}
+-                            onClick={() => {
+-                                setColor(c);
+-                                setIsColorPickerMode(false);
+-                            }}
+-                            style={{ backgroundColor: c }}
+-                            className={`color-options ${color === c ? 'selected' : ''}`}
+-                        />
+-                    ))}
+-                </div>
+-            </div>
++      <div className="preset-colors">
++        <div className="color-row">
++          {colorBank.map((c, index) => (
++            <div
++              key={index}
++              type="color-options"
++              value={c}
++              onClick={() => {
++                setColor(c);
++                setIsColorPickerMode(false);
++              }}
++              style={{ backgroundColor: c }}
++              className={`color-options ${color === c ? "selected" : ""}`}
++            />
++          ))}
++        </div>
++        <div className="color-row">
++          {colorBankLight.map((c, index) => (
++            <div
++              key={index}
++              type="color-options"
++              value={c}
++              onClick={() => {
++                setColor(c);
++                setIsColorPickerMode(false);
++              }}
++              style={{ backgroundColor: c }}
++              className={`color-options ${color === c ? "selected" : ""}`}
++            />
++          ))}
+         </div>
+-    );
+-};
+\ No newline at end of file
++      </div>
++    </div>
++  );
++};
+diff --git a/src/components/Controls.jsx b/src/components/Controls.jsx
+index 7ac142c..66e2def 100644
+--- a/src/components/Controls.jsx
++++ b/src/components/Controls.jsx
+@@ -1,71 +1,77 @@
+-import '../elements/Controls.css';
+-import { FaArrowRight, FaArrowLeft, FaArrowUp, FaArrowDown} from "react-icons/fa";
++import "../elements/Controls.css";
++import {
++  FaArrowRight,
++  FaArrowLeft,
++  FaArrowUp,
++  FaArrowDown,
++} from "react-icons/fa";
+ 
+ export const StringControls = ({ side, strings, setStrings }) => {
+-    // functions for modifying the visible strings on the fretboard
+-    const onIncreaseHighestString = () => {
+-        const id = strings.length > 0 ? strings[0].id - 1 : 0;
+-        setStrings([{id: id, midi: 64}, ...strings]); // add an extra E4 (midi = 64) string
+-        // console.log(strings);
+-    };
++  // functions for modifying the visible strings on the fretboard
++  const onIncreaseHighestString = () => {
++    const id = strings.length > 0 ? strings[0].id - 1 : 0;
++    setStrings([{ id: id, midi: 64 }, ...strings]); // add an extra E4 (midi = 64) string
++    // console.log(strings);
++  };
+ 
+-    const onDecreaseHighestString = () => {
+-        setStrings(strings.slice(1))
+-        // console.log(strings);
+-    };
++  const onDecreaseHighestString = () => {
++    setStrings(strings.slice(1));
++    // console.log(strings);
++  };
+ 
+-    const onIncreaseLowestString = () => {
+-        const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
+-        setStrings([...strings, {id: id, midi: 40}]); // add an extra E2 (midi = 40) string
+-        // console.log(strings);
+-    };
++  const onIncreaseLowestString = () => {
++    const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
++    setStrings([...strings, { id: id, midi: 40 }]); // add an extra E2 (midi = 40) string
++    // console.log(strings);
++  };
+ 
+-    const onDecreaseLowestString = () => {
+-        setStrings(strings.slice(0, -1));
+-        // console.log(strings);
+-    };
+-    
+-    const isHighest = side === "highest";
+-    return (
+-        <div className="modify-number-strings">
+-            {strings.length <= 12 && (
+-                <button
+-                    onClick={isHighest ? onIncreaseHighestString : onIncreaseLowestString }
+-                >
+-                    {isHighest ? <FaArrowUp /> : <FaArrowDown />}
+-                </button>
+-            )}
+-            {strings.length > 1 && (
+-                <button
+-                    onClick={isHighest ? onDecreaseHighestString : onDecreaseLowestString}
+-                >
+-                    {isHighest ? <FaArrowDown /> : <FaArrowUp />}
+-                </button>
+-            )}
+-        </div>
+-    );
++  const onDecreaseLowestString = () => {
++    setStrings(strings.slice(0, -1));
++    // console.log(strings);
++  };
++
++  const isHighest = side === "highest";
++  return (
++    <div className="modify-number-strings">
++      {strings.length <= 12 && (
++        <button
++          onClick={isHighest ? onIncreaseHighestString : onIncreaseLowestString}
++        >
++          {isHighest ? <FaArrowUp /> : <FaArrowDown />}
++        </button>
++      )}
++      {strings.length > 1 && (
++        <button
++          onClick={isHighest ? onDecreaseHighestString : onDecreaseLowestString}
++        >
++          {isHighest ? <FaArrowDown /> : <FaArrowUp />}
++        </button>
++      )}
++    </div>
++  );
+ };
+ 
+-export const FretControls = ({ side, canIncrease, canDecrease, onIncrease, onDecrease, numFrets }) => {
+-    const isLeft = side === "left";
+-    return (
+-        <div className="modify-number-frets">
+-            {canIncrease && (
+-                <button 
+-                    className={`increase-frets-${side}`}
+-                    onClick={onIncrease}
+-                > 
+-                    {isLeft ? <FaArrowLeft /> : <FaArrowRight />}
+-                </button>
+-            )}
+-            {(numFrets > 3 && canDecrease) && (
+-                <button
+-                    className={`decrease-frets-${side}`}
+-                    onClick={onDecrease}
+-                >
+-                    {isLeft ? <FaArrowRight /> : <FaArrowLeft />}
+-                </button>
+-            )}
+-        </div>
+-    );
+-};
+\ No newline at end of file
++export const FretControls = ({
++  side,
++  canIncrease,
++  canDecrease,
++  onIncrease,
++  onDecrease,
++  numFrets,
++}) => {
++  const isLeft = side === "left";
++  return (
++    <div className="modify-number-frets">
++      {canIncrease && (
++        <button className={`increase-frets-${side}`} onClick={onIncrease}>
++          {isLeft ? <FaArrowLeft /> : <FaArrowRight />}
++        </button>
++      )}
++      {numFrets > 3 && canDecrease && (
++        <button className={`decrease-frets-${side}`} onClick={onDecrease}>
++          {isLeft ? <FaArrowRight /> : <FaArrowLeft />}
++        </button>
++      )}
++    </div>
++  );
++};
+diff --git a/src/components/Download.jsx b/src/components/Download.jsx
+index 4dd4993..2897194 100644
+--- a/src/components/Download.jsx
++++ b/src/components/Download.jsx
+@@ -1,134 +1,148 @@
+-import '../elements/Download.css';
+-import { toSvg } from 'html-to-image';
++import "../elements/Download.css";
++import { toSvg } from "html-to-image";
+ 
+ export const Download = ({
+-    NOTE_LABELS,
+-    fretboard,
+-    updateFretboard,
+-    addFretboard,
+-    isDarkMode,
+-    keyForInterval,
+-    setKeyForInterval
++  NOTE_LABELS,
++  fretboard,
++  updateFretboard,
++  addFretboard,
++  isDarkMode,
++  keyForInterval,
++  setKeyForInterval,
+ }) => {
+-    const downloadSVG = () => {
+-        const fretboardNode = document.querySelector('.fretboard-interface.active');
+-        toSvg(fretboardNode, {
+-            style: {
+-                backgroundColor: isDarkMode ? '#141414' : 'transparent',
+-                boxShadow: 'none',
+-                border: '2px solid transparent',
+-                borderRadius: '0',
+-                transition: 'none',
+-            }
+-        })
+-        .then(dataUrl => {
+-            const link = document.createElement('a');
+-            link.download = 'fretboard-diagram.svg';
+-            link.href = dataUrl;
+-            link.click();
+-        })
+-        .catch(err => {
+-            console.error('Failed to save fretboard as SVG:', err);
+-        });
+-    };
++  const downloadSVG = () => {
++    const fretboardNode = document.querySelector(".fretboard-interface.active");
++    toSvg(fretboardNode, {
++      style: {
++        backgroundColor: isDarkMode ? "#141414" : "transparent",
++        boxShadow: "none",
++        border: "2px solid transparent",
++        borderRadius: "0",
++        transition: "none",
++      },
++    })
++      .then((dataUrl) => {
++        const link = document.createElement("a");
++        link.download = "fretboard-diagram.svg";
++        link.href = dataUrl;
++        link.click();
++      })
++      .catch((err) => {
++        console.error("Failed to save fretboard as SVG:", err);
++      });
++  };
+ 
+-    const downloadJSON = () => {
+-        const data = {
+-            id: fretboard.id,
+-            strings: fretboard.strings,
+-            noteToColor: fretboard.noteToColor,
+-            noteLabel: fretboard.noteLabel,
+-            //note: for old jsons, NOTE_LABELS.INTERVAL = 2
+-            keyForInterval: (fretboard.noteLabel === NOTE_LABELS.INTERVAL || fretboard.noteLabel === 2) ? keyForInterval : undefined,
+-            firstVisibleFretIndex: fretboard.firstVisibleFretIndex,
+-            lastVisibleFretIndex: fretboard.lastVisibleFretIndex,
+-            hideNotes: fretboard.hideNotes,
+-            showSharps: fretboard.showSharps,
+-        }
+-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+-        const url = URL.createObjectURL(blob);
+-        const a = document.createElement('a');
+-        a.href = url;
+-        a.download = 'fretboard-diagram.json';
+-        a.click();
+-        URL.revokeObjectURL(url);
++  const downloadJSON = () => {
++    const data = {
++      id: fretboard.id,
++      strings: fretboard.strings,
++      noteToColor: fretboard.noteToColor,
++      noteLabel: fretboard.noteLabel,
++      //note: for old jsons, NOTE_LABELS.INTERVAL = 2
++      keyForInterval:
++        fretboard.noteLabel === NOTE_LABELS.INTERVAL ||
++        fretboard.noteLabel === 2
++          ? keyForInterval
++          : undefined,
++      firstVisibleFretIndex: fretboard.firstVisibleFretIndex,
++      lastVisibleFretIndex: fretboard.lastVisibleFretIndex,
++      hideNotes: fretboard.hideNotes,
++      showSharps: fretboard.showSharps,
+     };
++    const blob = new Blob([JSON.stringify(data, null, 2)], {
++      type: "application/json",
++    });
++    const url = URL.createObjectURL(blob);
++    const a = document.createElement("a");
++    a.href = url;
++    a.download = "fretboard-diagram.json";
++    a.click();
++    URL.revokeObjectURL(url);
++  };
+ 
+-    const importJSON = (e) => {
+-        const file = e.target.files[0];
+-        if (!file) return;
++  const importJSON = (e) => {
++    const file = e.target.files[0];
++    if (!file) return;
+ 
+-        const standardTuning = [
+-            {id: 0, midi: 64}, // E4
+-            {id: 1, midi: 59}, // B3
+-            {id: 2, midi: 55}, // G3
+-            {id: 3, midi: 50}, // D3
+-            {id: 4, midi: 45}, // A2
+-            {id: 5, midi: 40}, // E2
+-        ];
++    const standardTuning = [
++      { id: 0, midi: 64 }, // E4
++      { id: 1, midi: 59 }, // B3
++      { id: 2, midi: 55 }, // G3
++      { id: 3, midi: 50 }, // D3
++      { id: 4, midi: 45 }, // A2
++      { id: 5, midi: 40 }, // E2
++    ];
+ 
+-        const reader = new FileReader();
+-        reader.onload = (event) => {
+-            let payload;
+-            try {
+-                const data = JSON.parse(event.target.result);
+-                // this code makes it so the jsons created before I
+-                // changed the notelabel from int to string still work
+-                let x = data.noteLabel;
+-                if (x === 0) {
+-                    x = NOTE_LABELS.SPN;
+-                } else if (x === 1) {
+-                    x = NOTE_LABELS.NO_SPN;
+-                } else if (x === 2) {
+-                    x = NOTE_LABELS.INTERVAL;
+-                } else if (x === 3) {
+-                    x = NOTE_LABELS.BLANK;
+-                }
+-                payload = {
+-                    strings: data.strings ?? standardTuning,
+-                    noteToColor: data.noteToColor ?? {},
+-                    noteLabel: x ?? 0,
+-                    firstVisibleFretIndex: data.firstVisibleFretIndex ?? 0,
+-                    lastVisibleFretIndex: data.lastVisibleFretIndex ?? 12,
+-                    hideNotes: data.hideNotes === false || data.hideNotes === 'false',
+-                    showSharps: data.showSharps === true || data.showSharps === 'true',
+-                }
+-                setKeyForInterval(data.keyForInterval ?? 'C');
+-            } catch (err) {
+-                payload = {
+-                    strings: standardTuning,
+-                    noteToColor: {},
+-                    noteLabel: NOTE_LABELS.SPN,
+-                    firstVisibleFretIndex: 0,
+-                    lastVisibleFretIndex: 12,
+-                    hideNotes: false,
+-                    showSharps: true,
+-                };
+-            }
+-            const newFretboardId = addFretboard();
+-            updateFretboard(newFretboardId, payload);
+-            e.target.value = '';
++    const reader = new FileReader();
++    reader.onload = (event) => {
++      let payload;
++      try {
++        const data = JSON.parse(event.target.result);
++        // this code makes it so the jsons created before I
++        // changed the notelabel from int to string still work
++        let x = data.noteLabel;
++        if (x === 0) {
++          x = NOTE_LABELS.SPN;
++        } else if (x === 1) {
++          x = NOTE_LABELS.NO_SPN;
++        } else if (x === 2) {
++          x = NOTE_LABELS.INTERVAL;
++        } else if (x === 3) {
++          x = NOTE_LABELS.BLANK;
++        }
++        payload = {
++          strings: data.strings ?? standardTuning,
++          noteToColor: data.noteToColor ?? {},
++          noteLabel: x ?? 0,
++          firstVisibleFretIndex: data.firstVisibleFretIndex ?? 0,
++          lastVisibleFretIndex: data.lastVisibleFretIndex ?? 12,
++          hideNotes: data.hideNotes === false || data.hideNotes === "false",
++          showSharps: data.showSharps === true || data.showSharps === "true",
++        };
++        setKeyForInterval(data.keyForInterval ?? "C");
++      } catch (err) {
++        payload = {
++          strings: standardTuning,
++          noteToColor: {},
++          noteLabel: NOTE_LABELS.SPN,
++          firstVisibleFretIndex: 0,
++          lastVisibleFretIndex: 12,
++          hideNotes: false,
++          showSharps: true,
+         };
+-        reader.readAsText(file);
++      }
++      const newFretboardId = addFretboard();
++      updateFretboard(newFretboardId, payload);
++      e.target.value = "";
+     };
++    reader.readAsText(file);
++  };
+ 
+-    return (
+-        <>
+-            <p className="settings-block-header">import & export</p>
+-            <div className="diagram-actions">
+-                <button className="saving" id="no-margin" onClick={downloadSVG}>download svg</button>
+-                <button className="json-download" onClick={downloadJSON} title="Save your diagram as a JSON file so you can import and reuse it later">download json</button>
+-                <label className="json-import" title="Import diagram from JSON">
+-                    import json
+-                    <input 
+-                        className="json-import-input"
+-                        type="file"
+-                        accept=".json" 
+-                        onChange={importJSON}
+-                        style={{ display: "none" }}
+-                    />
+-                </label>
+-            </div>
+-        </>
+-    )
+-}
+\ No newline at end of file
++  return (
++    <>
++      <p className="settings-block-header">import & export</p>
++      <div className="diagram-actions">
++        <button className="saving" id="no-margin" onClick={downloadSVG}>
++          download svg
++        </button>
++        <button
++          className="json-download"
++          onClick={downloadJSON}
++          title="Save your diagram as a JSON file so you can import and reuse it later"
++        >
++          download json
++        </button>
++        <label className="json-import" title="Import diagram from JSON">
++          import json
++          <input
++            className="json-import-input"
++            type="file"
++            accept=".json"
++            onChange={importJSON}
++            style={{ display: "none" }}
++          />
++        </label>
++      </div>
++    </>
++  );
++};
+diff --git a/src/components/Fretboard.jsx b/src/components/Fretboard.jsx
+index 20fb0e9..4dfc276 100644
+--- a/src/components/Fretboard.jsx
++++ b/src/components/Fretboard.jsx
+@@ -1,254 +1,249 @@
+-import { useEffect, useState } from 'react'
+-import '../elements/Fretboard.css';
+-import Soundfont from 'soundfont-player';
++import { useEffect, useState } from "react";
++import "../elements/Fretboard.css";
++import Soundfont from "soundfont-player";
+ 
+ export const FretboardInterface = ({
+-    fretboard,
+-    fretboards,
+-    curFretboardId,
+-    setCurFretboardId,
+-    updateFretboard,
+-    color,
+-    setColor,
+-    isColorPickerMode,
+-    setIsColorPickerMode,
+-    toggles,
+-    formatNote
++  fretboard,
++  fretboards,
++  curFretboardId,
++  setCurFretboardId,
++  updateFretboard,
++  color,
++  setColor,
++  isColorPickerMode,
++  setIsColorPickerMode,
++  toggles,
++  formatNote,
+ }) => {
++  const { isDarkMode, lefty, playAudio } = toggles;
+ 
+-    const {isDarkMode, lefty, playAudio} = toggles;
+-    
+-    const firstVisibleFretIndex = fretboard.firstVisibleFretIndex;
+-    const lastVisibleFretIndex = fretboard.lastVisibleFretIndex;
+-    const noteToColor = fretboard.noteToColor;
++  const firstVisibleFretIndex = fretboard.firstVisibleFretIndex;
++  const lastVisibleFretIndex = fretboard.lastVisibleFretIndex;
++  const noteToColor = fretboard.noteToColor;
+ 
+-    const numFrets = lastVisibleFretIndex - firstVisibleFretIndex + 1;
+-    
+-    useEffect(() => {
+-        // console.log("noteToColor changed:", noteToColor);
+-    }, [noteToColor]);
+-    // load the soundfont library on page load, prevents audio delay
+-    const [instrument, setInstrument] = useState(null);
+-    useEffect(() => {
+-        const audioCtx = new AudioContext();
+-        Soundfont.instrument(audioCtx, 'acoustic_guitar_nylon')
+-            .then((instrument) => {
+-                setInstrument(instrument);
+-                instrument.play(60, 0, { gain: 0, duration: 0.01 });
+-            })
+-            .catch((error) => {
+-                console.error('Error loading instrument:', error);
+-            }
+-        );
+-    }, []);
++  const numFrets = lastVisibleFretIndex - firstVisibleFretIndex + 1;
+ 
+-    // midi notes: 57=A3, 52=E3, etc.
+-    // stringIndex = 0 (top string) to 5 (bottom string)
+-    // if playAudio is true, play the note when clicked, and if color is set, apply the color to the note
+-    const selectNote = (note, stringIndex) => {
+-        if (note > 108) return; // note is out of range, so ignore it
++  // load the soundfont library on page load, prevents audio delay
++  const [instrument, setInstrument] = useState(null);
++  useEffect(() => {
++    const audioCtx = new AudioContext();
++    Soundfont.instrument(audioCtx, "acoustic_guitar_nylon")
++      .then((instrument) => {
++        setInstrument(instrument);
++        instrument.play(60, 0, { gain: 0, duration: 0.01 });
++      })
++      .catch((error) => {
++        console.error("Error loading instrument:", error);
++      });
++  }, []);
+ 
+-        if (playAudio && instrument) {
+-            instrument.play(note, 0, { gain: 1, duration: 1.5 });
+-        }
++  // if playAudio is true, play the note when clicked, and if color is set, apply the color to the note
++  // note as given as a midi value
++  // stringIdx: 0 is top e string, 6 is bottom E string
++  const selectNote = (note, stringIdx) => {
++    if (instrument && note < 109 && playAudio) {
++      instrument.play(note, 0, { gain: 1, duration: 1.5 });
++    }
+ 
+-        const noteToColor = fretboard.noteToColor;
+-        if (isColorPickerMode) {
+-            setIsColorPickerMode(false);
+-            if (!(noteToColor[`${note}-${stringIndex}`])) {
+-                setColor("none");
+-                return;
+-            }
+-            setColor(noteToColor[`${note}-${stringIndex}`]);
+-            return;
+-        }
+-        
+-        // console.log("start---------");
+-        // console.log(color);
+-        // console.log(noteToColor);
+-        // console.log("end---------");
+-        if ((color === noteToColor[`${note}-${stringIndex}`])) {  // or if the user clicks a note with the same color, reset it
+-            // console.log("if1:"+noteColor);
+-            delete noteToColor[`${note}-${stringIndex}`];
+-            updateFretboard(fretboard.id, { noteToColor });
+-            // console.log("-noteToColor:");
+-            // for (const [key, value] of Object.entries(noteToColor)) { console.log(key, value); }
++    const noteToColor = fretboard.noteToColor;
++    if (isColorPickerMode) {
++      setIsColorPickerMode(false);
++      if (!noteToColor[`${note}-${stringIdx}`]) {
++        setColor("none");
++        return;
++      }
++      setColor(noteToColor[`${note}-${stringIdx}`]);
++      return;
++    }
++    
++    // if the user clicks a note with the same color, reset it
++    if (color === noteToColor[`${note}-${stringIdx}`]) {
++      delete noteToColor[`${note}-${stringIdx}`];
++      updateFretboard(fretboard.id, { noteToColor });
++    } else if (color !== "none") { // if a color has been set, then apply it to the note
++      updateFretboard(fretboard.id, {
++        noteToColor: {
++          ...noteToColor,
++          [`${note}-${stringIdx}`]: color,
++        },
++      });
++    }
++  };
+ 
+-            // console.log("color="+color);
+-        } else if (color !== 'none') { // if a color has been set, then apply it to the note
+-            // console.log("if2:"+noteColor);
+-            // console.log("[`${note}-${stringIndex}`]: color => " + note +", "+stringIndex + ": " +color);
+-            updateFretboard(fretboard.id, {
+-                noteToColor: {
+-                    ...noteToColor,
+-                    [`${note}-${stringIndex}`]: color
+-                }
+-            });
+-            // console.log("-noteToColor:");
+-            // for (const [key, value] of Object.entries(noteToColor)) { console.log(key, value); }
+-            // console.log("color="+color);
+-        }
+-    };
++  // noteMidiValue: the midi value of a note (64 => E4 note)
++  // getStringNotes returns all the notes that belong to the string
++  const getStringNotes = (noteMidiValue) => {
++    let stringNotes = [];
++    const startIndex = noteMidiValue;
++    const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
++    if (lefty) {
++      for (
++        let i = startIndex + lastVisibleFretIndex;
++        i >= startIndexWithOffset;
++        i--
++      ) {
++        stringNotes.push(i);
++      }
++    } else {
++      for (
++        let i = startIndexWithOffset;
++        i < startIndex + lastVisibleFretIndex + 1;
++        i++
++      ) {
++        stringNotes.push(i);
++      }
++    }
++    return stringNotes;
++  };
+ 
+-    // noteMidiValue: the midi value of a note (64 => E4 note)
+-    // getStringNotes returns all the notes that belong to the string
+-    const getStringNotes = (noteMidiValue) => {
+-        
+-        let stringNotes = [];
+-        const startIndex = noteMidiValue;
+-        const startIndexWithOffset = startIndex + firstVisibleFretIndex; // add firstVisibleFretIndex offset user sets
+-        if (lefty) {
+-            for (let i = startIndex + lastVisibleFretIndex; i >= startIndexWithOffset; i--) {
+-                stringNotes.push(i);
+-            }
+-        } else {
+-            // console.log("startIndexWithOffset="+startIndexWithOffset+"; startIndex="+startIndex+"; lastVisibleFretIndex="+lastVisibleFretIndex);
+-            for (let i = startIndexWithOffset; i < startIndex + lastVisibleFretIndex + 1; i++) {
+-                stringNotes.push(i);
+-            }
+-        }
+-        return stringNotes;
+-    };
++  // notes should be positioned in the middle of the fret markers
++  // exception: the first note of a string (e.g. EADGBE in standard tuning) should be placed slightly before the "zero-th" fret marker
++  const getNotePositions = () => {
++    let placements = [];
++    let firstFretPosition = 100 / numFrets;
++    // first notes of the strings (e.g. EADGBE in standard tuning) should be placed slightly before "zero-th" fret marker
++    // only do so when its the zero-th fret, even if the user changes its visibility
++    if (lefty) {
++      let i;
++      for (i = 1; i < numFrets; i++) {
++        placements.push(firstFretPosition * i - firstFretPosition / 2);
++      }
++      if (lastVisibleFretIndex === numFrets - 1) {
++        placements.push(firstFretPosition * i - firstFretPosition / 1.66);
++      } else {
++        placements.push(firstFretPosition * i - firstFretPosition / 2);
++      }
++      return placements;
++    }
++    let i = 2;
++    if (firstVisibleFretIndex === 0) {
++      placements.push(firstFretPosition - firstFretPosition / 3); // div by 3 is a nice offset to div by 2 (which is used for other note placements not on the 0th fret)
++    } else {
++      // i is changed here to account for when the first visible fret isn't pushed to the placements array
++      i = 1;
++    }
++    // the other notes of the strings are placed in the midpoints of the frets
++    for (; i <= numFrets; i++) {
++      placements.push(firstFretPosition * i - firstFretPosition / 2);
++    }
++    // console.log(placements);
++    return placements;
++  };
+ 
+-    // notes should be positioned in the middle of the fret markers
+-    // exception: the first note of a string (e.g. EADGBE in standard tuning) should be placed slightly before the "zero-th" fret marker
+-    const getNotePositions = () => {
+-        let placements = [];
+-        let firstFretPosition = 100 / numFrets;
+-        // first notes of the strings (e.g. EADGBE in standard tuning) should be placed slightly before "zero-th" fret marker
+-        // only do so when its the zero-th fret, even if the user changes its visibility
+-        if (lefty) {
+-            let i;
+-            for (i = 1; i < numFrets; i++) {
+-                placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+-            }
+-            if (lastVisibleFretIndex === numFrets - 1) {
+-                placements.push((firstFretPosition * i) - firstFretPosition / 1.66);
+-            } else {
+-                placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+-            }
+-            return placements;
+-        }
+-        let i = 2;
+-        if (firstVisibleFretIndex === 0) {
+-            placements.push(firstFretPosition - firstFretPosition / 3); // div by 3 is a nice offset to div by 2 (which is used for other note placements not on the 0th fret)
+-        } else {
+-            // i is changed here to account for when the first visible fret isn't pushed to the placements array
+-            i = 1;
+-        }
+-        // the other notes of the strings are placed in the midpoints of the frets
+-        for (; i <= numFrets; i++) {
+-            placements.push((firstFretPosition * i) - (firstFretPosition / 2));
+-        }
+-        // console.log(placements);
+-        return placements;
+-    };
++  // returns true if fretIndex is on the zero-th fret and the first visible fret is the zero-th fret
++  // used for styling, making it apparent where the start of the fretboard is
++  const isZerothFret = (fretIndex) => {
++    if (lefty)
++      return (
++        lastVisibleFretIndex === numFrets - 1 && fretIndex === numFrets - 2
++      );
++    else return firstVisibleFretIndex === 0 && fretIndex === 0;
++  };
+ 
+-    // returns true if fretIndex is on the zero-th fret and the first visible fret is the zero-th fret
+-    // used for styling, making it apparent where the start of the fretboard is
+-    const isZerothFret = (fretIndex) => {
+-        if (lefty)
+-            return lastVisibleFretIndex === numFrets - 1 && fretIndex === numFrets - 2;
+-        else
+-            return firstVisibleFretIndex === 0 && fretIndex === 0;
+-    };
++  const fretLabels = () => {
++    let arr = Array.from(
++      { length: lastVisibleFretIndex - firstVisibleFretIndex + 1 },
++      (_, i) => firstVisibleFretIndex + i,
++    );
++    return lefty ? arr.reverse() : arr;
++  };
+ 
+-    const fretLabels = () => {
+-        let arr = Array.from(
+-            { length: lastVisibleFretIndex - firstVisibleFretIndex + 1},
+-            (_, i) => firstVisibleFretIndex + i
+-        );
+-        return lefty ? arr.reverse() : arr;
+-    };
++  const getFretMarkerPositions = (numFrets) => {
++    let placements = [];
++    let firstFretPosition = 100 / numFrets;
++    for (let i = 1; i <= numFrets; i++) {
++      placements.push(firstFretPosition * i);
++    }
++    return placements;
++  };
+ 
+-    const getFretMarkerPositions = (numFrets) => {
+-        let placements = [];
+-        let firstFretPosition = 100 / numFrets;
+-        for (let i = 1; i <= numFrets; i++) {
+-            placements.push(firstFretPosition * i);
++  return (
++    <div
++      id="fretboard-interface"
++      // className="fretboard-interface"
++      className={`fretboard-interface ${fretboard.id === curFretboardId ? "active" : "inactive"}`}
++      style={{
++        minWidth: `${numFrets * 75}px`,
++        cursor: curFretboardId === fretboard.id ? "auto" : "pointer",
++      }}
++      onClick={() => {
++        if (curFretboardId !== fretboard.id) {
++          setCurFretboardId(fretboard.id);
+         }
+-        return placements;
+-    };
++      }}
++    >
++      {/* the fretboard itself; contains the clickable note */}
++      <div className="fretboard">
++        <div className="fret-labels">
++          {fretLabels().map((fretIndex, i) => {
++            // const fretIndex = firstVisibleFretIndex + i;
++            return (
++              <div
++                key={fretIndex}
++                className="fret-label"
++                style={{ left: `${getNotePositions()[i]}%` }}
++              >
++                {fretIndex}
++              </div>
++            );
++          })}
++        </div>
+ 
+-    return (
+-        <div 
+-            id="fretboard-interface"
+-            // className="fretboard-interface"  
+-            className={`fretboard-interface ${fretboard.id === curFretboardId ? 'active' : 'inactive'}`}
+-            style={{
+-                minWidth: `${(numFrets) * 75}px`,
+-                cursor: curFretboardId === fretboard.id ? "auto" : "pointer",
+-            }}
+-            onClick={() => {
+-                if (curFretboardId !== fretboard.id) {
+-                    setCurFretboardId(fretboard.id);
+-                }
+-            }}
++        <div
++          className="string-container"
++          style={{ minWidth: `${numFrets * 75}px` }}
+         >
+-            {/* the fretboard itself; contains the clickable note */}
+-            <div className="fretboard">
+-                <div className="fret-labels">
+-                    {fretLabels().map((fretIndex, i) => {
+-                        // const fretIndex = firstVisibleFretIndex + i;
+-                        return (
+-                        <div
+-                            key={fretIndex}
+-                            className="fret-label"
+-                            style={{ left: `${getNotePositions()[i]}%` }}
+-                        >
+-                            {fretIndex}
+-                        </div>
+-                        );
+-                    })}
+-                </div>
+-
+-                <div className="string-container" style={{ minWidth: `${numFrets * 75}px` }}>
+-                    {fretboard.strings.map((stringObj) => (
+-                    <div className="string" key={stringObj.id}>
+-                        <div className="string-notes">
+-                            {/* now map the notes onto the string just generated */}
+-                            {getStringNotes(stringObj.midi).map((note, j) => 
+-                                // audible midi range is [0, 109]
+-                                note < 109 && (
+-                                    <button
+-                                        key={`${note}-${stringObj.id}`}
+-                                        // only hide notes that don't have a color given to them
+-                                        className={`note ${(fretboard.hideNotes && !noteToColor[note + "-" + stringObj.id]) ? 'hidden' : ''}`}
+-                                        style={{
+-                                            left: `${getNotePositions()[j]}%`,
+-                                            // backgroundColor: noteColorArr[note]
+-                                            backgroundColor: noteToColor[`${note}-${stringObj.id}`] != null ? noteToColor[`${note}-${stringObj.id}`] : '',
+-                                            pointerEvents: curFretboardId === fretboard.id ? "auto" : "none"
+-                                        }}
+-                                        onClick={() => selectNote(note, stringObj.id)}
+-                                    >
+-                                        {/* {note}.{stringObj.id} */}
+-                                        {/* {note} */}
+-                                        {formatNote(note, fretboard.id)}
+-                                    </button>
+-                                )
+-                            )}
+-                        </div>
+-                    </div>
+-                    ))}
+-                </div>
+-
+-                {/* fret line dividers */}
+-                {getFretMarkerPositions(numFrets).map((percent, i) => {
+-                    if (i === numFrets - 1) return <></>;
+-                    return ( 
+-                        <div 
+-                            className="fret-marker" 
+-                            style={{ 
+-                                left: `${percent}%`,
+-                                width: isZerothFret(i) ? "3px" : "2px",
+-                                backgroundColor: isZerothFret(i) ? (isDarkMode ? "#727272" : "black") : (isDarkMode ? "#434343" : "#717171")
+-                            }}
+-                        >
+-                        </div>
+-                    )
+-                })}
++          {fretboard.strings.map((stringObj) => (
++            <div className="string" key={stringObj.id}>
++              <div className="string-notes">
++                {/* now map the notes onto the string just generated */}
++                {getStringNotes(stringObj.midi).map(
++                  (note, j) =>
++                      <button
++                        key={`${note}-${stringObj.id}`}
++                        // only hide notes that don't have a color given to them
++                        className={`note ${fretboard.hideNotes && !noteToColor[note + "-" + stringObj.id] ? "hidden" : ""}`}
++                        style={{
++                          left: `${getNotePositions()[j]}%`,
++                          backgroundColor:
++                            noteToColor[`${note}-${stringObj.id}`] != null
++                              ? noteToColor[`${note}-${stringObj.id}`]
++                              : "",
++                          pointerEvents:
++                            curFretboardId === fretboard.id ? "auto" : "none",
++                        }}
++                        onClick={() => selectNote(note, stringObj.id)}
++                      >
++                        {/* {note} */}
++                        {formatNote(note, fretboard.id)}
++                      </button>
++                )}
++              </div>
+             </div>
++          ))}
+         </div>
+-    )
+-}
+\ No newline at end of file
++
++        {/* fret line dividers */}
++        {getFretMarkerPositions(numFrets).map((percent, i) => {
++          if (i === numFrets - 1) return <></>;
++          return (
++            <div
++              className="fret-marker"
++              style={{
++                left: `${percent}%`,
++                width: isZerothFret(i) ? "3px" : "2px",
++                backgroundColor: isZerothFret(i)
++                  ? isDarkMode
++                    ? "#727272"
++                    : "black"
++                  : isDarkMode
++                    ? "#434343"
++                    : "#717171",
++              }}
++            ></div>
++          );
++        })}
++      </div>
++    </div>
++  );
++};
+diff --git a/src/components/HeaderToggles.jsx b/src/components/HeaderToggles.jsx
+index cd0928c..29d2b09 100644
+--- a/src/components/HeaderToggles.jsx
++++ b/src/components/HeaderToggles.jsx
+@@ -1,45 +1,59 @@
+-
+-import '../elements/Toggle.css';
++import "../elements/Toggle.css";
+ import { MdLightMode, MdOutlineLightMode } from "react-icons/md";
+ import { FaHandPointLeft, FaHandPointRight } from "react-icons/fa";
+ import { HiVolumeUp, HiVolumeOff } from "react-icons/hi";
+ 
+ export const HeaderToggles = ({
+-    playAudio,
+-    setPlayAudio,
+-    lefty,
+-    setLefty,
+-    isDarkMode,
+-    setIsDarkMode,
++  playAudio,
++  setPlayAudio,
++  lefty,
++  setLefty,
++  isDarkMode,
++  setIsDarkMode,
+ }) => {
+-    return (
+-        <div className="toggle-btns">
+-            <div className="toggle-and-label">
+-                <button
+-                    className="toggle-audio"
+-                    aria-label={playAudio ? "Mute audio" : "Unmute audio"}
+-                    onClick={() => setPlayAudio(prev => !prev)}>
+-                    {playAudio ? <HiVolumeUp size={30} /> : <HiVolumeOff size={30} />}
+-                </button>
+-            </div>
++  return (
++    <div className="toggle-btns">
++      <div className="toggle-and-label">
++        <button
++          className="toggle-audio"
++          aria-label={playAudio ? "Mute audio" : "Unmute audio"}
++          onClick={() => setPlayAudio((prev) => !prev)}
++        >
++          {playAudio ? <HiVolumeUp size={30} /> : <HiVolumeOff size={30} />}
++        </button>
++      </div>
+ 
+-            <div className="toggle-and-label">
+-                <button
+-                    className="toggle-hand"
+-                    aria-label={lefty ? "Switch to right-handed" : "Switch to left-handed"} 
+-                    onClick={() => setLefty(prev => !prev)}>
+-                    {lefty ? < FaHandPointLeft size={30} /> : <FaHandPointRight size={30} />}
+-                </button>
+-            </div>
++      <div className="toggle-and-label">
++        <button
++          className="toggle-hand"
++          aria-label={
++            lefty ? "Switch to right-handed" : "Switch to left-handed"
++          }
++          onClick={() => setLefty((prev) => !prev)}
++        >
++          {lefty ? (
++            <FaHandPointLeft size={30} />
++          ) : (
++            <FaHandPointRight size={30} />
++          )}
++        </button>
++      </div>
+ 
+-            <div className="toggle-and-label">
+-                <button 
+-                    className="toggle-dark-mode"
+-                    aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+-                    onClick={() => setIsDarkMode(prev => !prev)}>
+-                    {isDarkMode ? < MdOutlineLightMode size={30} /> : <MdLightMode size={30} />}
+-                </button>
+-            </div>            
+-        </div>
+-    )
+-}
+\ No newline at end of file
++      <div className="toggle-and-label">
++        <button
++          className="toggle-dark-mode"
++          aria-label={
++            isDarkMode ? "Switch to light mode" : "Switch to dark mode"
++          }
++          onClick={() => setIsDarkMode((prev) => !prev)}
++        >
++          {isDarkMode ? (
++            <MdOutlineLightMode size={30} />
++          ) : (
++            <MdLightMode size={30} />
++          )}
++        </button>
++      </div>
++    </div>
++  );
++};
+diff --git a/src/components/Interface.jsx b/src/components/Interface.jsx
+index ff414c9..c59b33c 100644
+--- a/src/components/Interface.jsx
++++ b/src/components/Interface.jsx
+@@ -1,327 +1,353 @@
+-import { React, useEffect, useState } from 'react'
+-import { FretboardInterface } from './Fretboard.jsx';
+-import { Toggles } from './Toggles.jsx';
+-import { HeaderToggles } from './HeaderToggles.jsx';
+-import { ColorSelector } from './ColorSelector.jsx';
+-import { Tuning } from './Tuning.jsx';
+-import { Scale } from './Scale.jsx';
+-import { Arpeggio } from './Arpeggio.jsx';
+-import { NeckSetup } from './NeckSetup.jsx';
+-import { Download } from './Download.jsx';
+-import { IoIosMusicalNote } from 'react-icons/io';
+-import { v4 as uuidv4 } from 'uuid';
+-import { FaPlus, FaMinus } from 'react-icons/fa6';
+-import '../elements/Interface.css';
++import { React, useEffect, useState } from "react";
++import { FretboardInterface } from "./Fretboard.jsx";
++import { Toggles } from "./Toggles.jsx";
++import { HeaderToggles } from "./HeaderToggles.jsx";
++import { ColorSelector } from "./ColorSelector.jsx";
++import { Tuning } from "./Tuning.jsx";
++import { NeckSetup } from "./NeckSetup.jsx";
++import { Download } from "./Download.jsx";
++import { IoIosMusicalNote } from "react-icons/io";
++import { v4 as uuidv4 } from "uuid";
++import { FaPlus, FaMinus } from "react-icons/fa6";
++import "../elements/Interface.css";
++
++import { GeneratorScaleAndButton } from "./GeneratorScaleAndButton.jsx";
+ 
+ function Interface() {
+-    const [curFretboardId, setCurFretboardId] = useState(uuidv4());
+-    const standardTuning = [
+-        {id: 0, midi: 64},  // E4
+-        {id: 1, midi: 59},  // B3
+-        {id: 2, midi: 55},  // G3
+-        {id: 3, midi: 50},  // D3
+-        {id: 4, midi: 45},  // A2
+-        {id: 5, midi: 40},  // E2
+-    ];
+-    
+-    // enum
+-    const NOTE_LABELS = {
+-        SPN: 'octave',
+-        NO_SPN: 'no octave',
+-        INTERVAL: 'degree',
+-        BLANK: 'blank'
+-    }
++  const [curFretboardId, setCurFretboardId] = useState(uuidv4());
++  const standardTuning = [
++    { id: 0, midi: 64 }, // E4
++    { id: 1, midi: 59 }, // B3
++    { id: 2, midi: 55 }, // G3
++    { id: 3, midi: 50 }, // D3
++    { id: 4, midi: 45 }, // A2
++    { id: 5, midi: 40 }, // E2
++  ];
+ 
+-    const defaultFretboard = {
+-        id: curFretboardId,
+-        noteLabel: NOTE_LABELS.SPN,
+-        strings: [...standardTuning],
+-        color: '#5c67ff',
+-        noteToColor: {},
+-        firstVisibleFretIndex: 0,
+-        lastVisibleFretIndex: 12,
+-        hideNotes: false,
+-        showSharps: true,
+-    };
++  // enum
++  const NOTE_LABELS = {
++    SPN: "octave",
++    NO_SPN: "no octave",
++    INTERVAL: "degree",
++    BLANK: "blank",
++  };
+ 
+-    const [fretboards, setFretboards] = useState([defaultFretboard]);
++  const defaultFretboard = {
++    id: curFretboardId,
++    noteLabel: NOTE_LABELS.SPN,
++    strings: [...standardTuning],
++    color: "#5c67ff",
++    noteToColor: {},
++    firstVisibleFretIndex: 0,
++    lastVisibleFretIndex: 12,
++    hideNotes: false,
++    showSharps: true,
++  };
+ 
+-    const [keyForInterval, setKeyForInterval] = useState('C');
+-    const [root, setRoot] = useState('C');
++  const [fretboards, setFretboards] = useState([defaultFretboard]);
+ 
+-    // global toggles
+-    const useToggleState = (key, defaultVal) => {
+-        const [val, setVal] = useState(() => {
+-            const stored = localStorage.getItem(key);
+-            return stored ? JSON.parse(stored) : defaultVal;
+-        });
++  const [keyForInterval, setKeyForInterval] = useState("C");
++  const [root, setRoot] = useState("C");
+ 
+-        useEffect(() => { 
+-            localStorage.setItem(key, JSON.stringify(val));
+-        }, [key, val]);
++  // global toggles
++  const useToggleState = (key, defaultVal) => {
++    const [val, setVal] = useState(() => {
++      const stored = localStorage.getItem(key);
++      return stored ? JSON.parse(stored) : defaultVal;
++    });
+ 
+-        return [val, setVal];
+-    };
++    useEffect(() => {
++      localStorage.setItem(key, JSON.stringify(val));
++    }, [key, val]);
+ 
+-    const [playAudio, setPlayAudio] = useToggleState('playAudio', true);
++    return [val, setVal];
++  };
+ 
+-    const [lefty, setLefty] = useToggleState('lefty', false);
++  const [playAudio, setPlayAudio] = useToggleState("playAudio", true);
+ 
+-    const [isDarkMode, setIsDarkMode] = useToggleState('isDarkMode', false);
++  const [lefty, setLefty] = useToggleState("lefty", false);
+ 
+-    useEffect(() => {
+-        document.body.classList.toggle('dark', isDarkMode);
+-        localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
+-    }, [isDarkMode]);
++  const [isDarkMode, setIsDarkMode] = useToggleState("isDarkMode", false);
+ 
+-    // coloring for notes
+-    const [color, setColor] = useState('#5c67ff');
+-    const [colorBank] = useState(['#ff5c5c', '#ffbf5c', '#fff85c', '#9cff5c', '#5cf0ff', '#5c67ff', '#b25cff', '#ff5cfd']);
+-    const [colorBankLight] = useState(['#ffbebe','#ffe5be','#fffcbe','#d7ffbe','#bef9ff', '#c1beff', '#e0beff','#ffbefe']);
+-    const [isColorPickerMode, setIsColorPickerMode] = useState(false);
+-    
+-    // fretboard crud functions
+-    const addFretboard = () => {
+-        const newId = uuidv4();
+-        setFretboards(prev => {
+-            const idx = prev.findIndex(f => f.id === curFretboardId);
+-            const newFretboard = {
+-                ...defaultFretboard,
+-                id: newId,
+-            }
+-            return [...prev.slice(0, idx + 1), newFretboard, ...prev.slice(idx + 1)]
+-        });
+-        setCurFretboardId(newId);
+-        return newId;
+-    };
+-    
+-    const getFretboard = (id) => {
+-        // const fb = fretboards.find(fretboard => fretboard.id === id);
+-        // for (const str of fb.strings) {
+-        //     console.log(str.id + ', midi=' + str.midi);
+-        // }
+-        // return fb;
+-        return fretboards.find(fretboard => fretboard.id === id);
+-    }
++  const [showSharps, setShowSharps] = useToggleState("showShaps", false);
+ 
+-    const updateFretboard = (id, updates) => {
+-        setFretboards(prev =>
+-            prev.map(fretboard => fretboard.id === id ? { ...fretboard, ...updates } : fretboard)
+-        );
+-    }
++  useEffect(() => {
++    document.body.classList.toggle("dark", isDarkMode);
++    localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
++  }, [isDarkMode]);
+ 
+-    const deleteFretboard = (id) => {
+-        const confirm = window.confirm('Are you sure you want to delete this fretboard? This action cannot be undone. This will only affect the currently selected fretboard.');
+-        if (!confirm) return;
+-        setFretboards(prev => {
+-            const idx = prev.findIndex(f => f.id === id);
+-            const prevFretboard = idx < prev.length - 1 ? prev[idx + 1] : prev[0];
+-            setCurFretboardId(prevFretboard.id);
+-            return prev.filter(f => f.id !== id);
+-        });
+-    };
++  // coloring for notes
++  const [color, setColor] = useState("#5c67ff");
++  const [colorBank] = useState([
++    "#ff5c5c",
++    "#ffbf5c",
++    "#fff85c",
++    "#9cff5c",
++    "#5cf0ff",
++    "#5c67ff",
++    "#b25cff",
++    "#ff5cfd",
++  ]);
++  const [colorBankLight] = useState([
++    "#ffbebe",
++    "#ffe5be",
++    "#fffcbe",
++    "#d7ffbe",
++    "#bef9ff",
++    "#c1beff",
++    "#e0beff",
++    "#ffbefe",
++  ]);
++  const [isColorPickerMode, setIsColorPickerMode] = useState(false);
+ 
+-    // useEffect(() => {
+-    //     console.log('all fretboards:', fretboards);
+-    // }, [fretboards]);
++  // fretboard crud functions
++  const addFretboard = () => {
++    const newId = uuidv4();
++    setFretboards((prev) => {
++      const idx = prev.findIndex((f) => f.id === curFretboardId);
++      const newFretboard = {
++        ...defaultFretboard,
++        id: newId,
++      };
++      return [...prev.slice(0, idx + 1), newFretboard, ...prev.slice(idx + 1)];
++    });
++    setCurFretboardId(newId);
++    return newId;
++  };
+ 
+-    // converts midi note value to spn (64 --> E4, 59 --> B3)
+-    const formatNote = (midiNoteValue, id, mandatorySPN = false) => {
+-        const fretboard = getFretboard(id);
+-        const noteLabel = fretboard.noteLabel;
+-        const notes = fretboard.showSharps
+-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
++  const getFretboard = (id) => {
++    // const fb = fretboards.find(fretboard => fretboard.id === id);
++    // for (const str of fb.strings) {
++    //     console.log(str.id + ', midi=' + str.midi);
++    // }
++    // return fb;
++    return fretboards.find((fretboard) => fretboard.id === id);
++  };
+ 
+-        if (noteLabel === NOTE_LABELS.INTERVAL && !mandatorySPN) {
+-            let keyMidi = notes.indexOf(keyForInterval); // first midi value of key (key of f will be 5, c will be 0, etc)
+-            let note = midiNoteValue % notes.length;
+-            if (keyMidi > note) {
+-                note += 12;
+-            }
+-            const intervals = fretboard.showSharps
+-                ? ['1', '#1', '2', '#2', '3', '4', '#4', '5', '#5', '6', '#6', '7']
+-                : ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'];
+-            return <>{intervals[note - keyMidi]}</>
+-        }
++  const updateFretboard = (id, updates) => {
++    setFretboards((prev) =>
++      prev.map((fretboard) =>
++        fretboard.id === id ? { ...fretboard, ...updates } : fretboard,
++      ),
++    );
++  };
+ 
+-        const note = notes[midiNoteValue % notes.length];
+-        const octave = Math.floor(midiNoteValue / notes.length) - 1;
+-        if (noteLabel === NOTE_LABELS.SPN || mandatorySPN) { 
+-            return (
+-                <p style={{
+-                    display: 'flex',
+-                    alignItems: 'flex-end',
+-                    margin: 0
+-                }}>
+-                    <span>{note}</span>
+-                    <span
+-                        style={{
+-                            fontSize: '0.85em',
+-                            lineHeight: 1,
+-                            transform: 'translateY(2px)'
+-                        }}
+-                    >
+-                        {octave}
+-                    </span>
+-                </p>
+-            ) 
+-        }
+-        return noteLabel === NOTE_LABELS.NO_SPN ? <>{note}</> : <></>;
+-    };
++  const deleteFretboard = (id) => {
++    const confirm = window.confirm(
++      "Are you sure you want to delete this fretboard? This action cannot be undone. This will only affect the currently selected fretboard.",
++    );
++    if (!confirm) return;
++    setFretboards((prev) => {
++      const idx = prev.findIndex((f) => f.id === id);
++      const prevFretboard = idx < prev.length - 1 ? prev[idx + 1] : prev[0];
++      setCurFretboardId(prevFretboard.id);
++      return prev.filter((f) => f.id !== id);
++    });
++  };
+ 
+-    useEffect(() => {
+-        document.documentElement.style.overscrollBehavior = 'none';
+-        document.body.style.overscrollBehavior = 'none';
+-        return () => {
+-            document.documentElement.style.overscrollBehavior = '';
+-            document.body.style.overscrollBehavior = '';
+-        };
+-    }, []);
++  // useEffect(() => {
++  //     console.log('all fretboards:', fretboards);
++  // }, [fretboards]);
+ 
+-    return (
+-        <div className="app">
+-            <div className="header">
+-                <div className="title">
+-                    <IoIosMusicalNote
+-                        size={40}
+-                        style={{ transform: 'translateY(5px)' , marginRight: '-7px'}}
+-                    />
+-                    <IoIosMusicalNote
+-                        size={40}
+-                        style={{
+-                            position: 'absolute',
+-                            top: 0,
+-                            left: 0,
+-                            transform: 'translateY(17px)',
+-                            clipPath: 'inset(0 0 50% 0)',
+-                        }}
+-                    />
+-                    retboard Diagram Builder
+-                </div>
+-                <div className="toggles">
+-                    <HeaderToggles
+-                        playAudio={playAudio}
+-                        setPlayAudio={setPlayAudio}
+-                        lefty={lefty}
+-                        setLefty={setLefty}
+-                        isDarkMode={isDarkMode}
+-                        setIsDarkMode={setIsDarkMode}
+-                    />
+-                </div>
++  // converts midi note value to spn (64 --> E4, 59 --> B3)
++  const formatNote = (midiNoteValue, id, mandatorySPN = false) => {
++    const fretboard = getFretboard(id);
++    const noteLabel = fretboard.noteLabel;
++    const notes = fretboard.showSharps
++      ? ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
++      : ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
++
++    if (noteLabel === NOTE_LABELS.INTERVAL && !mandatorySPN) {
++      let keyMidi = notes.indexOf(keyForInterval); // first midi value of key (key of f will be 5, c will be 0, etc)
++      let note = midiNoteValue % notes.length;
++      if (keyMidi > note) {
++        note += 12;
++      }
++      const intervals = fretboard.showSharps
++        ? ["1", "#1", "2", "#2", "3", "4", "#4", "5", "#5", "6", "#6", "7"]
++        : ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"];
++      return <>{intervals[note - keyMidi]}</>;
++    }
++
++    const note = notes[midiNoteValue % notes.length];
++    const octave = Math.floor(midiNoteValue / notes.length) - 1;
++    if (noteLabel === NOTE_LABELS.SPN || mandatorySPN) {
++      return (
++        <p
++          style={{
++            display: "flex",
++            alignItems: "flex-end",
++            margin: 0,
++          }}
++        >
++          <span>{note}</span>
++          <span
++            style={{
++              fontSize: "0.85em",
++              lineHeight: 1,
++              transform: "translateY(2px)",
++            }}
++          >
++            {octave}
++          </span>
++        </p>
++      );
++    }
++    return noteLabel === NOTE_LABELS.NO_SPN ? <>{note}</> : <></>;
++  };
++
++  useEffect(() => {
++    document.documentElement.style.overscrollBehavior = "none";
++    document.body.style.overscrollBehavior = "none";
++    return () => {
++      document.documentElement.style.overscrollBehavior = "";
++      document.body.style.overscrollBehavior = "";
++    };
++  }, []);
++
++  return (
++    <div className="app">
++      <div className="header">
++        <div className="title">
++          <IoIosMusicalNote
++            size={40}
++            style={{ transform: "translateY(5px)", marginRight: "-7px" }}
++          />
++          <IoIosMusicalNote
++            size={40}
++            style={{
++              position: "absolute",
++              top: 0,
++              left: 0,
++              transform: "translateY(17px)",
++              clipPath: "inset(0 0 50% 0)",
++            }}
++          />
++          retboard Diagram Builder
++        </div>
++        <div className="toggles">
++          <HeaderToggles
++            playAudio={playAudio}
++            setPlayAudio={setPlayAudio}
++            lefty={lefty}
++            setLefty={setLefty}
++            isDarkMode={isDarkMode}
++            setIsDarkMode={setIsDarkMode}
++          />
++        </div>
++      </div>
++      <div className="interface">
++        <div className="settings">
++          <div className="settings-block">
++            <NeckSetup
++              fretboard={getFretboard(curFretboardId)}
++              updateFretboard={updateFretboard}
++              isDarkMode={isDarkMode}
++            />
++          </div>
++          <div className="settings-block">
++            <GeneratorScaleAndButton
++              option={"scale"}
++              fretboard={getFretboard(curFretboardId)}
++              updateFretboard={updateFretboard}
++              root={root}
++              setRoot={setRoot}
++              showSharps={showSharps}
++              color={color}
++            />
++          </div>
++          <div className="settings-block">
++            <GeneratorScaleAndButton
++              option={"arpeggio"}
++              fretboard={getFretboard(curFretboardId)}
++              updateFretboard={updateFretboard}
++              root={root}
++              setRoot={setRoot}
++              showSharps={showSharps}
++              color={color}
++            />
++          </div>
++          <div className="settings-block">
++            <div className="settings-block-toggles">
++              <ColorSelector
++                colorBank={colorBank}
++                colorBankLight={colorBankLight}
++                isColorPickerMode={isColorPickerMode}
++                setIsColorPickerMode={setIsColorPickerMode}
++                color={color}
++                setColor={setColor}
++              />
+             </div>
+-            <div className="interface">
+-                <div className="settings">
+-                    <div className="settings-block">
+-                        <NeckSetup
+-                            fretboard={getFretboard(curFretboardId)}
+-                            updateFretboard={updateFretboard}
+-                            isDarkMode={isDarkMode}
+-                        />
+-                    </div>
+-                    <div className="settings-block">
+-                        <Scale
+-                            fretboard={getFretboard(curFretboardId)}
+-                            updateFretboard={updateFretboard}
+-                            // showSharps={showSharps}
+-                            root={root}
+-                            setRoot={setRoot}
+-                            color={color}
+-                        />
+-                    </div>
+-                    <div className="settings-block">
+-                        <Arpeggio
+-                            fretboard={getFretboard(curFretboardId)}
+-                            updateFretboard={updateFretboard}
+-                            // showSharps={showSharps}
+-                            root={root}
+-                            setRoot={setRoot}
+-                            color={color}
+-                        />
+-                    </div>
+-                    <div className="settings-block">
+-                        <div className="settings-block-toggles">
+-                            <ColorSelector
+-                                colorBank={colorBank}
+-                                colorBankLight={colorBankLight}
+-                                isColorPickerMode={isColorPickerMode}
+-                                setIsColorPickerMode={setIsColorPickerMode}
+-                                color={color}
+-                                setColor={setColor}
+-                            />
+-                        </div>
+-                    </div>
+-                    <div className="settings-block">
+-                        <div className="settings-block-toggles">
+-                            <Toggles
+-                                curFretboardId={curFretboardId}
+-                                setCurFretboardId={setCurFretboardId}
+-                                fretboard={getFretboard(curFretboardId)}
+-                                updateFretboard={updateFretboard}
+-                                setRoot={setRoot}
+-                                keyForInterval={keyForInterval}
+-                                setKeyForInterval={setKeyForInterval}
+-                                NOTE_LABELS={NOTE_LABELS}
+-                            />
+-                        </div>
+-                    </div>
+-                    <div className="settings-block">
+-                        <Download
+-                            NOTE_LABELS={NOTE_LABELS}
+-                            fretboard={getFretboard(curFretboardId)}
+-                            updateFretboard={updateFretboard}
+-                            defaultFretboard={defaultFretboard}
+-                            addFretboard={addFretboard}
+-                            isDarkMode={isDarkMode}
+-                            keyForInterval={keyForInterval}
+-                            setKeyForInterval={setKeyForInterval}
+-                        />
+-                    </div>
+-                </div>
+-                <div className="fretboard-display">
+-                    <Tuning
+-                        fretboard={getFretboard(curFretboardId)}
+-                        fretboards={fretboards}
+-                        updateFretboard={updateFretboard}
+-                        formatNote={formatNote}
+-                        root={root}
+-                        setRoot={setRoot}
+-                    />
+-                    {fretboards.map((fretboard) => 
+-                        <>
+-                            <FretboardInterface
+-                                fretboard={fretboard}
+-                                fretboards={fretboards}
+-                                setCurFretboardId={setCurFretboardId}
+-                                curFretboardId={curFretboardId}
+-                                updateFretboard={updateFretboard}
+-                                color={color}
+-                                setColor={setColor}
+-                                toggles={{ isDarkMode, lefty, playAudio }}
+-                                isColorPickerMode={isColorPickerMode}
+-                                setIsColorPickerMode={setIsColorPickerMode}
+-                                formatNote={formatNote}
+-                            />
+-                            {fretboard.id === curFretboardId &&
+-                                <div className="add-remove-fretboard-btns">
+-                                    <button
+-                                        onClick={() => addFretboard()}>
+-                                        <FaPlus/>
+-                                    </button>
+-                                    {fretboards.length > 1 &&
+-                                        <button
+-                                            onClick={() => deleteFretboard(curFretboardId)}>
+-                                            <FaMinus/>
+-                                        </button>
+-                                    }
+-                                </div>
+-                            }
+-                        </>
+-                    )}
+-                </div>
++          </div>
++          <div className="settings-block">
++            <div className="settings-block-toggles">
++              <Toggles
++                curFretboardId={curFretboardId}
++                setCurFretboardId={setCurFretboardId}
++                fretboard={getFretboard(curFretboardId)}
++                updateFretboard={updateFretboard}
++                setRoot={setRoot}
++                keyForInterval={keyForInterval}
++                setKeyForInterval={setKeyForInterval}
++                NOTE_LABELS={NOTE_LABELS}
++              />
+             </div>
++          </div>
++          <div className="settings-block">
++            <Download
++              NOTE_LABELS={NOTE_LABELS}
++              fretboard={getFretboard(curFretboardId)}
++              updateFretboard={updateFretboard}
++              defaultFretboard={defaultFretboard}
++              addFretboard={addFretboard}
++              isDarkMode={isDarkMode}
++              keyForInterval={keyForInterval}
++              setKeyForInterval={setKeyForInterval}
++            />
++          </div>
++        </div>
++        <div className="fretboard-display">
++          <Tuning
++            fretboard={getFretboard(curFretboardId)}
++            fretboards={fretboards}
++            updateFretboard={updateFretboard}
++            formatNote={formatNote}
++            root={root}
++            setRoot={setRoot}
++          />
++          {fretboards.map((fretboard) => (
++            <>
++              <FretboardInterface
++                fretboard={fretboard}
++                fretboards={fretboards}
++                setCurFretboardId={setCurFretboardId}
++                curFretboardId={curFretboardId}
++                updateFretboard={updateFretboard}
++                color={color}
++                setColor={setColor}
++                toggles={{ isDarkMode, lefty, playAudio }}
++                isColorPickerMode={isColorPickerMode}
++                setIsColorPickerMode={setIsColorPickerMode}
++                formatNote={formatNote}
++              />
++              {fretboard.id === curFretboardId && (
++                <div className="add-remove-fretboard-btns">
++                  <button onClick={() => addFretboard()}>
++                    <FaPlus />
++                  </button>
++                  {fretboards.length > 1 && (
++                    <button onClick={() => deleteFretboard(curFretboardId)}>
++                      <FaMinus />
++                    </button>
++                  )}
++                </div>
++              )}
++            </>
++          ))}
+         </div>
+-    )
++      </div>
++    </div>
++  );
+ }
+ 
+-export default Interface;
+\ No newline at end of file
++export default Interface;
+diff --git a/src/components/NeckSetup.jsx b/src/components/NeckSetup.jsx
+index 3a5dec8..e855dad 100644
+--- a/src/components/NeckSetup.jsx
++++ b/src/components/NeckSetup.jsx
+@@ -2,181 +2,322 @@ import { useState, useEffect } from "react";
+ import "./../elements/NeckSetup.css";
+ import { FaPlus, FaMinus, FaArrowUp, FaArrowDown } from "react-icons/fa";
+ import { IoMdArrowDropup, IoMdArrowDropdown } from "react-icons/io";
+-export const NeckSetup = ({
+-    fretboard,
+-    updateFretboard,
+-    isDarkMode
+-}) => {
+-    const strings = fretboard.strings;
+-    const onIncreaseHighestString = () => {
+-        if (strings.length >= 15) return;
+-        const id = strings.length > 0 ? strings[0].id - 1 : 0;
+-        updateFretboard(fretboard.id, {
+-            strings: [
+-                {id, midi: 64}, // new E4 string
+-                ...strings
+-            ]
+-        });
+-        // console.log(strings); 
+-    };
++export const NeckSetup = ({ fretboard, updateFretboard, isDarkMode }) => {
++  const strings = fretboard.strings;
++  const onIncreaseHighestString = () => {
++    if (strings.length >= 15) return;
++    const id = strings.length > 0 ? strings[0].id - 1 : 0;
++    updateFretboard(fretboard.id, {
++      strings: [
++        { id, midi: 64 }, // new E4 string
++        ...strings,
++      ],
++    });
++    // console.log(strings);
++  };
+ 
+-    const onDecreaseHighestString = () => {
+-        if (strings.length <= 1) return;
+-        updateFretboard(fretboard.id, {
+-            strings: strings.slice(1)
+-        });
+-        // console.log(strings);
+-    };
++  const onDecreaseHighestString = () => {
++    if (strings.length <= 1) return;
++    updateFretboard(fretboard.id, {
++      strings: strings.slice(1),
++    });
++    // console.log(strings);
++  };
+ 
+-    const onIncreaseLowestString = () => {
+-        if (strings.length >= 15) return;
+-        const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
+-        updateFretboard(fretboard.id, {
+-            strings: [
+-                ...strings,
+-                {id, midi: 40} // new E2 string
+-            ]
+-        });
+-        // console.log(strings);
+-    };
++  const onIncreaseLowestString = () => {
++    if (strings.length >= 15) return;
++    const id = strings.length > 0 ? strings[strings.length - 1].id + 1 : 0;
++    updateFretboard(fretboard.id, {
++      strings: [
++        ...strings,
++        { id, midi: 40 }, // new E2 string
++      ],
++    });
++    // console.log(strings);
++  };
+ 
+-    const onDecreaseLowestString = () => {
+-        if (strings.length <= 1) return;
+-        updateFretboard(fretboard.id, {
+-            strings: strings.slice(0, -1)
+-        });
+-        // console.log(strings);
+-    };
+-    
+-    const handleFirstChange = (e) => {
+-        const val = e.target.value;
+-        if (Number(val) > fretboard.lastVisibleFretIndex) {
+-            updateFretboard(fretboard.id, { firstVisibleFretIndex: fretboard.lastVisibleFretIndex })
+-            return;
+-        } else if (Number(val) < 0) {
+-            updateFretboard(fretboard.id, { firstVisibleFretIndex: 0 })
+-            return;
+-        }
+-        updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(val)})
+-    };
++  const onDecreaseLowestString = () => {
++    if (strings.length <= 1) return;
++    updateFretboard(fretboard.id, {
++      strings: strings.slice(0, -1),
++    });
++    // console.log(strings);
++  };
+ 
+-    const handleLastChange = (e) => {
+-        const val = e.target.value;
+-        if (Number(val) < fretboard.firstVisibleFretIndex) {
+-            updateFretboard(fretboard.id, { lastVisibleFretIndex: fretboard.firstVisibleFretIndex })
+-            return;
+-        } else if (Number(val) < 0) {
+-            updateFretboard(fretboard.id, { lastVisibleFretIndex: 0 })
+-            return;
+-        } else if (Number(val) > 48) {
+-            updateFretboard(fretboard.id, { lastVisibleFretIndex: 48 })
+-            return;
+-        }
+-        updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(val)})
+-    };
+-
+-    const svg = () => {
+-        const color = isDarkMode ? "#fffff1" : "black";
+-        return (
+-            <svg 
+-                viewBox="0 0 64 42" 
+-                width="64px" 
+-                height="42px" 
+-                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+-                xmlns="http://www.w3.org/2000/svg"
+-                >
+-
+-                <rect x="7" y="4" width="4" height="36" rx="1.5" ry="1.5" fill={color} />
+-                <rect x="7" y="3" width="53" height="5" rx="1.5" ry="1.5" fill="#ff4500" />
+-                <rect x="7" y="11" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="18" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="25" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="31.5" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="38" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-            </svg>
+-            );
++  const handleFirstChange = (e) => {
++    const val = e.target.value;
++    if (Number(val) > fretboard.lastVisibleFretIndex) {
++      updateFretboard(fretboard.id, {
++        firstVisibleFretIndex: fretboard.lastVisibleFretIndex,
++      });
++      return;
++    } else if (Number(val) < 0) {
++      updateFretboard(fretboard.id, { firstVisibleFretIndex: 0 });
++      return;
+     }
++    updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(val) });
++  };
+ 
+-    const svg2 = () => {
+-        const color = isDarkMode ? "#fffff1" : "black";
+-        return (
+-            <svg 
+-                viewBox="0 0 64 42" 
+-                width="64px" 
+-                height="42px" 
+-                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+-                xmlns="http://www.w3.org/2000/svg"
+-                >
+-                <rect x="7" y="3" width="4" height="36" rx="1.5" ry="1.5" fill={color} />
+-                <rect x="7" y="3" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="10" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="17" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="24" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="30.5" width="53" height="2.2" rx="0.8" ry="0.8" fill={color} />
+-                <rect x="7" y="35" width="53" height="5" rx="1.5" ry="1.5" fill="#ff4500" />
+-            </svg>
+-        );
++  const handleLastChange = (e) => {
++    const val = e.target.value;
++    if (Number(val) < fretboard.firstVisibleFretIndex) {
++      updateFretboard(fretboard.id, {
++        lastVisibleFretIndex: fretboard.firstVisibleFretIndex,
++      });
++      return;
++    } else if (Number(val) < 0) {
++      updateFretboard(fretboard.id, { lastVisibleFretIndex: 0 });
++      return;
++    } else if (Number(val) > 48) {
++      updateFretboard(fretboard.id, { lastVisibleFretIndex: 48 });
++      return;
+     }
++    updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(val) });
++  };
+ 
++  const svg = () => {
++    const color = isDarkMode ? "#fffff1" : "black";
+     return (
+-        <div className="neck-setup-interface">
+-            <p className="settings-block-header">neck setup</p>
++      <svg
++        viewBox="0 0 64 42"
++        width="64px"
++        height="42px"
++        style={{ display: "inline-block", verticalAlign: "middle" }}
++        xmlns="http://www.w3.org/2000/svg"
++      >
++        <rect
++          x="7"
++          y="4"
++          width="4"
++          height="36"
++          rx="1.5"
++          ry="1.5"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="3"
++          width="53"
++          height="5"
++          rx="1.5"
++          ry="1.5"
++          fill="#ff4500"
++        />
++        <rect
++          x="7"
++          y="11"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="18"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="25"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="31.5"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="38"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++      </svg>
++    );
++  };
+ 
+-            <div className="neck-setup-input">
+-                <label htmlFor="first-fret" className="settings-block-label">frets</label>
+-                <input
+-                    id="first-fret"
+-                    type="number"
+-                    value={fretboard.firstVisibleFretIndex}
+-                    onChange={handleFirstChange}
+-                    onBlur={() => updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex) })}
+-                    onKeyDown={(e) => {
+-                        if (e.key === "Enter") {
+-                            updateFretboard(fretboard.id, { firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex) });
+-                        }
+-                    }}
+-                    style={{ width: "40px", margin: "0 8px" }}
+-                />
+-                <label className="settings-block-label" htmlFor="last-fret">to</label>
+-                <input
+-                    id="last-fret"
+-                    type="number"
+-                    value={fretboard.lastVisibleFretIndex}
+-                    onChange={handleLastChange}
+-                    onBlur={() =>
+-                        updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex) })
+-                    }
+-                    onKeyDown={(e) => {
+-                        if (e.key === "Enter") {
+-                            updateFretboard(fretboard.id, { lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex) })
+-                        }
+-                    }}
+-                    style={{ width: "40px", margin: "0 8px" }}
+-                />
+-            </div>
++  const svg2 = () => {
++    const color = isDarkMode ? "#fffff1" : "black";
++    return (
++      <svg
++        viewBox="0 0 64 42"
++        width="64px"
++        height="42px"
++        style={{ display: "inline-block", verticalAlign: "middle" }}
++        xmlns="http://www.w3.org/2000/svg"
++      >
++        <rect
++          x="7"
++          y="3"
++          width="4"
++          height="36"
++          rx="1.5"
++          ry="1.5"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="3"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="10"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="17"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="24"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="30.5"
++          width="53"
++          height="2.2"
++          rx="0.8"
++          ry="0.8"
++          fill={color}
++        />
++        <rect
++          x="7"
++          y="35"
++          width="53"
++          height="5"
++          rx="1.5"
++          ry="1.5"
++          fill="#ff4500"
++        />
++      </svg>
++    );
++  };
+ 
+-            <div className="change-strings">
+-                <div className="arrows-and-svg">
+-                    <button type="button" aria-label="Increase highest string" onClick={onIncreaseHighestString}>
+-                        <IoMdArrowDropup />
+-                    </button>
+-                    {svg()}
+-                    <button type="button" aria-label="Decrease highest string" onClick={onDecreaseHighestString}>
+-                        <IoMdArrowDropdown />
+-                    </button>
+-                </div>
+-                <div className="arrows-and-svg">
+-                    <button type="button" aria-label="Increase highest string" onClick={onDecreaseLowestString}>
+-                        <IoMdArrowDropup />
+-                    </button>
+-                    {svg2()}
+-                    <button type="button" aria-label="Decrease highest string" onClick={onIncreaseLowestString}>
+-                        <IoMdArrowDropdown />
+-                    </button>
+-                </div>
+-            </div>
+-            
+-            {/* <div className="neck-setup-strings">
++  return (
++    <div className="neck-setup-interface">
++      <p className="settings-block-header">neck setup</p>
++
++      <div className="neck-setup-input">
++        <label htmlFor="first-fret" className="settings-block-label">
++          frets
++        </label>
++        <input
++          id="first-fret"
++          type="number"
++          value={fretboard.firstVisibleFretIndex}
++          onChange={handleFirstChange}
++          onBlur={() =>
++            updateFretboard(fretboard.id, {
++              firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex),
++            })
++          }
++          onKeyDown={(e) => {
++            if (e.key === "Enter") {
++              updateFretboard(fretboard.id, {
++                firstVisibleFretIndex: Number(fretboard.firstVisibleFretIndex),
++              });
++            }
++          }}
++          style={{ width: "40px", margin: "0 8px" }}
++        />
++        <label className="settings-block-label" htmlFor="last-fret">
++          to
++        </label>
++        <input
++          id="last-fret"
++          type="number"
++          value={fretboard.lastVisibleFretIndex}
++          onChange={handleLastChange}
++          onBlur={() =>
++            updateFretboard(fretboard.id, {
++              lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex),
++            })
++          }
++          onKeyDown={(e) => {
++            if (e.key === "Enter") {
++              updateFretboard(fretboard.id, {
++                lastVisibleFretIndex: Number(fretboard.lastVisibleFretIndex),
++              });
++            }
++          }}
++          style={{ width: "40px", margin: "0 8px" }}
++        />
++      </div>
++
++      <div className="change-strings">
++        <div className="arrows-and-svg">
++          <button
++            type="button"
++            aria-label="Increase highest string"
++            onClick={onIncreaseHighestString}
++          >
++            <IoMdArrowDropup />
++          </button>
++          {svg()}
++          <button
++            type="button"
++            aria-label="Decrease highest string"
++            onClick={onDecreaseHighestString}
++          >
++            <IoMdArrowDropdown />
++          </button>
++        </div>
++        <div className="arrows-and-svg">
++          <button
++            type="button"
++            aria-label="Increase highest string"
++            onClick={onDecreaseLowestString}
++          >
++            <IoMdArrowDropup />
++          </button>
++          {svg2()}
++          <button
++            type="button"
++            aria-label="Decrease highest string"
++            onClick={onIncreaseLowestString}
++          >
++            <IoMdArrowDropdown />
++          </button>
++        </div>
++      </div>
++
++      {/* <div className="neck-setup-strings">
+                 <div className="generate-scale">
+                     {svg()}
+                     <div className="neck-setup-string-control-group">
+@@ -200,6 +341,6 @@ export const NeckSetup = ({
+                     </div>
+                 </div>
+             </div> */}
+-        </div>
+-    );
+-};
+\ No newline at end of file
++    </div>
++  );
++};
+diff --git a/src/components/Scale.jsx b/src/components/Scale.jsx
+index a3968f7..211bab3 100644
+--- a/src/components/Scale.jsx
++++ b/src/components/Scale.jsx
+@@ -1,144 +1,58 @@
+-import { useState } from "react";
++import { scales } from "./GeneratorScaleAndButton"
+ import "./../elements/Scale.css";
+ 
+ export const Scale = ({
+-    fretboard,
+-    updateFretboard,
+-    root,
+-    setRoot,
+-    color
++  root,
++  setRoot,
++  setScale,
++  scale,
++  notes,
+ }) => {
+-    const notes = fretboard.showSharps ? [
+-        "C", "C#", "D", "D#", "E", "F",
+-        "F#", "G", "G#", "A", "A#", "B"
+-    ] : [
+-        "C", "Db", "D", "Eb", "E", "F",
+-        "Gb", "G", "Ab", "A", "Bb", "B"
+-    ];
+-    const [scale, setScale] = useState("Major (Ionian)");
+ 
+-
+-    const lightenHex = (hex, amount = 0.5) => {
+-        let clean = hex.replace("#", "");
+-
+-        if (clean.length === 3) {
+-            clean = clean.split("").map(c => c + c).join("");
+-        }
+-
+-        let num = parseInt(clean, 16);
+-
+-        let r = (num >> 16) & 255;
+-        let g = (num >> 8) & 255;
+-        let b = num & 255;
+-
+-        r = Math.min(255, Math.round(r + (255 - r) * amount));
+-        g = Math.min(255, Math.round(g + (255 - g) * amount));
+-        b = Math.min(255, Math.round(b + (255 - b) * amount));
+-
+-        const toHex = (value) => value.toString(16).padStart(2, "0");
+-
+-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+-    };
+-
+-    const noteToMidi = () => {
+-        const noteMap = fretboard.showSharps
+-            ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+-            : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+-        for (let i = 0; i < noteMap.length; i++) {
+-            if (noteMap[i] === root) {
+-                return i;
+-            }
+-        }
+-        return -1;
+-    }
+-
+-    const scales = {
+-        "Major (Ionian)": [0, 2, 4, 5, 7, 9, 11],
+-        "Dorian": [0, 2, 3, 5, 7, 9, 10],
+-        "Phrygian": [0, 1, 3, 5, 7, 8, 10],
+-        "Lydian": [0, 2, 4, 6, 7, 9, 11],
+-        "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
+-        "Locrian": [0, 1, 3, 5, 6, 8, 10],
+-        "Natural Minor (Aeolian)": [0, 2, 3, 5, 7, 8, 10],
+-        "Harmonic Minor": [0, 2, 3, 5, 7, 8, 11],
+-        "Melodic Minor Ascending": [0, 2, 3, 5, 7, 9, 11],
+-        "Pentatonic Major": [0, 2, 4, 7, 9],
+-        "Pentatonic Minor": [0, 3, 5, 7, 10],
+-    }
+-
+-    const generateScale = (scaleName) => {
+-        if (color === "none") return;
+-
+-        updateFretboard(fretboard.id, { noteToColor: {} });
+-
+-        let midiRoot = noteToMidi(root);
+-        let scale = scales[scaleName];
+-        // console.log("midiRoot=", midiRoot, "scale=", scale);
+-        let tmp = {}; // temporary noteToColor mapping
+-
+-        const rootColor = color;
+-        const scaleColor = lightenHex(color, 0.6);
+-        const strings = fretboard.strings;
+-        for (let stringIdx = 0; stringIdx < strings.length; stringIdx++) {
+-            // valid midi range is 21 to 108
+-            for (let midi = 0; midi <= 108; midi++) {
+-                if (midi % 12 !== midiRoot) continue;
+-                tmp[midi + "-"  + strings[stringIdx].id] = rootColor;
+-                for (let i = 1; i < scale.length; i++) {
+-                    let noteMidi = midi + scale[i];
+-                    if (noteMidi >= 21 && noteMidi <= 108) {
+-                        tmp[noteMidi + "-"  + strings[stringIdx].id] = scaleColor;
+-                    }
+-                }
+-            }
+-        }
+-        updateFretboard(fretboard.id, { noteToColor: tmp });
+-        
+-    };
+-
+-    return (
+-        <div className="scale-interface">
+-            <p className="settings-block-header">scale generator</p>
+-            <div className="scale-dropdown-wrapper">
+-                <div className="label-and-dropdown">
+-                    <label htmlFor="root" className="settings-block-label">root</label>
+-                    <select
+-                        id="root"
+-                        className="scale-dropdown"
+-                        value={root}
+-                        onChange={(e) => setRoot(e.target.value)}
+-                    >
+-                        {notes.map((note) => 
+-                            <option key={note} value={note}>{note}</option>
+-                        )}
+-                    </select>
+-                </div>
+-                
+-                <div className="label-and-dropdown">
+-                    <label className="settings-block-label">scale</label>
+-                    <select
+-                        id="scale"
+-                        className="scale-dropdown"
+-                        value={scale}
+-                        onChange={(e) => setScale(e.target.value)}
+-                    >
+-                        {Object.entries(scales).map(([key, intervals]) => (
+-                            <option key={key} value={key}>{key}</option>
+-                        ))}
+-                    </select>
+-                </div>
+-                
+-                <div className="label-and-dropdown">
+-                    <label className="settings-block-label" style={{ visibility: "hidden" }}>.</label>
+-                    <div className="generate-scale">
+-                        <button className="gen-btn-text" onClick={() => generateScale(scale)}>
+-                            generate
+-                        </button>
+-                    </div>
+-                </div>
+-            </div>
+-
+-        </div>
+-        
+-    );
+-}
+\ No newline at end of file
++  return (
++    <div className="scale-dropdown-wrapper">
++      <div className="label-and-dropdown">
++        <label htmlFor="root" className="settings-block-label">
++          root
++        </label>
++        <select
++          id="root"
++          className="scale-dropdown"
++          value={root}
++          onChange={(e) => setRoot(e.target.value)}
++        >
++          {notes.map((note) => (
++            <option key={note} value={note}>
++              {note}
++            </option>
++          ))}
++        </select>
++      </div>
++
++      <div className="label-and-dropdown">
++        <label className="settings-block-label">scale</label>
++        <select
++          id="scale"
++          className="scale-dropdown"
++          value={scale}
++          onChange={(e) => setScale(e.target.value)}
++        >
++          {Object.entries(scales).map(([key, intervals]) => (
++            <option key={key} value={key}>
++              {key}
++            </option>
++          ))}
++        </select>
++      </div>
++
++      <div className="label-and-dropdown">
++        <label
++          className="settings-block-label"
++          style={{ visibility: "hidden" }}
++        >
++          .
++        </label>
++      </div>
++    </div>
++  );
++};
+diff --git a/src/components/Toggles.jsx b/src/components/Toggles.jsx
+index 1bad781..8fde3d5 100644
+--- a/src/components/Toggles.jsx
++++ b/src/components/Toggles.jsx
+@@ -1,127 +1,200 @@
+-
+-import '../elements/Toggle.css';
++import "../elements/Toggle.css";
+ import { FaHashtag } from "react-icons/fa";
+ import { FaEye, FaEyeSlash } from "react-icons/fa6";
+ import { BsFillTrashFill } from "react-icons/bs";
+-import Icon from '@mdi/react';
+-import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiNumeric1 } from '@mdi/js';
++import Icon from "@mdi/react";
++import { mdiAlphaC, mdiAlphaX, mdiNumeric3, mdiNumeric1 } from "@mdi/js";
+ 
+ export const Toggles = ({
+-    fretboard,
+-    updateFretboard,
+-    NOTE_LABELS,
+-    setRoot,
+-    keyForInterval,
+-    setKeyForInterval
++  fretboard,
++  updateFretboard,
++  NOTE_LABELS,
++  setRoot,
++  keyForInterval,
++  setKeyForInterval,
+ }) => {
+-    const notes = fretboard.showSharps
+-        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+-        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
++  const notes = fretboard.showSharps
++    ? ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
++    : ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+ 
+-        const nextNoteLabel = (label) => {
+-            const labels = Object.values(NOTE_LABELS);
+-            const currentIndex = labels.indexOf(label);
+-            return labels[(currentIndex + 1) % labels.length];
+-        }
++  const nextNoteLabel = (label) => {
++    const labels = Object.values(NOTE_LABELS);
++    const currentIndex = labels.indexOf(label);
++    return labels[(currentIndex + 1) % labels.length];
++  };
+ 
+-    return (
+-        <div className="toggle-container">
+-            <p className="settings-block-header" id="no-margin">toggles</p>
+-            <div className="toggle-btns">
+-                <div className="toggle-and-label">
+-                    <button className="toggle-notes"  aria-label={fretboard.hideNotes ? "Show all notes" : "Show marked notes"} onClick={() => updateFretboard(fretboard.id, { hideNotes: !fretboard.hideNotes })}>
+-                        {fretboard.hideNotes ? <FaEyeSlash size={37} /> : <FaEye size={35} />}
+-                    </button>
+-                    <span className="label-text">
+-                        {fretboard.hideNotes ? "marked": "all"}
+-                    </span>
+-                </div>
++  return (
++    <div className="toggle-container">
++      <p className="settings-block-header" id="no-margin">
++        toggles
++      </p>
++      <div className="toggle-btns">
++        <div className="toggle-and-label">
++          <button
++            className="toggle-notes"
++            aria-label={
++              fretboard.hideNotes ? "Show all notes" : "Show marked notes"
++            }
++            onClick={() =>
++              updateFretboard(fretboard.id, { hideNotes: !fretboard.hideNotes })
++            }
++          >
++            {fretboard.hideNotes ? (
++              <FaEyeSlash size={37} />
++            ) : (
++              <FaEye size={35} />
++            )}
++          </button>
++          <span className="label-text">
++            {fretboard.hideNotes ? "marked" : "all"}
++          </span>
++        </div>
+ 
+-                <div className="toggle-and-label">
+-                    <button
+-                        className="toggle-sharps-flats"
+-                        aria-label={fretboard.showSharps ? "Switch to flats" : "Switch to sharps"}
+-                        onClick={() =>{
+-                            updateFretboard(fretboard.id, { showSharps: !fretboard.showSharps });
+-                            setRoot(prev => {
+-                                const sharps = [
+-                                    "C", "C#", "D", "D#", "E", "F",
+-                                    "F#", "G", "G#", "A", "A#", "B"
+-                                ];
+-                                const flats  = [
+-                                    "C", "Db", "D", "Eb", "E", "F",
+-                                    "Gb", "G", "Ab", "A", "Bb", "B"
+-                                ];
+-                                if (fretboard.showSharps) {
+-                                    const idx = sharps.indexOf(prev);
+-                                    return idx !== -1 ? flats[idx] : prev;
+-                                } else {
+-                                    const idx = flats.indexOf(prev);
+-                                    return idx !== -1 ? sharps[idx] : prev;
+-                                }
+-                            })
+-                        }}
+-                    >
+-                        {fretboard.showSharps ? <FaHashtag size={35} /> : <p style={{ fontSize: "50px", fontWeight: "bold", marginTop: "53px" }}>♭</p>}
+-                    </button>
+-                    <span className="label-text">
+-                        {fretboard.showSharps ? "sharps" : "flats"}
+-                    </span>
+-                </div>
++        <div className="toggle-and-label">
++          <button
++            className="toggle-sharps-flats"
++            aria-label={
++              fretboard.showSharps ? "Switch to flats" : "Switch to sharps"
++            }
++            onClick={() => {
++              updateFretboard(fretboard.id, {
++                showSharps: !fretboard.showSharps,
++              });
++              setRoot((prev) => {
++                const sharps = [
++                  "C",
++                  "C#",
++                  "D",
++                  "D#",
++                  "E",
++                  "F",
++                  "F#",
++                  "G",
++                  "G#",
++                  "A",
++                  "A#",
++                  "B",
++                ];
++                const flats = [
++                  "C",
++                  "Db",
++                  "D",
++                  "Eb",
++                  "E",
++                  "F",
++                  "Gb",
++                  "G",
++                  "Ab",
++                  "A",
++                  "Bb",
++                  "B",
++                ];
++                if (fretboard.showSharps) {
++                  const idx = sharps.indexOf(prev);
++                  return idx !== -1 ? flats[idx] : prev;
++                } else {
++                  const idx = flats.indexOf(prev);
++                  return idx !== -1 ? sharps[idx] : prev;
++                }
++              });
++            }}
++          >
++            {fretboard.showSharps ? (
++              <FaHashtag size={35} />
++            ) : (
++              <p
++                style={{
++                  fontSize: "50px",
++                  fontWeight: "bold",
++                  marginTop: "53px",
++                }}
++              >
++                ♭
++              </p>
++            )}
++          </button>
++          <span className="label-text">
++            {fretboard.showSharps ? "sharps" : "flats"}
++          </span>
++        </div>
+ 
+-                <div className="toggle-and-label">
+-                    <button
+-                        className={"toggle-note-label"}
+-                        aria-label={`Switch note labels to ${nextNoteLabel(fretboard.noteLabel)}`}
+-                        onClick={() =>
+-                            updateFretboard(fretboard.id, { noteLabel: nextNoteLabel(fretboard.noteLabel) })
+-                        }
+-                    >
+-                        {fretboard.noteLabel === NOTE_LABELS.SPN && (
+-                            <div className="icons">
+-                                <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>
+-                                <div className="icon"><Icon path={mdiNumeric3} size={1.75} /></div>
+-                            </div>
+-                        )}
+-                        {fretboard.noteLabel === NOTE_LABELS.NO_SPN && <div className="icon"><Icon path={mdiAlphaC} size={2.5} /></div>}
+-                        {fretboard.noteLabel === NOTE_LABELS.INTERVAL && <div className="icon"><Icon path={mdiNumeric1} size={2.5} /></div>}
+-                        {fretboard.noteLabel === NOTE_LABELS.BLANK && <div className="icon"><Icon path={mdiAlphaX} size={2.5} /></div>}
+-                    </button>
+-                    <span className="label-text">
+-                        {fretboard.noteLabel}
+-                    </span>
++        <div className="toggle-and-label">
++          <button
++            className={"toggle-note-label"}
++            aria-label={`Switch note labels to ${nextNoteLabel(fretboard.noteLabel)}`}
++            onClick={() =>
++              updateFretboard(fretboard.id, {
++                noteLabel: nextNoteLabel(fretboard.noteLabel),
++              })
++            }
++          >
++            {fretboard.noteLabel === NOTE_LABELS.SPN && (
++              <div className="icons">
++                <div className="icon">
++                  <Icon path={mdiAlphaC} size={2.5} />
++                </div>
++                <div className="icon">
++                  <Icon path={mdiNumeric3} size={1.75} />
+                 </div>
++              </div>
++            )}
++            {fretboard.noteLabel === NOTE_LABELS.NO_SPN && (
++              <div className="icon">
++                <Icon path={mdiAlphaC} size={2.5} />
++              </div>
++            )}
++            {fretboard.noteLabel === NOTE_LABELS.INTERVAL && (
++              <div className="icon">
++                <Icon path={mdiNumeric1} size={2.5} />
++              </div>
++            )}
++            {fretboard.noteLabel === NOTE_LABELS.BLANK && (
++              <div className="icon">
++                <Icon path={mdiAlphaX} size={2.5} />
++              </div>
++            )}
++          </button>
++          <span className="label-text">{fretboard.noteLabel}</span>
++        </div>
+ 
+-                {fretboard.noteLabel === NOTE_LABELS.INTERVAL && (
+-                    <div className="key-select">
+-                        <p className="key-text">root</p>
+-                        <select className="scale-dropdown" value={keyForInterval} onChange={((e) => {setKeyForInterval(e.target.value)})}>
+-                            {notes.map((key) => (
+-                                <option key={key} value={key}>
+-                                    {key}
+-                                </option>
+-                            ))}
+-                        </select>
+-                    </div>
+-                    
+-                )}
++        {fretboard.noteLabel === NOTE_LABELS.INTERVAL && (
++          <div className="key-select">
++            <p className="key-text">root</p>
++            <select
++              className="scale-dropdown"
++              value={keyForInterval}
++              onChange={(e) => {
++                setKeyForInterval(e.target.value);
++              }}
++            >
++              {notes.map((key) => (
++                <option key={key} value={key}>
++                  {key}
++                </option>
++              ))}
++            </select>
++          </div>
++        )}
+ 
+-                <div className="toggle-and-label">
+-                    <button className="delete" aria-label="Clear current fretboard" onClick={() => {
+-                        const confirm = window.confirm("Are you sure you want to clear this fretboard? This action cannot be undone. This will only affect the currently selected fretboard.");
+-                        if (confirm) {
+-                            updateFretboard(fretboard.id, { noteToColor: {} })
+-                            setRoot("C");
+-                        }
+-                    }}>
+-                        <BsFillTrashFill size={30} />
+-                    </button>
+-                    <span className="label-text">
+-                        clear
+-                    </span>
+-                </div>
+-                
+-            </div>
++        <div className="toggle-and-label">
++          <button
++            className="delete"
++            aria-label="Clear current fretboard"
++            onClick={() => {
++              const confirm = window.confirm(
++                "Are you sure you want to clear this fretboard? This action cannot be undone. This will only affect the currently selected fretboard.",
++              );
++              if (confirm) {
++                updateFretboard(fretboard.id, { noteToColor: {} });
++                setRoot("C");
++              }
++            }}
++          >
++            <BsFillTrashFill size={30} />
++          </button>
++          <span className="label-text">clear</span>
+         </div>
+-    )
+-}
+\ No newline at end of file
++      </div>
++    </div>
++  );
++};
+diff --git a/src/components/Tuning.jsx b/src/components/Tuning.jsx
+index 7dcc984..b785cf8 100644
+--- a/src/components/Tuning.jsx
++++ b/src/components/Tuning.jsx
+@@ -1,230 +1,231 @@
+-import { useEffect, useState } from 'react'
+-import '../elements/Tuning.css';
+-import { tuning, tuningsMidi } from "./Tunings.jsx"
+-import { Scale } from './Scale.jsx';
++import { useEffect, useState } from "react";
++import "../elements/Tuning.css";
++import { tuning, tuningsMidi } from "./Tunings.jsx";
++import { Scale } from "./Scale.jsx";
+ import { RiResetLeftFill } from "react-icons/ri";
+ import { GrFormRefresh } from "react-icons/gr";
+ const presetTunings = {
+-    'standard': tuning['standard'],
+-    'half-step-down': tuning['half-step-down'],
+-    'full-step-down': tuning['full-step-down'],
+-    'drop-d': tuning['drop-d'],
+-    'drop-c': tuning['drop-c'],
+-    'open-d': tuning['open-d'],
+-    'open-c': tuning['open-c'],
+-    'open-g': tuning['open-g'],
+-    'dadgad': tuning['dadgad'],
+-    'double-drop-d': tuning['double-drop-d'],
+-    'all fourths': tuning['all fourths'],
+-    'bass standard': tuning['bass standard'],
+-    'custom': tuning['custom'] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
++  standard: tuning["standard"],
++  "half-step-down": tuning["half-step-down"],
++  "full-step-down": tuning["full-step-down"],
++  "drop-d": tuning["drop-d"],
++  "drop-c": tuning["drop-c"],
++  "open-d": tuning["open-d"],
++  "open-c": tuning["open-c"],
++  "open-g": tuning["open-g"],
++  dadgad: tuning["dadgad"],
++  "double-drop-d": tuning["double-drop-d"],
++  "all fourths": tuning["all fourths"],
++  "bass standard": tuning["bass standard"],
++  custom: tuning["custom"], // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
+ };
+ 
+-export const Tuning = ({
+-    fretboard,
+-    updateFretboard,
+-    formatNote,
+-}) => {
+-    const [tuning, setTuning] = useState('standard');
+-    const [retuningStringId, setRetuningStringId] = useState(null);
+-    const [updatedNote, setUpdatedNote] = useState('');
++export const Tuning = ({ fretboard, updateFretboard, formatNote }) => {
++  const [tuning, setTuning] = useState("standard");
++  const [retuningStringId, setRetuningStringId] = useState(null);
++  const [updatedNote, setUpdatedNote] = useState("");
+ 
+-    const strings = fretboard.strings;
+-    
+-    // user can change the tuning of the fretboard by clicking on the note boxes below the fretboard and editing them
+-    const updateTuningInputText = (e) => {
+-        setUpdatedNote(e.target.value);
+-    };
++  const strings = fretboard.strings;
+ 
+-    // helper function to check if two arrays are equal
+-    // used to check if the updated tuning by the user matches any preset options
+-    const arraysEqual = (a, b) => {
+-        return a.length === b.length && a.every((val, i) => val === b[i]);
+-    };
++  // user can change the tuning of the fretboard by clicking on the note boxes below the fretboard and editing them
++  const updateTuningInputText = (e) => {
++    setUpdatedNote(e.target.value);
++  };
+ 
+-    // check if updated tuning by user matches any preset options
+-    useEffect(() => {
+-        let found = false;
+-        let currentMidiArray = strings.map(s => s.midi);
+-        for (const [name, notes] of Object.entries(tuningsMidi)) {
+-            if (arraysEqual(notes, currentMidiArray)) {
+-                setTuning(name);
+-                found = true;
+-                break;
+-            }
+-        }
+-        if (!found) {
+-            setTuning("custom");
+-        }
+-    }, [fretboard, setTuning]);
++  // helper function to check if two arrays are equal
++  // used to check if the updated tuning by the user matches any preset options
++  const arraysEqual = (a, b) => {
++    return a.length === b.length && a.every((val, i) => val === b[i]);
++  };
+ 
+-    // letter note to midi note conversion
+-    const convertNoteAndOctaveToMidi = (userInputNote) => {
+-        const noteMap = {
+-            'C': 0,
+-            'C#': 1, 'DB': 1,
+-            'D': 2,
+-            'D#': 3, 'EB': 3,
+-            'E': 4,
+-            'F': 5,
+-            'F#': 6, 'GB': 6,
+-            'G': 7,
+-            'G#': 8, 'AB': 8,
+-            'A': 9,
+-            'A#': 10, 'BB': 10,
+-            'B': 11
+-        };
+-        const match = userInputNote.match(/^([A-G][#b]?)(\d+)$/i);
+-        const fail = "Invalid note format. Use Scientific Pitch Notation :)\nFormat: [note][octave]\nExamples: E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.";
+-        if (!match) {
+-            alert(fail);
+-            return -1;
+-        }
+-        const note = match[1].toUpperCase();
+-        if (noteMap[note] === undefined) {
+-            alert(fail);
+-            return -1;
+-        }
+-        const octave = parseInt(match[2], 10) + 1;
++  // check if updated tuning by user matches any preset options
++  useEffect(() => {
++    let found = false;
++    let currentMidiArray = strings.map((s) => s.midi);
++    for (const [name, notes] of Object.entries(tuningsMidi)) {
++      if (arraysEqual(notes, currentMidiArray)) {
++        setTuning(name);
++        found = true;
++        break;
++      }
++    }
++    if (!found) {
++      setTuning("custom");
++    }
++  }, [fretboard, setTuning]);
+ 
+-        if ((octave > 9) ||
+-            ((octave <= 1) && !(['A','A#','BB'].includes(note))) || 
+-            ((octave === 9) && (note !== 'C'))) {
+-            alert("Valid octave range: [A0, C8]");
+-            return -1;
+-        }
+-        // console.log(`Unformatted note: ${note}, Octave: ${octave}`);
+-        return (octave * 12) + noteMap[note];
++  // letter note to midi note conversion
++  const convertNoteAndOctaveToMidi = (userInputNote) => {
++    const noteMap = {
++      C: 0,
++      "C#": 1,
++      DB: 1,
++      D: 2,
++      "D#": 3,
++      EB: 3,
++      E: 4,
++      F: 5,
++      "F#": 6,
++      GB: 6,
++      G: 7,
++      "G#": 8,
++      AB: 8,
++      A: 9,
++      "A#": 10,
++      BB: 10,
++      B: 11,
+     };
++    const match = userInputNote.match(/^([A-G][#b]?)(\d+)$/i);
++    const fail = "Invalid note format. Use Scientific Pitch Notation :)\nFormat: [note][octave]\nExamples: E2, A2, D3, G3, B3, E4, A#4, Bb2, etc.";
++    if (!match) {
++      alert(fail);
++      return -1;
++    }
+ 
+-    const finishChangeTuning = (updatedNoteAndOctave) => {
+-        const noteMidiValue = convertNoteAndOctaveToMidi(updatedNoteAndOctave);
+-        if (noteMidiValue === -1) {
+-            setRetuningStringId(null); // reset index
+-            return; // return with no changes
+-        }
+-        updateFretboard(fretboard.id, {
+-            strings: fretboard.strings.map(str =>
+-                str.id === retuningStringId
+-                    ? {...str, midi: noteMidiValue}
+-                    : str
+-            )
+-        });
+-        setRetuningStringId(null); // reset index
+-    };
++    const note = match[1].toUpperCase();
++    if (noteMap[note] === undefined) {
++      alert(fail);
++      return -1;
++    }
+ 
+-    // prefills retune input box with current note
+-    useEffect(() => {
+-        let stringObj = strings.find((str) => str.id === retuningStringId);
+-        if (!stringObj) return;
+-        const noteMap = fretboard.showSharps
+-        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+-        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+-        let note = noteMap[stringObj.midi % 12];
+-        const octave = Math.floor(stringObj.midi / 12) - 1;
+-        setUpdatedNote(note + octave);
+-    }, [retuningStringId]);
++    const octave = parseInt(match[2], 10) + 1;
++    if ((octave > 9) || (octave <= 1)) {
++      alert("Valid octave range is A0 to C8");
++      return -1;
++    }
++    
++    return octave * 12 + noteMap[note];
++  };
+ 
+-    // reset to default tuning
+-    const resetTuning = () => {
+-        updateFretboard(fretboard.id, {
+-            strings: [
+-                {id: 0, midi: 64}, // E4
+-                {id: 1, midi: 59}, // B3
+-                {id: 2, midi: 55}, // G3
+-                {id: 3, midi: 50}, // D3
+-                {id: 4, midi: 45}, // A2
+-                {id: 5, midi: 40}, // E2
+-            ]
+-        });
+-    };
++  const finishChangeTuning = (updatedNoteAndOctave) => {
++    const noteMidiValue = convertNoteAndOctaveToMidi(updatedNoteAndOctave);
++    if (noteMidiValue === -1) {
++      setRetuningStringId(null); // reset index
++      return; // return with no changes
++    }
++    updateFretboard(fretboard.id, {
++      strings: fretboard.strings.map((str) =>
++        str.id === retuningStringId ? { ...str, midi: noteMidiValue } : str,
++      ),
++    });
++    setRetuningStringId(null); // reset index
++  };
+ 
+-    // for when the user selects a preset tuning from the dropdown
+-    const changeTuningViaDropdown = (e) => {
+-        const tuning = e.target.value;
+-        setTuning(tuning); // update dropdown
+-        if (tuning !== 'custom') {
+-            updateFretboard(fretboard.id, { strings: presetTunings[tuning] }); // update the fretboard tuning
+-        }
+-    };
++  // prefills retune input box with current note
++  useEffect(() => {
++    let stringObj = strings.find((str) => str.id === retuningStringId);
++    if (!stringObj) return;
++    const noteMap = fretboard.showSharps
++      ? ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
++      : ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
++    let note = noteMap[stringObj.midi % 12];
++    const octave = Math.floor(stringObj.midi / 12) - 1;
++    setUpdatedNote(note + octave);
++  }, [retuningStringId]);
++
++  // reset to default tuning
++  const resetTuning = () => {
++    updateFretboard(fretboard.id, {
++      strings: [
++        { id: 0, midi: 64 }, // E4
++        { id: 1, midi: 59 }, // B3
++        { id: 2, midi: 55 }, // G3
++        { id: 3, midi: 50 }, // D3
++        { id: 4, midi: 45 }, // A2
++        { id: 5, midi: 40 }, // E2
++      ],
++    });
++  };
++
++  // for when the user selects a preset tuning from the dropdown
++  const changeTuningViaDropdown = (e) => {
++    const tuning = e.target.value;
++    setTuning(tuning); // update dropdown
++    if (tuning !== "custom") {
++      updateFretboard(fretboard.id, { strings: presetTunings[tuning] }); // update the fretboard tuning
++    }
++  };
+ 
+-    return (
+-        <div className="tuning-block-container">
+-            <div className="tuning-block">
+-                <div className="tuning-editor">
+-                    <div className="tune-dropdown-wrapper">
+-                        <label className="settings-block-header">current tuning</label>
+-                            <select
+-                                id="tuning-dropdown"
+-                                className="tuning-dropdown"
+-                                value={tuning}
+-                                onChange={changeTuningViaDropdown}
+-                            >
+-                                {Object.entries(presetTunings).map(([tuningKey]) => {
+-                                    if (tuningKey === 'custom' && tuning !== 'custom') {
+-                                        return null;
+-                                    }
+-                                    return (
+-                                        <option key={tuningKey} value={tuningKey}>{tuningKey}</option>
+-                                    );
+-                                })}
+-                            </select>
+-                    </div>
+-                    
+-                    <div className="tune-dropdown-wrapper">
+-                        <p className="settings-block-header">adjust tuning per string
+-                            <span style={{marginLeft: "5px"}}>(</span>
+-                            <span 
+-                                style={{
+-                                    textDecoration: "underline dotted",
+-                                    cursor: "help",
+-                                    display: "inline-block",
++  return (
++    <div className="tuning-block-container">
++      <div className="tuning-block">
++        <div className="tuning-editor">
++          <div className="tune-dropdown-wrapper">
++            <label className="settings-block-header">current tuning</label>
++            <select
++              id="tuning-dropdown"
++              className="tuning-dropdown"
++              value={tuning}
++              onChange={changeTuningViaDropdown}
++            >
++              {Object.entries(presetTunings).map(([tuningKey]) => {
++                if (tuningKey === "custom" && tuning !== "custom") {
++                  return null;
++                }
++                return (
++                  <option key={tuningKey} value={tuningKey}>
++                    {tuningKey}
++                  </option>
++                );
++              })}
++            </select>
++          </div>
+ 
+-                                }}
+-                                title="Scientific Pitch Notation. The number after the note indicates the pitch/octave. Ex: E2 is the low E string while E4 is the high E string.
++          <div className="tune-dropdown-wrapper">
++            <p className="settings-block-header">
++              adjust tuning per string
++              <span style={{ marginLeft: "5px" }}>(</span>
++              <span
++                style={{
++                  textDecoration: "underline dotted",
++                  cursor: "help",
++                  display: "inline-block",
++                }}
++                title="Scientific Pitch Notation. The number after the note indicates the pitch/octave. Ex: E2 is the low E string while E4 is the high E string.
+                                 More examples: A#4, Bb6, C#2, etc.
+                                 "
+-                            >
+-                                spn
+-                            </span>
+-                            <span>)</span>
+-                        </p>
+-                        <div className="tune-input">
+-                            {strings.map((stringObj) => (
+-                                <div key={stringObj.id}>
+-                                    {retuningStringId === stringObj.id ? (
+-                                        <input
+-                                            value={updatedNote}
+-                                            onChange={(e) => updateTuningInputText(e)}
+-                                            onBlur={() => setRetuningStringId(null)}
+-                                            onKeyDown={(e) => {
+-                                                if (e.key === 'Enter') {
+-                                                    finishChangeTuning(updatedNote);
+-                                                }
+-                                            }}
+-                                            autoFocus
+-                                        >
+-                                            </input>
+-                                    ) : (
+-                                        <button
+-                                            className='retune-note-btn'
+-                                            onClick={() => setRetuningStringId(stringObj.id)}
+-                                        >
+-                                            {/* // true boolean forces SPN formatting for the tuning input boxes */}
+-                                            {formatNote(stringObj.midi, fretboard.id, true)}
+-                                        </button>
+-                                    )}
+-                                </div>
+-                            ))}
+-                        </div>
+-                    </div>
++              >
++                spn
++              </span>
++              <span>)</span>
++            </p>
++            <div className="tune-input">
++              {strings.map((stringObj) => (
++                <div key={stringObj.id}>
++                  {retuningStringId === stringObj.id ? (
++                    <input
++                      value={updatedNote}
++                      onChange={(e) => updateTuningInputText(e)}
++                      onBlur={() => setRetuningStringId(null)}
++                      onKeyDown={(e) => {
++                        if (e.key === "Enter") {
++                          finishChangeTuning(updatedNote);
++                        }
++                      }}
++                      autoFocus
++                    ></input>
++                  ) : (
++                    <button
++                      className="retune-note-btn"
++                      onClick={() => setRetuningStringId(stringObj.id)}
++                    >
++                      {/* // true boolean forces SPN formatting for the tuning input boxes */}
++                      {formatNote(stringObj.midi, fretboard.id, true)}
++                    </button>
++                  )}
+                 </div>
++              ))}
+             </div>
+-            {tuning !== 'standard' && (
+-                <div className="toggle-btns">
+-                    <button className="toggle-btns" id="refresh" onClick={resetTuning}><GrFormRefresh /></button>
+-                </div>
+-            )}
++          </div>
++        </div>
++      </div>
++      {tuning !== "standard" && (
++        <div className="toggle-btns">
++          <button className="toggle-btns" id="refresh" onClick={resetTuning}>
++            <GrFormRefresh />
++          </button>
+         </div>
+-    );
+-}
+\ No newline at end of file
++      )}
++    </div>
++  );
++};
+diff --git a/src/components/Tunings.jsx b/src/components/Tunings.jsx
+index 37ffe36..c55b4fe 100644
+--- a/src/components/Tunings.jsx
++++ b/src/components/Tunings.jsx
+@@ -1,25 +1,25 @@
+ // midi values correspond to notes
+ // e.g., 64 = e4, 59 = B3, 55 = G3, 50 = D3, 45 = A2, 40 = E2, etc.
+ export const tuningsMidi = {
+-    'standard': [64, 59, 55, 50, 45, 40],
+-    'drop-d': [64, 59, 55, 50, 45, 38],
+-    'half-step-down': [63, 58, 54, 49, 44, 39],
+-    'full-step-down': [62, 57, 53, 48, 43, 38],
+-    'drop-c': [62, 57, 53, 48, 43, 36],
+-    'open-d': [62, 57, 54, 50, 45, 38],
+-    'open-g': [62, 59, 55, 50, 43, 38],
+-    'open-c': [64, 60, 55, 48, 43, 36],
+-    'dadgad': [62, 57, 55, 50, 45, 38],
+-    'double-drop-d': [62, 59, 55, 50, 45, 38],
+-    'all fourths': [65, 60, 55, 50, 45, 40],
+-    'bass standard': [43, 38, 33, 28],
+-    'custom': [] // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
++  standard: [64, 59, 55, 50, 45, 40],
++  "drop-d": [64, 59, 55, 50, 45, 38],
++  "half-step-down": [63, 58, 54, 49, 44, 39],
++  "full-step-down": [62, 57, 53, 48, 43, 38],
++  "drop-c": [62, 57, 53, 48, 43, 36],
++  "open-d": [62, 57, 54, 50, 45, 38],
++  "open-g": [62, 59, 55, 50, 43, 38],
++  "open-c": [64, 60, 55, 48, 43, 36],
++  dadgad: [62, 57, 55, 50, 45, 38],
++  "double-drop-d": [62, 59, 55, 50, 45, 38],
++  "all fourths": [65, 60, 55, 50, 45, 40],
++  "bass standard": [43, 38, 33, 28],
++  custom: [], // custom is not a preset, and only appears in the dropdown when the user enters a custom tuning
+ };
+ 
+-// generate string objects: {id: string-id, midi: midi value} 
++// generate string objects: {id: string-id, midi: midi value}
+ export const tuning = Object.fromEntries(
+-    Object.entries(tuningsMidi).map(([name, arr]) => [
+-        name,
+-        arr.map((midi, i) => ({id: i, midi})),
+-    ])
+-);
+\ No newline at end of file
++  Object.entries(tuningsMidi).map(([name, arr]) => [
++    name,
++    arr.map((midi, i) => ({ id: i, midi })),
++  ]),
++);
+diff --git a/src/index.jsx b/src/index.jsx
+index a37c97c..835d95d 100644
+--- a/src/index.jsx
++++ b/src/index.jsx
+@@ -1,11 +1,11 @@
+-import React from 'react';
+-import ReactDOM from 'react-dom/client';
+-import './elements/index.css';
+-import App from './components/App';
++import React from "react";
++import ReactDOM from "react-dom/client";
++import "./elements/index.css";
++import App from "./components/App";
+ 
+-const root = ReactDOM.createRoot(document.getElementById('root'));
++const root = ReactDOM.createRoot(document.getElementById("root"));
+ root.render(
+-    <React.StrictMode>
+-        <App />
+-    </React.StrictMode>
+-);
+\ No newline at end of file
++  <React.StrictMode>
++    <App />
++  </React.StrictMode>,
++);
