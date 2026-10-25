@@ -238,6 +238,7 @@ export const NeckSetup = ({ fretboard, updateFretboard, isDarkMode }) => {
           frets
         </label>
         <input
+          className="fret-input"
           id="first-fret"
           type="number"
           value={fretboard.firstVisibleFretIndex}
@@ -260,6 +261,7 @@ export const NeckSetup = ({ fretboard, updateFretboard, isDarkMode }) => {
           to
         </label>
         <input
+          className="fret-input"
           id="last-fret"
           type="number"
           value={fretboard.lastVisibleFretIndex}

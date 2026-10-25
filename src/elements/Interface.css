@@ -14,7 +14,7 @@
     z-index: 100;
     min-width: 100%;
     width: max-content;
-    background-color: #fffff8;
+    background-color: #fffffa;
     border-bottom: 1px solid #ddd;
     padding: 2.5px 0px;
 
@@ -55,8 +55,6 @@ body.dark .header {
 } */
 
 .header .title {
-    position: static;
-    transform: none;
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
@@ -139,7 +137,7 @@ body.dark .info kbd {
     padding: 5px;
     height: fit-content;
     border-radius: 10px;
-    background-color: rgba(246, 255, 82, 0.039);
+    background-color: rgba(255, 255, 212, 0.039);
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     position: relative;
     gap: 5px;
@@ -154,7 +152,7 @@ body.dark .settings {
 .settings-block {
     display: flex;
     flex-direction: column;
-    background-color: rgba(246, 255, 82, 0.039);
+    background-color: rgba(255, 255, 212, 0.039);
     align-items: center;
     justify-content: center;
     border-radius: 2.5px;
@@ -165,7 +163,7 @@ body.dark .settings {
 }
 
 .settings-block > * {
-    max-width: 95%;
+    max-width: 100%;
     min-width: 0;
 }
 
@@ -181,14 +179,18 @@ body.dark .settings {
     font-size: 18px;
     font-weight: bold;
     font-variant: small-caps;
-    margin-top: 0;
-    margin-bottom: 5px;
+
+    align-self: stretch;
+    width: auto;
+    margin: 0 0 5px 0;
+    text-align: center;
 }
 
 .settings-block-label {
     font-variant: small-caps;
     font-weight: bold;
     font-size: 14px;
+    
 }
 
 body.dark .settings-block {
@@ -223,7 +225,7 @@ body.dark .settings-block {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background-color: #fffff8;
+    background-color: #fffffa;
     height: auto;
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     border-radius: 10px;
@@ -244,16 +246,17 @@ body.dark .settings-block {
 }
 
 body.dark .add-remove-fretboard-btns button {
-    background-color: #212223;
+    background-color: #292929;
     box-shadow: 0 0 0 1px black;
 }
 
 body.dark .add-remove-fretboard-btns button svg {
-    color: #fffff8;
+    color: #fffffa;
 }
 
 body.dark .add-remove-fretboard-btns button:hover {
-    background-color: rgba(0, 0, 0, 0.161);
+    background-color: #343434;
+    border-color: #292929
 }
 
 .add-remove-fretboard-btns button:active {

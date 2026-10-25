@@ -24,7 +24,7 @@ export const Toggles = ({
   };
 
   return (
-    <div className="toggle-container">
+    <div>
       <p className="settings-block-header" id="no-margin">
         toggles
       </p>

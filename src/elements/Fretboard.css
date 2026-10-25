@@ -11,7 +11,7 @@
 }
 
 .fretboard-interface.active {
-    background-color: rgba(246, 255, 82, 0.039);
+    background-color: rgba(255, 255, 212, 0.039);
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     border-radius: 10px;
     cursor: auto;
@@ -19,7 +19,6 @@
 }
 
 .fretboard-interface.inactive:hover {
-    /* background-color: #fffff887; */
     background-color: rgba(246, 255, 82, 0.030);
 
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.05);
@@ -36,7 +35,6 @@ body.dark .fretboard-interface.active {
 }
 
 body.dark .fretboard-interface.inactive:hover {
-    /* background-color: #fffff887; */
     background-color: rgba(94, 95, 104, 0.1);
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.2);
 }

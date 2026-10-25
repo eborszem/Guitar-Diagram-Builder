@@ -268,7 +268,6 @@ function Interface() {
             />
           </div>
           <div className="settings-block">
-            <div className="settings-block-toggles">
               <ColorSelector
                 colorBank={colorBank}
                 colorBankLight={colorBankLight}
@@ -277,10 +276,8 @@ function Interface() {
                 color={color}
                 setColor={setColor}
               />
-            </div>
           </div>
           <div className="settings-block">
-            <div className="settings-block-toggles">
               <Toggles
                 curFretboardId={curFretboardId}
                 setCurFretboardId={setCurFretboardId}
@@ -291,7 +288,6 @@ function Interface() {
                 setKeyForInterval={setKeyForInterval}
                 NOTE_LABELS={NOTE_LABELS}
               />
-            </div>
           </div>
           <div className="settings-block">
             <Download

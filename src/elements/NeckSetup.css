@@ -37,6 +37,10 @@
     padding: 10px;
 }
 
+.fret-input {
+    /* background-color: white; */
+}
+
 .neck-setup-input {
     display: flex;
     flex-direction: row;
@@ -116,12 +120,6 @@
     background-color: rgba(0, 0, 0, 0.161);
 }
 
-body.dark .arrows-and-svg button:hover {
-
-    background-color: #1a1a1a;
-
-}
-
 .arrows-and-svg button:active {
     transform: scale(0.95);
 }
@@ -131,6 +129,11 @@ body.dark .arrows-and-svg button svg {
 }
 
 body.dark .arrows-and-svg button {
-    background-color: #212223;
+    background-color: #292929;
     border-color: #161616
+}
+
+body.dark .arrows-and-svg button:hover {
+    background-color: #343434;
+    border-color: #292929
 }

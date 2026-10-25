@@ -7,7 +7,7 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    background-color: rgba(246, 255, 82, 0.039);
+    background-color: rgba(255, 255, 212, 0.039);
     border: 1px solid rgba(0, 0, 0, 0.097);
     border-radius: 3px;
     height: fit-content;
@@ -21,7 +21,7 @@
     justify-content: center;
     width: fit-content;
     border-radius: 10px;
-    background-color: rgba(246, 255, 82, 0.039);
+    background-color: rgba(255, 255, 212, 0.039);
     box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
     margin: 5px 0px;
 }
@@ -69,9 +69,9 @@
 }
 
 body.dark .tuning-editor .retune-note-btn {
-    background-color: #212223;
-    border-color: rgb(22, 22, 22);
-    color: #fffff8;
+    color: #fffffa;
+    background-color: #292929;
+    border-color: #161616
 }
 
 .tuning-editor .retune-note-btn:hover {
@@ -79,8 +79,8 @@ body.dark .tuning-editor .retune-note-btn {
 }
 
 body.dark .tuning-editor .retune-note-btn:hover {
-    background-color: #1a1a1a;
-
+    background-color: #343434;
+    border-color: #292929
 }
 
 .tuning-editor input {
@@ -142,13 +142,14 @@ body.dark .tuning-editor .retune-note-btn:hover {
 }
 
 body.dark .tuning-dropdown {
-    background-color: #212223;
-    border-color: rgb(22, 22, 22);
-    color: #fffff8;
+    color: #fffffa;
+    background-color: #292929;
+    border-color: #161616
 }
 
 body.dark .tuning-dropdown:hover {
-    background-color: #1a1a1a;
+    background-color: #343434;
+    border-color: #292929
 }
 
 

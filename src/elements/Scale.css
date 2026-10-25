@@ -65,13 +65,15 @@
 }
 
 body.dark .scale-dropdown {
-    background-color: #212223;
-    border-color: rgb(22, 22, 22);
+    background-color: #292929;
+    border-color: #161616;
     color: #fffff1;
 }
 
 body.dark .scale-dropdown:hover {
-    background-color: #1a1a1a;
+    background-color: #343434;
+    border-color: #292929
+    
 }
 
 .generate-scale button {
@@ -91,7 +93,6 @@ body.dark .scale-dropdown:hover {
 
 .generate-scale button:hover {
     background-color: rgba(0, 0, 0, 0.161);
-    
 }
 
 .generate-scale button:active {
@@ -99,12 +100,13 @@ body.dark .scale-dropdown:hover {
 }
 
 body.dark .generate-scale button {
-    background-color: #212223;
+    background-color: #292929;
     border-color: #161616;
     color: #fffff1;
 }
 
 
 body.dark .generate-scale button:hover {
-    background-color: #1a1a1a;
+    background-color: #343434;
+    border-color: #292929
 }
